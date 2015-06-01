@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "FrameServer.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -59,12 +60,12 @@ CFrameMain * CFrameServer::CreateNewFrame()
 
 	if ((m_Arr.GetCount() == 0) && (m_rectMain.Width() > 80) && (m_rectMain.left >= 0) && (m_rectMain.top >= 0))
 	{
-		pMainFrame->Create(NULL, gstr[131], WS_OVERLAPPEDWINDOW, m_rectMain, 
+		pMainFrame->Create(NULL, GCStrings::getString(131).c_str(), WS_OVERLAPPEDWINDOW, m_rectMain, 
 			NULL, MAKEINTRESOURCE(IDR_MAINMENU), NULL, NULL);
 	}
 	else
 	{
-		pMainFrame->Create(NULL, gstr[131], WS_OVERLAPPEDWINDOW, CFrameWnd::rectDefault, 
+		pMainFrame->Create(NULL, GCStrings::getString(131).c_str(), WS_OVERLAPPEDWINDOW, CFrameWnd::rectDefault, 
 			NULL, MAKEINTRESOURCE(IDR_MAINMENU), NULL, NULL);
 	}
 	
@@ -162,7 +163,7 @@ void CFrameServer::CreateNewFindFrame()
 	{
 		m_pFinder = new CFrameFind;
 
-		strTitle.Format("%s - Event Finder", gstr[131].c_str());
+		strTitle.Format("%s - Event Finder", GCStrings::getString(131).c_str());
 		m_pFinder->Create( AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW, ::LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE + 1), NULL)
 			, strTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CFrameWnd::rectDefault, 
 			NULL, MAKEINTRESOURCE(IDR_FINDMENU), NULL, NULL);
@@ -208,7 +209,7 @@ void CFrameServer::CreateNewLocationFrame()
 	{
 		m_pLocs = new CFrameLocs;
 
-		strTitle.Format("%s - Locations", gstr[131].c_str());
+		strTitle.Format("%s - Locations", GCStrings::getString(131).c_str());
 		m_pLocs->Create( AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW, ::LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE + 1), NULL)
 			, strTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CFrameWnd::rectDefault, 
 			NULL, MAKEINTRESOURCE(IDR_LOCSMENU), NULL, NULL);
@@ -262,7 +263,7 @@ void CFrameServer::CreateNewEventsFrame()
 	}
 
 	m_pEvents = new CFrameEvents;
-	strTitle.Format("%s - Events", gstr[131].c_str());
+	strTitle.Format("%s - Events", GCStrings::getString(131).c_str());
 	m_pEvents->Create( AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW, ::LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE + 1), NULL)
 		, strTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CFrameWnd::rectDefault, 
 		NULL, MAKEINTRESOURCE(IDR_EVENTSMENU), NULL, NULL);

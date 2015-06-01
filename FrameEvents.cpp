@@ -9,6 +9,7 @@
 #include "vedic_ui.h"
 #include "CustomEvent.h"
 #include "DlgEditCustomEvent.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -19,8 +20,6 @@ static char THIS_FILE[]=__FILE__;
 extern GCalApp theApp;
 
 int AvcComboMasaToMasa(int);
-const char * AvcGetEventClassText(int i);
-void SetSpecFestivalName(int, const char *);
 int GetShowSetVal(int);
 
 //////////////////////////////////////////////////////////////////////
@@ -240,7 +239,7 @@ int CFrameEvents::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndClass.AddString("<all classes>");
 	for(i = 0; i < 7; i++)
-		m_wndClass.AddString(AvcGetEventClassText(i));
+		m_wndClass.AddString(GCStrings::GetEventClassText(i));
 /*	m_wndClass.AddString("Appearance Days of the Lord and His Incarnations");
 	m_wndClass.AddString("Events in the Pastimes of the Lord and His Associates");
 	m_wndClass.AddString("Appearance and Disappearance Days of Recent Acaryas");
@@ -251,7 +250,7 @@ int CFrameEvents::OnCreate(LPCREATESTRUCT lpCreateStruct)
 */
 	m_wndMasa.AddString("<all masa>");
 	for(i = 0; i < 12; i++)
-		m_wndMasa.AddString(GetMasaName(AvcComboMasaToMasa(i)));
+		m_wndMasa.AddString(GCStrings::GetMasaName(AvcComboMasaToMasa(i)));
 
 	m_wndClass.SetCurSel(0);
 	m_wndMasa.SetCurSel(0);
@@ -293,15 +292,15 @@ void CFrameEvents::FillListView()
 		if (p->nMasa>=0 && p->nMasa<12 && p->nClass>=0 && p->nClass<10 && b_class[p->nClass] && b_masa[p->nMasa] && p->nDeleted==0)
 		{
 			i = m_wndList.InsertItem(0, p->strText.c_str());
-			m_wndList.SetItemText(i, 1, GetTithiName(p->nTithi));
-			m_wndList.SetItemText(i, 2, GetPaksaName(p->nTithi/15));
-			m_wndList.SetItemText(i, 3, GetMasaName(p->nMasa));
+			m_wndList.SetItemText(i, 1, GCStrings::GetTithiName(p->nTithi));
+			m_wndList.SetItemText(i, 2, GCStrings::GetPaksaName(p->nTithi/15));
+			m_wndList.SetItemText(i, 3, GCStrings::GetMasaName(p->nMasa));
 			if (p->nFastType != 0)
 			{
-				m_wndList.SetItemText(i, 4, GetFastingName(p->nFastType + 0x200));
+				m_wndList.SetItemText(i, 4, GCStrings::GetFastingName(p->nFastType + 0x200));
 				m_wndList.SetItemText(i, 5, p->strFastSubject.c_str());
 			}
-			m_wndList.SetItemText(i, 6, AvcGetEventClassText(p->nClass));
+			m_wndList.SetItemText(i, 6, GCStrings::GetEventClassText(p->nClass));
 			if (p->nStartYear > -7000)
 			{
 				char str10[32];
@@ -390,7 +389,7 @@ void CFrameEvents::OnEventsEditevent()
 					pe->nStartYear = -10000;
 
 				gCustomEventList_Modified = 1;
-				SetSpecFestivalName(pe->nSpec, (LPCTSTR)d.m_strText);
+				GCStrings::SetSpecFestivalName(pe->nSpec, (LPCTSTR)d.m_strText);
 				FillListView();
 			}
 		}
@@ -421,7 +420,7 @@ void CFrameEvents::OnEventsNewevent()
 			p->strFastSubject = (LPCTSTR)d.m_strFastSubject;
 			p->strText = (LPCTSTR)d.m_strText;
 			gCustomEventList_Modified = 1;
-			SetSpecFestivalName(p->nSpec, (LPCTSTR)d.m_strText);
+			GCStrings::SetSpecFestivalName(p->nSpec, (LPCTSTR)d.m_strText);
 			FillListView();
 		}
 	}
@@ -485,7 +484,7 @@ void CFrameEvents::UpdateItemsFasting()
 		p = (CCustomEvent *)m_wndList.GetItemData(i);
 		if (p->nFastType != 0)
 		{
-			m_wndList.SetItemText(i, 4, GetFastingName(p->nFastType + 0x200));
+			m_wndList.SetItemText(i, 4, GCStrings::GetFastingName(p->nFastType + 0x200));
 			m_wndList.SetItemText(i, 5, p->strFastSubject.c_str());
 		}
 		else

@@ -10,6 +10,7 @@
 #include "vedic_ui.h"
 #include "strings.h"
 #include "level_0.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -355,7 +356,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 
 		/*for(i = 200; i < 560; i++)
 		{
-			vd.festivals = gstr[i].c_str();
+			vd.festivals = GCStrings::getString(i).c_str();
 			ind = vd.GetHeadFestival();
 			while(vd.GetNextFestival(ind, strFest))
 			{
@@ -390,7 +391,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 4;
 			pce->nTithi = 7;
 			pce->nSpec = SPEC_JANMASTAMI;
-			pce->strText = gstr[741].c_str();
+			pce->strText = GCStrings::getString(741).c_str();
 			pce->nFastType = 5;
 			pce->strFastSubject = "Sri Krsna";
 		}
@@ -402,7 +403,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 10;
 			pce->nTithi = 29;
 			pce->nSpec = SPEC_GAURAPURNIMA;
-			pce->strText = gstr[742].c_str();
+			pce->strText = GCStrings::getString(742).c_str();
 			pce->nFastType = 3;
 			pce->strFastSubject = "Sri Krsna Caitanya Mahaprabhu";
 		}
@@ -414,7 +415,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 2;
 			pce->nTithi = 8;
 			pce->nSpec = SPEC_RETURNRATHA;
-			pce->strText = gstr[743].c_str();
+			pce->strText = GCStrings::getString(743).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -426,7 +427,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 2;
 			pce->nTithi = 4;
 			pce->nSpec = SPEC_HERAPANCAMI;
-			pce->strText = gstr[744].c_str();
+			pce->strText = GCStrings::getString(744).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -438,7 +439,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 2;
 			pce->nTithi = 0;
 			pce->nSpec = SPEC_GUNDICAMARJANA;
-			pce->strText = gstr[745].c_str();
+			pce->strText = GCStrings::getString(745).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -450,7 +451,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 6;
 			pce->nTithi = 0;
 			pce->nSpec = SPEC_GOVARDHANPUJA;
-			pce->strText = gstr[746].c_str();
+			pce->strText = GCStrings::getString(746).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -462,7 +463,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 11;
 			pce->nTithi = 23;
 			pce->nSpec = SPEC_RAMANAVAMI;
-			pce->strText = gstr[747].c_str();
+			pce->strText = GCStrings::getString(747).c_str();
 			pce->nFastType = 2;
 			pce->strFastSubject = "Sri Ramacandra";
 		}
@@ -474,7 +475,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 2;
 			pce->nTithi = 1;
 			pce->nSpec = SPEC_RATHAYATRA;
-			pce->strText = gstr[748].c_str();
+			pce->strText = GCStrings::getString(748).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -486,7 +487,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 4;
 			pce->nTithi = 23;
 			pce->nSpec = SPEC_NANDAUTSAVA;
-			pce->strText = gstr[749].c_str();
+			pce->strText = GCStrings::getString(749).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -498,7 +499,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 4;
 			pce->nTithi = 8;
 			pce->nSpec = SPEC_PRABHAPP;
-			pce->strText = gstr[759].c_str();
+			pce->strText = GCStrings::getString(759).c_str();
 			pce->nFastType = 1;
 			pce->strFastSubject = "Srila Prabhupada";
 		}
@@ -510,7 +511,7 @@ int CustomEventListReadFile_RL(const char * pszFile)
 			pce->nMasa = 11;
 			pce->nTithi = 15;
 			pce->nSpec = SPEC_MISRAFESTIVAL;
-			pce->strText = gstr[750].c_str();
+			pce->strText = GCStrings::getString(750).c_str();
 			pce->nFastType = 0;
 			pce->strFastSubject = "";
 		}
@@ -617,20 +618,20 @@ void CustomEventList_Export()
 				while(pce)
 				{
 					strc.Format("%s\n\t%s Tithi,%s Paksa,%s Masa\n", pce->strText.c_str(),
-						GetTithiName(pce->nTithi), GetPaksaName(pce->nTithi/15), GetMasaName(pce->nMasa));
+						GCStrings::GetTithiName(pce->nTithi), GCStrings::GetPaksaName(pce->nTithi/15), GCStrings::GetMasaName(pce->nMasa));
 					f.WriteString(strc);
 					if (pce->nFastType)
 					{
-						strc.Format("\t%s\n", GetFastingName(0x200 + pce->nFastType));
+						strc.Format("\t%s\n", GCStrings::GetFastingName(0x200 + pce->nFastType));
 						f.WriteString(strc);
 					}
 					pce = pce->next;
 				}
-				f.WriteString(gstr[78]);
+				f.WriteString(GCStrings::getString(78));
 				f.WriteString("\n\t\tMakara Sankranti\n");
-				f.WriteString(gstr[79]);
+				f.WriteString(GCStrings::getString(79));
 				f.WriteString("\n\t\tMesha Sankranti\n");
-				f.WriteString(gstr[80]);
+				f.WriteString(GCStrings::getString(80));
 				f.WriteString("\n\t\tA day before Vrsabha Sankranti\n");
 				break;
 			case 2:
@@ -643,22 +644,22 @@ void CustomEventList_Export()
 						f.WriteString("\t<event>\n");
 						strc.Format("\t\t<name>%s</name>\n", pce->strText.c_str());
 						f.WriteString(strc);
-						strc.Format("\t\t<tithi>%s</tithi>\n", GetTithiName(pce->nTithi));
+						strc.Format("\t\t<tithi>%s</tithi>\n", GCStrings::GetTithiName(pce->nTithi));
 						f.WriteString(strc);
-						strc.Format("\t\t<paksa>%s</paksa>\n", GetPaksaName(pce->nTithi/15));
+						strc.Format("\t\t<paksa>%s</paksa>\n", GCStrings::GetPaksaName(pce->nTithi/15));
 						f.WriteString(strc);
-						strc.Format("\t\t<masa>%s</masa>\n", GetMasaName(pce->nMasa));
+						strc.Format("\t\t<masa>%s</masa>\n", GCStrings::GetMasaName(pce->nMasa));
 						f.WriteString(strc);
 						f.WriteString("\t</event>\n");
 					}
 					f.WriteString("\t<event>\n\t\t<name>");
-					f.WriteString(gstr[78]);
+					f.WriteString(GCStrings::getString(78));
 					f.WriteString("</name>\n\t\t<sankranti>Makara</sankranti>\n\t\t<rel>0</rel>\n\t</event>\n");
 					f.WriteString("\t<event>\n\t\t<name>");
-					f.WriteString(gstr[79]);
+					f.WriteString(GCStrings::getString(79));
 					f.WriteString("</name>\n\t\t<sankranti>Mesha</sankranti>\n\t\t<rel>0</rel>\n\t</event>\n");
 					f.WriteString("\t<event>\n\t\t<name>");
-					f.WriteString(gstr[80]);
+					f.WriteString(GCStrings::getString(80));
 					f.WriteString("</name>\n\t\t<sankranti>Vrsabha</sankranti>\n\t\t<rel>-1</rel>\n\t</event>\n");
 					f.WriteString("</xml>\n");
 				}

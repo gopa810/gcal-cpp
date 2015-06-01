@@ -10,6 +10,7 @@
 #include "TCountry.h"
 #include "TLocation.h"
 #include "strings.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -88,8 +89,8 @@ BOOL DlgEditLocation::OnInitDialog()
 		cDst.SetItemData(c, TTimeZone::gzone[n].idx);
 	}
 
-	cLat.SetWindowText(AvcGetTextLatitude(m_loc->m_fLatitude));
-	cLong.SetWindowText(AvcGetTextLongitude(m_loc->m_fLongitude));
+	cLat.SetWindowText(EARTHDATA::GetTextLatitude(m_loc->m_fLatitude));
+	cLong.SetWindowText(EARTHDATA::GetTextLongitude(m_loc->m_fLongitude));
 	//cTimezone.SetCurSel(AvcGetNearestTimeZone(m_loc->m_fTimezone));
 	cCity.SetWindowText(m_loc->m_strCity);
 
@@ -248,37 +249,37 @@ void DlgEditLocation::UpdateDSTInfo()
 
 	if (dw == 0)
 	{
-		ret = gstr[807];
+		ret = GCStrings::getString(807);
 	}
 	else
 	{
 		TTimeZone::ExpandVal(dw, a);
 
-		ret = gstr[808];
+		ret = GCStrings::getString(808);
 		// pre datumovy den
 		if (a[1] == 1)
 		{
 
-			str.Format("since %s %s ", gstr[a[2] + 810].c_str(), gstr[a[0] + 794].c_str());
+			str.Format("since %s %s ", GCStrings::getString(a[2] + 810).c_str(), GCStrings::getString(a[0] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO1, str);
 		}
 		else
 		{
 			// pre tyzdenny den
-			str.Format("since %s %s %s ", gstr[a[2] + 781].c_str(), gstr[a[3] + 787].c_str(), gstr[a[0] + 794].c_str());
+			str.Format("since %s %s %s ", GCStrings::getString(a[2] + 781).c_str(), GCStrings::getString(a[3] + 787).c_str(), GCStrings::getString(a[0] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO1, str);
 		}
 		ret += str;
 
 		if (a[5] == 1)
 		{
-			str.Format("to %s %s", gstr[810 + a[6]].c_str(), gstr[a[4] + 794].c_str());
+			str.Format("to %s %s", GCStrings::getString(810 + a[6]).c_str(), GCStrings::getString(a[4] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO2, str);
 		}
 		else
 		{
 			// pre tyzdenny den
-			str.Format("to %s %s %s", gstr[a[6] + 781].c_str(), gstr[a[7] + 787].c_str(), gstr[a[4] + 794].c_str());
+			str.Format("to %s %s %s", GCStrings::getString(a[6] + 781).c_str(), GCStrings::getString(a[7] + 787).c_str(), GCStrings::getString(a[4] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO2, str);
 		}
 		ret += str;
@@ -298,8 +299,8 @@ void DlgEditLocation::LocationToDialog()
 {
 	//int n, c, m, sel, null;
 
-	cLat.SetWindowText( AvcGetTextLatitude(m_loc->m_fLatitude) );
-	cLong.SetWindowText( AvcGetTextLongitude(m_loc->m_fLongitude) );
+	cLat.SetWindowText( EARTHDATA::GetTextLatitude(m_loc->m_fLatitude) );
+	cLong.SetWindowText( EARTHDATA::GetTextLongitude(m_loc->m_fLongitude) );
 
 	/*m = cDst.GetCount();
 	sel = -1;

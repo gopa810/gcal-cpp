@@ -10,6 +10,8 @@
 #include "TTimeZone.h"
 #include "CustomEvent.h"
 #include "strings.h"
+#include "GCStrings.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -93,8 +95,8 @@ void DlgSpecCommand::ExportLocsCocoa()
 				str.Format("%s|%s|%s|%s|%s#",
 					p->m_strCity.c_str(),
 					p->m_strCountry.c_str(),
-					AvcGetTextLatitude(p->m_fLatitude),
-					AvcGetTextLongitude(p->m_fLongitude),
+					EARTHDATA::GetTextLatitude(p->m_fLatitude),
+					EARTHDATA::GetTextLongitude(p->m_fLongitude),
 					TTimeZone::GetTimeZoneName(p->m_nDST));
 				std.WriteString(str);
 				p = p->next;
@@ -223,12 +225,12 @@ void DlgSpecCommand::ExportStrings()
 			int i;
 			for(i = 0; i < 900; i++)
 			{
-				if (gstr[i].GetLength() > 0)
+				if (GCStrings::getString(i).GetLength() > 0)
 				{
 					str.Format("%s|%d|%s\n",
-						gstr[i].c_str(),
+						GCStrings::getString(i).c_str(),
 						i,
-						gstr[i].c_str()
+						GCStrings::getString(i).c_str()
 						);
 					std.WriteString(str);
 				}

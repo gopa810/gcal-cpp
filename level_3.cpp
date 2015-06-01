@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "level_2.h"
-
+#include "GCRasi.h"
+#include "GCAyanamsha.h"
 // PORTABLE 
 
 /*
@@ -9,13 +10,13 @@ Hindu calendar calculation
 
 */
 
-void correct_parallax(MOONDATA &, JULIANDATE, double, double);
+void correct_parallax(MOONDATA &, double, double, double);
 
 
 double DayCalcEx(VCTIME date, EARTHDATA earth, int nType)
 {
 	double d;
-	JULIANDATE jdate;
+	double jdate;
 	MOONDATA moon;
 	SUNDATA sun;
 
@@ -23,8 +24,8 @@ double DayCalcEx(VCTIME date, EARTHDATA earth, int nType)
 	{
 		date.shour = 1.0;
 		jdate = date.GetJulianDetailed();
-		MoonCalc(jdate, moon, earth);
-		d = put_in_360( moon.longitude_deg - GetAyanamsa(jdate));
+		moon.Calculate(jdate, earth);
+		d = put_in_360( moon.longitude_deg - GCAyanamsha::GetAyanamsa(jdate));
 		return floor(( d * 3.0) / 40.0 );
 	}
 	else if (nType == DCEX_MOONRISE)
@@ -52,7 +53,7 @@ double DayCalcEx(VCTIME date, EARTHDATA earth, int nType)
 int DayCalc(VCTIME date, EARTHDATA earth, DAYDATA &day)
 {
 	double d;
-	JULIANDATE jdate;
+	double jdate;
 //	SUNDATA sun;
 
 	// sun position on sunrise on that day
@@ -63,12 +64,12 @@ int DayCalc(VCTIME date, EARTHDATA earth, DAYDATA &day)
 	day.jdate = jdate = date.GetJulianDetailed();
 
 	// moon position at sunrise on that day
-	MoonCalc(date.GetJulianDetailed(), day.moon, earth);
+	day.moon.Calculate(date.GetJulianDetailed(), earth);
 
 	// correct_parallax(day.moon, jdate, earth.latitude_deg, earth.longitude_deg);
 
 	day.msDistance = put_in_360( day.moon.longitude_deg - day.sun.longitude_deg - 180.0);
-	day.msAyanamsa = GetAyanamsa( jdate );
+	day.msAyanamsa = GCAyanamsha::GetAyanamsa( jdate );
 
 	// tithi
 	d = day.msDistance / 12.0;
@@ -93,17 +94,17 @@ int DayCalc(VCTIME date, EARTHDATA earth, DAYDATA &day)
 	day.nMasa = -1;
 
 	// rasi
-	day.nSunRasi = GetRasi(day.sun.longitude_deg, day.msAyanamsa);
-	day.nMoonRasi = GetRasi(day.moon.longitude_deg, day.msAyanamsa);
+	day.nSunRasi = GCRasi::GetRasi(day.sun.longitude_deg, day.msAyanamsa);
+	day.nMoonRasi = GCRasi::GetRasi(day.moon.longitude_deg, day.msAyanamsa);
 
 	MOONDATA moon;
 	date.shour = day.sun.sunset_deg/360.0;
-	MoonCalc(date.GetJulianDetailed(), moon, earth);
+	moon.Calculate(date.GetJulianDetailed(), earth);
 	d = put_in_360(moon.longitude_deg - day.sun.longitude_set_deg - 180) / 12.0;
 	day.nTithiSunset = (int)floor(d);
 
 	date.shour = day.sun.arunodaya_deg/360.0;
-	MoonCalc(date.GetJulianDetailed(), moon, earth);
+	moon.Calculate(date.GetJulianDetailed(), earth);
 	d = put_in_360(moon.longitude_deg - day.sun.longitude_arun_deg - 180) / 12.0;
 	day.nTithiArunodaya = (int)floor(d);
 
@@ -157,7 +158,7 @@ int MasaCalc(VCTIME date, DAYDATA day, EARTHDATA earth, int & nGaurabdaYear)
 		L[n] = GetPrevConjunction(C[n-1], C[n], true, earth);
 
 	for(n = 0; n < PREV_MONTHS; n++)
-		R[n] = GetRasi(L[n], GetAyanamsa(C[n].GetJulian()));
+		R[n] = GCRasi::GetRasi(L[n], GCAyanamsha::GetAyanamsa(C[n].GetJulian()));
 
 /*	TRACE("TEST Date: %d %d %d\n", date.day, date.month, date.year);
 	TRACE("FOUND CONJ Date: %d %d %d rasi: %d\n", C[1].day, C[1].month, C[1].year, R[1]);

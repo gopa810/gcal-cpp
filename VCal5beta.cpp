@@ -18,6 +18,7 @@
 #include "langfileinfo.h"
 #include "TFileRichList.h"
 #include "TCountry.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -64,7 +65,6 @@ GCalApp::GCalApp()
 
 int GCalApp_InitFolders();
 const char * GCalApp_GetFileName(int n);
-double GetJulianDay(int, int, int);
 
 /////////////////////////////////////////////////////////////////////////////
 // The one and only GCalApp object
@@ -517,7 +517,7 @@ int GCalApp::ExitInstance()
 		for(int i = 0; i < TTimeZone::GetTimeZoneCount(); i++)
 		{
 			str.Format("{\"%s %s\", %.2fF, %2d, 0x%08x, %.2fF, %.2fF, %.2fF, %.2fF, %d}\n", 
-				AvcGetTextTimeZone(TTimeZone::gzone[i].tzone),
+				TTimeZone::GetTimeZoneOffsetText(TTimeZone::gzone[i].tzone),
 				TTimeZone::gzone[i].name,
 				TTimeZone::gzone[i].tzone,
 				TTimeZone::gzone[i].bias,
@@ -570,7 +570,7 @@ int GCalApp::ExitInstance()
 	ff.Open("D:\\work\\gcal\\evx.rl", CFile::modeWrite|CFile::modeCreate);
 	for(int i=200; i < 560; i++)
 	{
-		tt = gstr[i].c_str();
+		tt = GCStrings::getString(i).c_str();
 		if (fp=0, fn = tt.Find('#', fp), fn>=0)
 		{
 			vd.festivals = tt;
@@ -610,7 +610,7 @@ BOOL GCalApp::InitLanguageOutputFromFile(const char * pszFile)
 			n = atoi(strA);
 			if ((n >= 0) && (n < 800))
 			{
-				gstr[n] = strB;
+				GCStrings::setString(n, strB);
 			}
 		}
 
@@ -967,9 +967,9 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 			// export obsahu do subora
 			for(i = 0; i < 900; i ++)
 			{
-				if (!gstr[i].IsEmpty())
+				if (!GCStrings::getString(i).IsEmpty())
 				{
-					str.Format("%d\n%s\n", i, gstr[i].c_str());
+					str.Format("%d\n%s\n", i, GCStrings::getString(i).c_str());
 					fputs(str, fout);
 				}
 			}

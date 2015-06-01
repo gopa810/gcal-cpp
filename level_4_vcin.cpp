@@ -2,6 +2,7 @@
 
 #include "level_2.h"
 #include "level_4.h"
+#include "GCTithi.h"
 
 // PORTABLE 
 
@@ -504,10 +505,10 @@ cont_2:
 	{
 		VCTIME d1, d2;
 		d.shour = sunrise;
-		GetPrevTithiStart(earth, d, d1);
+		GCTithi::GetPrevTithiStart(earth, d, d1);
 		//d = d1;
 		//d.shour += 0.02;
-		GetNextTithiStart(earth, d, d2);
+		GCTithi::GetNextTithiStart(earth, d, d2);
 
 		endTithi = d2;
 		return d1;
@@ -516,11 +517,11 @@ cont_2:
 	{
 		VCTIME d1, d2;
 		d.shour = sunrise;
-		GetNextTithiStart(earth, d, d1);
+		GCTithi::GetNextTithiStart(earth, d, d1);
 		d = d1;
 		d.shour += 0.1;
 		d.NormalizeValues();
-		GetNextTithiStart(earth, d, d2);
+		GCTithi::GetNextTithiStart(earth, d, d2);
 
 		endTithi = d2;
 		return d1;
@@ -826,270 +827,7 @@ VCTIME GetFirstDayOfMasa(EARTHDATA earth, int GYear, int nMasa)
 	return CalcTithiDate(GYear, nMasa, 0, 0, earth);
 }
 
-/*********************************************************************/
-/*                                                                   */
-/*   finds next time when starts next naksatra                       */
-/*                                                                   */
-/*   timezone is not changed                                         */
-/*                                                                   */
-/*   return value: index of naksatra 0..26                           */
-/*                 or -1 if failed                                   */
-/*********************************************************************/
 
-int GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
-{
-	double phi = 40.0/3.0;
-	double l1, l2;
-	JULIANDATE jday = startDate.GetJulianComplete();
-	MOONDATA moon;
-	VCTIME d = startDate;
-	double ayanamsa = GetAyanamsa(jday);
-	double scan_step = 0.5;
-	int prev_naks = 0;
-	int new_naks = -1;
-
-	JULIANDATE xj;
-	VCTIME xd;
-
-	MoonCalc(jday, moon, ed);
-	l1 = put_in_360(moon.longitude_deg - ayanamsa);
-	prev_naks = int(floor(l1 / phi));
-
-	int counter = 0;
-	while(counter < 20)
-	{
-		xj = jday;
-		xd = d;
-
-		jday += scan_step;
-		d.shour += scan_step;
-		if (d.shour > 1.0)
-		{
-			d.shour -= 1.0;
-			d.NextDay();
-		}
-
-		MoonCalc(jday, moon, ed);
-		l2 = put_in_360(moon.longitude_deg - ayanamsa);
-		new_naks = int(floor(l2/phi));
-		if (prev_naks != new_naks)
-		{
-			jday = xj;
-			d = xd;
-			scan_step *= 0.5;
-			counter++;
-			continue;
-		}
-		else
-		{
-			l1 = l2;
-		}
-	}
-	nextDate = d;
-	return new_naks;
-}
-
-/*********************************************************************/
-/*                                                                   */
-/*   finds previous time when starts next naksatra                   */
-/*                                                                   */
-/*   timezone is not changed                                         */
-/*                                                                   */
-/*   return value: index of naksatra 0..26                           */
-/*                 or -1 if failed                                   */
-/*********************************************************************/
-
-int GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
-{
-	double phi = 40.0/3.0;
-	double l1, l2;
-	JULIANDATE jday = startDate.GetJulianComplete();
-	MOONDATA moon;
-	VCTIME d = startDate;
-	double ayanamsa = GetAyanamsa(jday);
-	double scan_step = 0.5;
-	int prev_naks = 0;
-	int new_naks = -1;
-
-	JULIANDATE xj;
-	VCTIME xd;
-
-	MoonCalc(jday, moon, ed);
-	l1 = put_in_360(moon.longitude_deg - ayanamsa);
-	prev_naks = int(floor(l1/phi));
-
-	int counter = 0;
-	while(counter < 20)
-	{
-		xj = jday;
-		xd = d;
-
-		jday -= scan_step;
-		d.shour -= scan_step;
-		if (d.shour < 0.0)
-		{
-			d.shour += 1.0;
-			d.PreviousDay();
-		}
-
-		MoonCalc(jday, moon, ed);
-		l2 = put_in_360(moon.longitude_deg - ayanamsa);
-		new_naks = int(floor(l2/phi));
-
-		if (prev_naks != new_naks)
-		{
-			jday = xj;
-			d = xd;
-			scan_step *= 0.5;
-			counter++;
-			continue;
-		}
-		else
-		{
-			l1 = l2;
-		}
-
-	}
-
-	nextDate = d;
-	return new_naks;
-
-}
-
-/*********************************************************************/
-/*                                                                   */
-/*   finds next time when starts next tithi                          */
-/*                                                                   */
-/*   timezone is not changed                                         */
-/*                                                                   */
-/*   return value: index of tithi 0..29                              */
-/*                 or -1 if failed                                   */
-/*********************************************************************/
-
-int GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
-{
-	double phi = 12.0;
-	double l1, l2, sunl;
-	JULIANDATE jday = startDate.GetJulianComplete();
-	JULIANDATE xj;
-	MOONDATA moon;
-	VCTIME d = startDate;
-	VCTIME xd;
-	double scan_step = 0.5;
-	int prev_tit = 0;
-	int new_tit = -1;
-
-	MoonCalc(jday, moon, ed);
-	sunl = GetSunLongitude(d);
-//	SunPosition(d, ed, sun, d.shour - 0.5 + d.tzone/24.0);
-	l1 = put_in_360(moon.longitude_deg - sunl - 180.0);
-	prev_tit = int(floor(l1/phi));
-
-	int counter = 0;
-	while(counter < 20)
-	{
-		xj = jday;
-		xd = d;
-
-		jday += scan_step;
-		d.shour += scan_step;
-		if (d.shour > 1.0)
-		{
-			d.shour -= 1.0;
-			d.NextDay();
-		}
-
-		MoonCalc(jday, moon, ed);
-		//SunPosition(d, ed, sun, d.shour - 0.5 + d.tzone/24.0);
-		//l2 = put_in_360(moon.longitude_deg - sun.longitude_deg - 180.0);
-		sunl = GetSunLongitude(d);
-		l2 = put_in_360(moon.longitude_deg - sunl - 180.0);
-		new_tit = int(floor(l2/phi));
-
-		if (prev_tit != new_tit)
-		{
-			jday = xj;
-			d = xd;
-			scan_step *= 0.5;
-			counter++;
-			continue;
-		}
-		else
-		{
-			l1 = l2;
-		}
-	}
-	nextDate = d;
-//	nextDate.shour += startDate.tzone / 24.0;
-//	nextDate.NormalizeValues();
-	return new_tit;
-}
-
-/*********************************************************************/
-/*                                                                   */
-/*   finds previous time when starts next tithi                      */
-/*                                                                   */
-/*   timezone is not changed                                         */
-/*                                                                   */
-/*   return value: index of tithi 0..29                              */
-/*                 or -1 if failed                                   */
-/*********************************************************************/
-
-int GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
-{
-	double phi = 12.0;
-	double l1, l2, sunl;
-	JULIANDATE jday = startDate.GetJulianComplete();
-	JULIANDATE xj;
-	MOONDATA moon;
-	VCTIME d = startDate;
-	VCTIME xd;
-	double scan_step = 0.5;
-	int prev_tit = 0;
-	int new_tit = -1;
-
-	MoonCalc(jday, moon, ed);
-	sunl = GetSunLongitude(d);
-	l1 = put_in_360(moon.longitude_deg - sunl - 180.0);
-	prev_tit = int(floor(l1/phi));
-
-	int counter = 0;
-	while(counter < 20)
-	{
-		xj = jday;
-		xd = d;
-
-		jday -= scan_step;
-		d.shour -= scan_step;
-		if (d.shour < 0.0)
-		{
-			d.shour += 1.0;
-			d.PreviousDay();
-		}
-
-		MoonCalc(jday, moon, ed);
-		sunl = GetSunLongitude(d);
-		l2 = put_in_360(moon.longitude_deg - sunl - 180.0);
-		new_tit = int(floor(l2/phi));
-
-		if (prev_tit != new_tit)
-		{
-			jday = xj;
-			d = xd;
-			scan_step *= 0.5;
-			counter++;
-			continue;
-		}
-		else
-		{
-			l1 = l2;
-		}
-	}
-	nextDate = d;
-//	nextDate.shour += startDate.tzone / 24.0;
-//	nextDate.NormalizeValues();
-	return new_tit;
-}
 
 //===========================================================================
 //

@@ -7,10 +7,6 @@
 TString gstr[950];
 int gstr_Modified = 0;
 
-const char * AvcGetVersionText(void)
-{
-	return gstr[130];
-}
 
 /*
 *  nRange: 0 - vsetky stringy

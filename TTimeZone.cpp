@@ -512,7 +512,6 @@ Boolean TTimeZone::GetXMLString(TString &str, int nIndex)
 
 	return TRUE;
 }
-char * AvcGetTextTimeZoneArg(double d);
 
 void TTimeZone::ExportDB()
 {
@@ -522,7 +521,7 @@ void TTimeZone::ExportDB()
 	{
 		TTimeZone::ExpandVal(TTimeZone::gzone[i].val, a);
 		fprintf(fo, "\"%s\",\"%s\",%d,%dx%dx%dx%dx%dx%dx%dx%d\n", TTimeZone::gzone[i].name,
-			AvcGetTextTimeZoneArg(double(TTimeZone::gzone[i].offset)/60.0),
+			TTimeZone::GetTimeZoneOffsetTextArg(double(TTimeZone::gzone[i].offset)/60.0),
 			TTimeZone::gzone[i].offset,
 			a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
 	}
@@ -571,7 +570,7 @@ int TTimeZone::GetDaylightTimeStartDate(int nDst, int nYear, VCTIME &vcStart)
 	{
 		if (a[2] == 5)
 		{
-			vcStart.day = GetMonthMaxDays(nYear, a[0]);
+			vcStart.day = VCTIME::GetMonthMaxDays(nYear, a[0]);
 			vcStart.InitWeekDay();
 			while (vcStart.dayOfWeek != a[3])
 			{
@@ -633,3 +632,50 @@ int TTimeZone::ID2INDEX(int _id)
 
 	return 0;
 }
+
+char * TTimeZone::GetTimeZoneOffsetText(double d)
+{
+	int a4, a5;
+	int sig;
+	static char inter[16];
+
+	if (d < 0.0)
+	{
+		sig = -1;
+		d = -d;
+	}
+	else
+	{
+		sig = 1;
+	}
+	a4 = int(d);
+	a5 = int((d - a4)*60 + 0.5);
+
+	sprintf(inter, "%c%d:%02d", (sig>0?'+':'-'), a4, a5);
+
+	return inter;
+}
+
+char * TTimeZone::GetTimeZoneOffsetTextArg(double d)
+{
+	int a4, a5;
+	int sig;
+	static char inter[16];
+
+	if (d < 0.0)
+	{
+		sig = -1;
+		d = -d;
+	}
+	else
+	{
+		sig = 1;
+	}
+	a4 = int(d);
+	a5 = int((d - a4)*60 + 0.5);
+
+	sprintf(inter, "%d%c%02d", a4, (sig>0?'E':'W'),a5);
+
+	return inter;
+}
+

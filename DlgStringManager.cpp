@@ -7,6 +7,7 @@
 #include "strings.h"
 #include "DlgEditString.h"
 #include "avc.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,7 +69,7 @@ void DlgStringManager::OnEdit()
 		// edit char
 		DlgEditString des;
 
-		des.m_orig = gstr[id].c_str();
+		des.m_orig = GCStrings::getString(id).c_str();
 		des.m_new = m_List.GetItemText(i, 1);
 		if (des.DoModal()==IDOK)
 		{
@@ -192,11 +193,11 @@ void DlgStringManager::InitListWithStrings()
 	{
 		for(i = a[j][0]; i <= a[j][1]; i++)
 		{
-			if (gstr[i].GetLength() > 0)
+			if (GCStrings::getString(i).GetLength() > 0)
 			{
 				str1.Format("%6d", i);
 				nn = m_List.InsertItem(1, str1);
-				m_List.SetItemText(nn, 1, gstr[i].c_str());
+				m_List.SetItemText(nn, 1, GCStrings::getString(i).c_str());
 				m_List.SetItemData(nn, i);
 			}
 		}
@@ -222,7 +223,7 @@ void DlgStringManager::SaveStringsToMemory()
 	{
 		ind = m_List.GetItemData(i);
 		str = m_List.GetItemText(i, 1);
-		gstr[ind] = (LPCTSTR)(str);
+		GCStrings::setString(ind, (LPCTSTR)(str));
 	}
 }
 

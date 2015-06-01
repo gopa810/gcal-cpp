@@ -63,7 +63,7 @@ double GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 	double nowSun = 0.0, nowMoon = 0.0, nowDiff = 0.0;
 //	SUNDATA sun;
 	MOONDATA moon;
-	JULIANDATE jd;
+	double jd;
 	VCTIME d;
 
 	d = date;
@@ -74,8 +74,8 @@ double GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 	// set initial data for input day
 	// NOTE: for grenwich
 	//SunPosition(d, earth, sun);
-	MoonCalc(jd, moon, earth);
-	prevSun = GetSunLongitude(d);
+	moon.Calculate(jd, earth);
+	prevSun = SUNDATA::GetSunLongitude(d);
 	prevMoon = moon.longitude_deg;
 	prevDiff = put_in_180(prevSun - prevMoon);
 
@@ -86,8 +86,8 @@ double GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 		jd -= 1.0;
 		// calculation
 		//SunPosition(d, earth, sun);
-		MoonCalc(jd, moon, earth);
-		nowSun = GetSunLongitude(d);
+		moon.Calculate(jd, earth);
+		nowSun = SUNDATA::GetSunLongitude(d);
 		nowMoon = moon.longitude_deg;
 		nowDiff = put_in_180(nowSun - nowMoon);
 		// if difference of previous has another sign than now calculated
@@ -112,7 +112,7 @@ double GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 				d.shour = x - 0.5;
 			}
 			date = d;
-			double other = GetSunLongitude(d);
+			double other = SUNDATA::GetSunLongitude(d);
 //			double other2 = nowSun + (prevSun - nowSun)*x;
 			put_in_360(prevSun);
 			put_in_360(nowSun);
@@ -159,19 +159,19 @@ double GetNextConjunction(VCTIME &date, EARTHDATA earth)
 	double nowSun = 0.0, nowMoon = 0.0, nowDiff = 0.0;
 	//SUNDATA sun;
 	MOONDATA moon;
-	JULIANDATE jd;
+	double jd;
 	VCTIME d;
 
 	d = date;
 	d.shour = 0.5;
 	d.tzone = 0.0;
-	jd = GetJulianDay(d.year, d.month, d.day);
+	jd = d.GetJulian();
 
 	// set initial data for input day
 	// NOTE: for grenwich
 	//SunPosition(d, earth, sun, 0.0);
-	MoonCalc(jd, moon, earth);
-	nowSun = put_in_360(GetSunLongitude(d));
+	moon.Calculate(jd, earth);
+	nowSun = put_in_360(SUNDATA::GetSunLongitude(d));
 	nowMoon = put_in_360(moon.longitude_deg);
 	nowDiff = put_in_180(nowSun - nowMoon);
 
@@ -182,8 +182,8 @@ double GetNextConjunction(VCTIME &date, EARTHDATA earth)
 		jd += 1.0;
 		// calculation
 		//SunPosition(d, earth, sun, 0.0);
-		MoonCalc(jd, moon, earth);
-		prevSun = GetSunLongitude(d);
+		moon.Calculate(jd, earth);
+		prevSun = SUNDATA::GetSunLongitude(d);
 		prevMoon = moon.longitude_deg;
 		prevDiff = put_in_180(prevSun - prevMoon);
 		// if difference of previous has another sign than now calculated
@@ -247,8 +247,8 @@ double GetPrevConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 	}
 
 	
-	JULIANDATE jday = test_date.GetJulianComplete();
-	JULIANDATE xj;
+	double jday = test_date.GetJulianComplete();
+	double xj;
 	MOONDATA moon;
 	VCTIME d = test_date;
 	VCTIME xd;
@@ -256,8 +256,8 @@ double GetPrevConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 	int prev_tit = 0;
 	int new_tit = -1;
 
-	MoonCalc(jday, moon, earth);
-	sunl = GetSunLongitude(d);
+	moon.Calculate(jday, earth);
+	sunl = SUNDATA::GetSunLongitude(d);
 	l1 = put_in_180(moon.longitude_deg - sunl);
 	prev_tit = int(floor(l1/phi));
 
@@ -275,8 +275,8 @@ double GetPrevConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 			d.PreviousDay();
 		}
 
-		MoonCalc(jday, moon, earth);
-		sunl = GetSunLongitude(d);
+		moon.Calculate(jday, earth);
+		sunl = SUNDATA::GetSunLongitude(d);
 		l2 = put_in_180(moon.longitude_deg - sunl);
 		new_tit = int(floor(l2/phi));
 
@@ -349,8 +349,8 @@ double GetNextConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 	}
 
 	
-	JULIANDATE jday = test_date.GetJulianComplete();
-	JULIANDATE xj;
+	double jday = test_date.GetJulianComplete();
+	double xj;
 	MOONDATA moon;
 	VCTIME d = test_date;
 	VCTIME xd;
@@ -358,8 +358,8 @@ double GetNextConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 	int prev_tit = 0;
 	int new_tit = -1;
 
-	MoonCalc(jday, moon, earth);
-	sunl = GetSunLongitude(d);
+	moon.Calculate(jday, earth);
+	sunl = SUNDATA::GetSunLongitude(d);
 	l1 = put_in_180(moon.longitude_deg - sunl);
 	prev_tit = int(floor(l1/phi));
 
@@ -377,8 +377,8 @@ double GetNextConjunction(VCTIME test_date, VCTIME &found, bool this_conj, EARTH
 			d.NextDay();
 		}
 
-		MoonCalc(jday, moon, earth);
-		sunl = GetSunLongitude(d);
+		moon.Calculate(jday, earth);
+		sunl = SUNDATA::GetSunLongitude(d);
 		l2 = put_in_180(moon.longitude_deg - sunl);
 		new_tit = int(floor(l2/phi));
 

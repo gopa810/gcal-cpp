@@ -7,6 +7,9 @@
 #include "strings.h"
 #include "vedic_ui.h"
 #include "LocationRef.h"
+#include "enums.h"
+#include "GCStrings.h"
+#include "GCAyanamsha.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -157,10 +160,10 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 
 			if ((GetShowSetVal(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
 			{
-				strHdr.Format("%s %s, Gaurabda %d", GetMasaName(pvd->astrodata.nMasa), gstr[22].c_str(), pvd->astrodata.nGaurabdaYear);
+				strHdr.Format("%s %s, Gaurabda %d", GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str(), pvd->astrodata.nGaurabdaYear);
 //				if ((pvd->astrodata.nMasa == ADHIKA_MASA) && ((lastmasa >= SRIDHARA_MASA) && (lastmasa <= DAMODARA_MASA)))
 				{
-//					AddListText(m_text, gstr[128]);
+//					AddListText(m_text, GCStrings::getString(128]);
 				}
 				lastmasa = pvd->astrodata.nMasa;
 				bStart = true;
@@ -168,7 +171,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 
 			if ((GetShowSetVal(19) == 1) && (pvd->date.month != lastmonth))
 			{
-				strHdr.Format("%s %d", gstr[759 + pvd->date.month].c_str(), pvd->date.year);
+				strHdr.Format("%s %d", GCStrings::getString(759 + pvd->date.month).c_str(), pvd->date.year);
 
 				//m_text += " DATE            TITHI                         PAKSA YOGA      NAKSATRA       FAST\r\n";
 				lastmonth = pvd->date.month;
@@ -198,11 +201,11 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				dc.TextOut(midPoint.x - sz.cx / 2, yCurr + 10, str);
 
 				// version
-				sz = dc.GetTextExtent(gstr[130].c_str(), gstr[130].GetLength());
-				dc.TextOut(rcPrint.right - sz.cx, yCurr - sz.cy - 10, gstr[130].c_str(), gstr[130].GetLength());
+				sz = dc.GetTextExtent(GCStrings::getString(130).c_str(), GCStrings::getString(130).GetLength());
+				dc.TextOut(rcPrint.right - sz.cx, yCurr - sz.cy - 10, GCStrings::getString(130).c_str(), GCStrings::getString(130).GetLength());
 
 				// page
-				str.Format("%s %d", gstr[162].c_str(), nPage);
+				str.Format("%s %d", GCStrings::getString(162).c_str(), nPage);
 				nPage++;
 				sz = dc.GetTextExtent(str);
 				dc.TextOut(rcPrint.right - sz.cx, yCurr + 10, str);
@@ -215,22 +218,22 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				yLine = sz.cy * 6 / 5;
 				yCurr += 3 * sz.cy;
 
-				str = gstr[157];
+				str = GCStrings::getString(157);
 				dc.TextOut(rcPrint.left + nColumn[0] + 3*nColumn[6], yCurr, str);//DATE
 
-				str = gstr[13];
+				str = GCStrings::getString(13);
 				str.MakeUpper();
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);//TITHI
 
-				str = gstr[163];
+				str = GCStrings::getString(163);
 				sz = dc.GetTextExtent(str);
 				dc.TextOut(rcPrint.left + nColumn[2] - sz.cx, yCurr, str);
 
-				str = gstr[104];
+				str = GCStrings::getString(104);
 				str.MakeUpper();
 				dc.TextOut(rcPrint.left + nColumn[3], yCurr, str);
 
-				str = gstr[15];
+				str = GCStrings::getString(15);
 				str.MakeUpper();
 				dc.TextOut(rcPrint.left + nColumn[4], yCurr, str);
 
@@ -249,14 +252,14 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				continue;
 			}
 
-			str.Format("%d %s %d", pvd->date.day, AvcGetMonthAbr(pvd->date.month), pvd->date.year);
+			str.Format("%d %s %d", pvd->date.day, GCStrings::GetMonthAbreviation(pvd->date.month), pvd->date.year);
 			sz = dc.GetTextExtent(str);
 			dc.TextOut(rcPrint.left + nColumn[0] + 11*nColumn[6] - nColumn[6]/2 - sz.cx, yCurr, str);
 
 			dc.TextOut(rcPrint.left + nColumn[0] + 11*nColumn[6] + nColumn[6]/2
-				, yCurr, LPCTSTR(gstr[pvd->date.dayOfWeek]), 2);
+				, yCurr, LPCTSTR(GCStrings::getString(pvd->date.dayOfWeek)), 2);
 
-			str = GetTithiName(pvd->astrodata.nTithi);
+			str = GCStrings::GetTithiName(pvd->astrodata.nTithi);
 
 			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) || (pvd->astrodata.nTithi == 11) || (pvd->astrodata.nTithi == 26))
 			{
@@ -265,23 +268,23 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 					if (pvd->nMhdType == EV_NULL)
 					{
 						str += " ";
-						str += gstr[58];
+						str += GCStrings::getString(58);
 					}
 					else
 					{
 						str += " ";
-						str += gstr[59];
+						str += GCStrings::getString(59);
 					}
 				}
 			}
 			dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 
-			dc.TextOut(rcPrint.left + nColumn[2] - nColumn[6], yCurr, GetPaksaName(pvd->astrodata.nPaksa), 1);
+			dc.TextOut(rcPrint.left + nColumn[2] - nColumn[6], yCurr, GCStrings::GetPaksaName(pvd->astrodata.nPaksa), 1);
 
-			str = GetYogaName(pvd->astrodata.nYoga);
+			str = GCStrings::GetYogaName(pvd->astrodata.nYoga);
 			dc.TextOut(rcPrint.left + nColumn[3], yCurr, str);
 
-			str = GetNaksatraName(pvd->astrodata.nNaksatra);
+			str = GCStrings::GetNaksatraName(pvd->astrodata.nNaksatra);
 			dc.TextOut(rcPrint.left + nColumn[4], yCurr, str);
 
 			if (pvd->nFastType >= EV_NULL)
@@ -348,13 +351,13 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 //				double h1, m1;
 //				m1 = modf(pvd->sankranti_day.shour*24, &h1);
 				str.Format(" %s %s (%s %s %s %d %s, %02d:%02d %s) "
-					, GetSankrantiName(pvd->sankranti_zodiac)
-					, gstr[56].c_str()
-					, gstr[111].c_str(), GetSankrantiNameEn(pvd->sankranti_zodiac)
-					, gstr[852].c_str()
-					, pvd->sankranti_day.day, AvcGetMonthAbr(pvd->sankranti_day.month)
+					, GCStrings::GetSankrantiName(pvd->sankranti_zodiac)
+					, GCStrings::getString(56).c_str()
+					, GCStrings::getString(111).c_str(), GCStrings::GetSankrantiNameEn(pvd->sankranti_zodiac)
+					, GCStrings::getString(852).c_str()
+					, pvd->sankranti_day.day, GCStrings::GetMonthAbreviation(pvd->sankranti_day.month)
 					, pvd->sankranti_day.GetHour(), pvd->sankranti_day.GetMinuteRound()
-					, AvcGetDSTSignature(pvd->nDST));
+					, GCStrings::GetDSTSignature(pvd->nDST));
 	
 				sz = dc.GetTextExtent(str);
 				nWidth = sz.cx / 2;
@@ -381,17 +384,17 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				ksayaDate = pvd->date;
 				if (pvd->ksaya_day1 < 0.0)
 					ksayaDate.PreviousDay();
-				str2.Format("%d %s, %02d:%02d", ksayaDate.day, AvcGetMonthAbr(ksayaDate.month), int(h), int(m*60));
+				str2.Format("%d %s, %02d:%02d", ksayaDate.day, GCStrings::GetMonthAbreviation(ksayaDate.month), int(h), int(m*60));
 
 				// end of ksaya tithi
 				m = modf(pvd->ksaya_time2*24, &h);
 				ksayaDate = pvd->date;
 				if (pvd->ksaya_day2 < 0.0)
 					ksayaDate.PreviousDay();
-				str3.Format("%d %s, %02d:%02d", ksayaDate.day, AvcGetMonthAbr(ksayaDate.month), int(h), int(m*60));
+				str3.Format("%d %s, %02d:%02d", ksayaDate.day, GCStrings::GetMonthAbreviation(ksayaDate.month), int(h), int(m*60));
 
 				// print info
-				str.Format("%s %s %s %s %s (%s)", gstr[89].c_str(), gstr[850].c_str(), str2, gstr[851].c_str(), str3, AvcGetDSTSignature(pvd->nDST));
+				str.Format("%s %s %s %s %s (%s)", GCStrings::getString(89).c_str(), GCStrings::getString(850).c_str(), str2, GCStrings::getString(851).c_str(), str3, GCStrings::GetDSTSignature(pvd->nDST));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
@@ -400,7 +403,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			{
 				if (pvd->is_vriddhi)
 				{
-					str = gstr[90];
+					str = GCStrings::getString(90);
 					dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 					yCurr += yLine;
 				}
@@ -409,23 +412,23 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			if (pvd->nCaturmasya & CMASYA_CONT_MASK)
 			{
 				int n = ((pvd->nCaturmasya & CMASYA_CONT_MASK) >> 22);
-				str = gstr[111+n];
+				str = GCStrings::getString(111+n);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
-//				AddListText(dayText, gstr[ 111 + n ]);
+//				AddListText(dayText, GCStrings::getString( 111 + n ]);
 			}
 
 			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				str.Format("%s [PURNIMA SYSTEM]"
-					, gstr[107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
-					           + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)].c_str()
+					, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
+					           + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str()
 					);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 				if ((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY) == 0x1)
 				{
-					str = gstr[110 + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)].c_str();
+					str = GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str();
 					dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 					yCurr += yLine;
 				}
@@ -434,14 +437,14 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				str.Format("%s [PRATIPAT SYSTEM]"
-					, gstr[107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
-					           + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)].c_str()
+					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
+					           + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str()
 					);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 				if ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) == 0x100)
 				{
-					str = gstr[110 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)].c_str();
+					str = GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str();
 					dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 					yCurr += yLine;
 				}
@@ -450,14 +453,14 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				str.Format("%s [EKADASI SYSTEM]"
-					, gstr[107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
-					           + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)].c_str()
+					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
+					           + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str()
 					);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 				if ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) == 0x10000)
 				{
-					str = gstr[110 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)].c_str();
+					str = GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str();
 					dc.TextOut(rcPrint.left  + nColumn[1], yCurr, str);
 					yCurr += yLine;
 				}
@@ -466,7 +469,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			// tithi at arunodaya
 			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
 			{
-				str.Format("%s: %s", gstr[98].c_str(), GetTithiName(pvd->astrodata.nTithiArunodaya));
+				str.Format("%s: %s", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
@@ -474,8 +477,8 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			//"Arunodaya Time",//1
 			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
 			{
-				str.Format("%s %d:%02d (%s)", gstr[99].c_str(), pvd->astrodata.sun.arunodaya.hour
-					, pvd->astrodata.sun.arunodaya.min, AvcGetDSTSignature(pvd->nDST));
+				str.Format("%s %d:%02d (%s)", GCStrings::getString(99).c_str(), pvd->astrodata.sun.arunodaya.hour
+					, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
@@ -483,15 +486,15 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			//"Sunset Time",//3
 			if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
 			{
-				str.Format("%s %d:%02d (%s)", gstr[51].c_str(), pvd->astrodata.sun.rise.hour
-					, pvd->astrodata.sun.rise.min, AvcGetDSTSignature(pvd->nDST));
+				str.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), pvd->astrodata.sun.rise.hour
+					, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
 			if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
 			{
-				str.Format("%s %d:%02d (%s)", gstr[52].c_str(), pvd->astrodata.sun.set.hour
-					, pvd->astrodata.sun.set.min, AvcGetDSTSignature(pvd->nDST));
+				str.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), pvd->astrodata.sun.set.hour
+					, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 
@@ -500,11 +503,11 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			if (GetShowSetVal(4) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
-					str = gstr[136];
+					str = GCStrings::getString(136);
 				else
 				{
-					str.Format("%s %d:%02d (%s)", gstr[53].c_str(), pvd->moonrise.hour
-						, pvd->moonrise.min, AvcGetDSTSignature(pvd->nDST));
+					str.Format("%s %d:%02d (%s)", GCStrings::getString(53).c_str(), pvd->moonrise.hour
+						, pvd->moonrise.min, GCStrings::GetDSTSignature(pvd->nDST));
 				}
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
@@ -513,11 +516,11 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			if (GetShowSetVal(5) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
-					str = gstr[137];
+					str = GCStrings::getString(137);
 				else
 				{
-					str.Format("%s %d:%02d (%s)", gstr[54].c_str(), pvd->moonset.hour
-						, pvd->moonset.min, AvcGetDSTSignature(pvd->nDST));
+					str.Format("%s %d:%02d (%s)", GCStrings::getString(54).c_str(), pvd->moonset.hour
+						, pvd->moonset.min, GCStrings::GetDSTSignature(pvd->nDST));
 				}
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
@@ -525,28 +528,28 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			///"Sun Longitude",//9
 			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
 			{
-				str.Format("%s: %f (*)", gstr[100].c_str(), pvd->astrodata.sun.longitude_deg);
+				str.Format("%s: %f (*)", GCStrings::getString(100).c_str(), pvd->astrodata.sun.longitude_deg);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
 			//"Moon Longitude",//10
 			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
 			{
-				str.Format("%s: %f (*)", gstr[101].c_str(), pvd->astrodata.moon.longitude_deg);
+				str.Format("%s: %f (*)", GCStrings::getString(101).c_str(), pvd->astrodata.moon.longitude_deg);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
 			//"Ayanamsha value",//11
 			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
 			{
-				str.Format("%s %f (%s) (*)", gstr[102].c_str(), pvd->astrodata.msAyanamsa, GetAyanamsaName(GetAyanamsaType()));
+				str.Format("%s %f (%s) (*)", GCStrings::getString(102).c_str(), pvd->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
 			//"Julian Day",//12
 			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
 			{
-				str.Format("%s %f (*)", gstr[103].c_str(), pvd->astrodata.jdate);
+				str.Format("%s %f (*)", GCStrings::getString(103).c_str(), pvd->astrodata.jdate);
 				dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 				yCurr += yLine;
 			}
@@ -557,7 +560,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				{
 					if (prevd->astrodata.nMasa != pvd->astrodata.nMasa)
 					{
-						str.Format("%s %s %s", gstr[780].c_str(), GetMasaName(pvd->astrodata.nMasa), gstr[22].c_str());
+						str.Format("%s %s %s", GCStrings::getString(780).c_str(), GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str());
 						dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 						yCurr += yLine;
 					}
@@ -566,7 +569,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				{
 					if (nextd->astrodata.nMasa != pvd->astrodata.nMasa)
 					{
-						str.Format("%s %s %s", gstr[781].c_str(), GetMasaName(pvd->astrodata.nMasa), gstr[22].c_str());
+						str.Format("%s %s %s", GCStrings::getString(781).c_str(), GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str());
 						dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 						yCurr += yLine;
 					}
@@ -640,12 +643,12 @@ int CFrameBase::PrintBlockText(CDC &pdc, TString &strTitle, TString &strText, in
 			pdc.SelectObject(&m_fontPrintText);
 
 			// pozn o programe verzii
-			str = gstr[130].c_str();
+			str = GCStrings::getString(130).c_str();
 			sz = pdc.GetTextExtent(str);
 			pdc.TextOut(rcPrint.right - sz.cx, yCurr - sz.cy - 5, str);
 
 			// cislo strany
-			strPage.Format("%s %d", gstr[162].c_str(), nPage);
+			strPage.Format("%s %d", GCStrings::getString(162).c_str(), nPage);
 			nPage++;
 			str = strPage.c_str();
 			sz = pdc.GetTextExtent(str);

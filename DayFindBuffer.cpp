@@ -7,6 +7,7 @@
 #include "level_5.h"
 #include "DayFindBuffer.h"
 #include "strings.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -233,19 +234,19 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 		{
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
-			m_pData[i].festivals += gstr[78];
+			m_pData[i].festivals += GCStrings::getString(78);
 		}
 		else if (m_pData[i].sankranti_zodiac == MESHA_SANKRANTI)
 		{
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
-			m_pData[i].festivals += gstr[79];
+			m_pData[i].festivals += GCStrings::getString(79);
 		}
 		else if (m_pData[i+1].sankranti_zodiac == VRSABHA_SANKRANTI)
 		{
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
-			m_pData[i].festivals += gstr[80];
+			m_pData[i].festivals += GCStrings::getString(80);
 		}
 	}
 

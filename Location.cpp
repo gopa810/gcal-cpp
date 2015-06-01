@@ -287,11 +287,11 @@ void CLocation::SetTextA(TString &str)
 	str += m_strCountry;
 	str += "]    ";
 
-	str += AvcGetTextLatitude(m_fLatitude);
+	str += EARTHDATA::GetTextLatitude(m_fLatitude);
 	str += " ";
-	str += AvcGetTextLongitude(m_fLongitude);
+	str += EARTHDATA::GetTextLongitude(m_fLongitude);
 	str += " ";
-	str += AvcGetTextTimeZone(m_fTimezone);
+	str += TTimeZone::GetTimeZoneOffsetText(m_fTimezone);
 }
 
 void CLocation::SetTextB(TString &str)
@@ -303,11 +303,11 @@ void CLocation::SetTextB(TString &str)
 	str += m_strCountry;
 	str += "]\t";
 
-	str += AvcGetTextLatitude(m_fLatitude);
+	str += EARTHDATA::GetTextLatitude(m_fLatitude);
 	str += "\t";
-	str += AvcGetTextLongitude(m_fLongitude);
+	str += EARTHDATA::GetTextLongitude(m_fLongitude);
 	str += "\t";
-	str += AvcGetTextTimeZone(m_fTimezone);
+	str += TTimeZone::GetTimeZoneOffsetText(m_fTimezone);
 
 }
 

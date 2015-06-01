@@ -5,6 +5,7 @@
 #include "vcal5beta.h"
 #include "DlgEditCustomEvent.h"
 #include "vedic_ui.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,7 +13,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-const char * AvcGetEventClassText(int);
 int GetShowSetVal(int);
 
 /////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ BOOL DlgEditCustomEvent::OnInitDialog()
 	p = (CComboBox *)GetDlgItem(IDC_COMBO1);
 	for(i =0; i < 30; i++)
 	{
-		str.Format("%s Tithi (%s Paksa)", GetTithiName(i), GetPaksaName(i/15));
+		str.Format("%s Tithi (%s Paksa)", GCStrings::GetTithiName(i), GCStrings::GetPaksaName(i/15));
 		p->AddString(str);
 	}
 	p->SetCurSel(this->m_nTithi);
@@ -79,7 +79,7 @@ BOOL DlgEditCustomEvent::OnInitDialog()
 	p = (CComboBox *)GetDlgItem(IDC_COMBO2);
 	for(i = 0; i < 12; i++)
 	{
-		p->AddString(GetMasaName(i));
+		p->AddString(GCStrings::GetMasaName(i));
 	}
 	p->SetCurSel(this->m_nMasa);
 	if (m_nClass != 6)
@@ -88,7 +88,7 @@ BOOL DlgEditCustomEvent::OnInitDialog()
 	p = (CComboBox *)GetDlgItem(IDC_COMBO3);
 	for(i = 0; i <= 6; i++)
 	{
-		p->AddString(AvcGetEventClassText(i));
+		p->AddString(GCStrings::GetEventClassText(i));
 	}
 	p->SetCurSel(this->m_nClass);
 	if (m_nClass != 6)
@@ -98,11 +98,11 @@ BOOL DlgEditCustomEvent::OnInitDialog()
 	
 	p = (CComboBox *)GetDlgItem(IDC_COMBO4);
 	p->AddString("no fast");
-	p->AddString(GetFastingName(0x201));
-	p->AddString(GetFastingName(0x202));
-	p->AddString(GetFastingName(0x203));
-	p->AddString(GetFastingName(0x204));
-	p->AddString(GetFastingName(0x205));
+	p->AddString(GCStrings::GetFastingName(0x201));
+	p->AddString(GCStrings::GetFastingName(0x202));
+	p->AddString(GCStrings::GetFastingName(0x203));
+	p->AddString(GCStrings::GetFastingName(0x204));
+	p->AddString(GCStrings::GetFastingName(0x205));
 	p->SetCurSel(this->m_nFastType);
 	if (m_nClass != 6)
 		p->EnableWindow(FALSE);

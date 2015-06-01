@@ -9,6 +9,10 @@
 #include "strings.h"
 #include "vedic_ui.h"
 #include "customevent.h"
+#include "enums.h"
+#include "GCStrings.h"
+#include "GCTithi.h"
+#include "GCNaksatra.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -474,21 +478,21 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
 			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += gstr[78];
+			m_pData[i].festivals += GCStrings::getString(78);
 		}
 		else if (m_pData[i].sankranti_zodiac == MESHA_SANKRANTI)
 		{
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
 			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += gstr[79];
+			m_pData[i].festivals += GCStrings::getString(79);
 		}
 		else if (m_pData[i+1].sankranti_zodiac == VRSABHA_SANKRANTI)
 		{
 			if (m_pData[i].festivals.IsEmpty() == FALSE)
 				m_pData[i].festivals += "#";
 			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += gstr[80];
+			m_pData[i].festivals += GCStrings::getString(80);
 		}
 	}
 
@@ -515,11 +519,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 			day1 = m_pData[i].date;
 			day1.shour = m_pData[i].astrodata.sun.sunrise_deg/360.0 + earth.tzone/24.0;
 
-			GetPrevTithiStart(earth, day1, d2);
+			GCTithi::GetPrevTithiStart(earth, day1, d2);
 			day1 = d2;
 			day1.shour -= 0.1;
 			day1.NormalizeValues();
-			GetPrevTithiStart(earth, day1, d1);
+			GCTithi::GetPrevTithiStart(earth, day1, d1);
 
 			d1.shour += (m_pData[i].nDST/24.0);
 			d2.shour += (m_pData[i].nDST/24.0);
@@ -565,13 +569,13 @@ int TResultCalendar::EkadasiCalc(int nIndex, EARTHDATA earth)
 				if (TITHI_TRAYODASI(u.astrodata.nTithi))
 				{
 					t.nMhdType = EV_UNMILANI_TRISPRSA;
-					t.ekadasi_vrata_name = GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
+					t.ekadasi_vrata_name = GCStrings::GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
 					t.nFastType = FAST_EKADASI;
 				}
 				else
 				{
 					t.nMhdType = EV_UNMILANI;
-					t.ekadasi_vrata_name = GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
+					t.ekadasi_vrata_name = GCStrings::GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
 					t.nFastType = FAST_EKADASI;
 				}
 			}
@@ -580,7 +584,7 @@ int TResultCalendar::EkadasiCalc(int nIndex, EARTHDATA earth)
 				if (TITHI_TRAYODASI(u.astrodata.nTithi))
 				{
 					t.nMhdType = EV_TRISPRSA;
-					t.ekadasi_vrata_name = GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
+					t.ekadasi_vrata_name = GCStrings::GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
 					t.nFastType = FAST_EKADASI;
 				}
 				else
@@ -596,7 +600,7 @@ int TResultCalendar::EkadasiCalc(int nIndex, EARTHDATA earth)
 					{
 						// else suddha ekadasi
 						t.nMhdType = EV_SUDDHA;
-						t.ekadasi_vrata_name = GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
+						t.ekadasi_vrata_name = GCStrings::GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
 						t.nFastType = FAST_EKADASI;
 					}
 				}
@@ -1080,7 +1084,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	}
 
 //	TRACE1("Festivals string: %s\n", t.festivals.c_str());
-/*	if (gstr[200 + n].IsEmpty() == FALSE)
+/*	if (GCStrings::getString(200 + n].IsEmpty() == FALSE)
 	{
 		s1 = true;
 	}
@@ -1091,7 +1095,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	{
 		// we have to add also festivals which was
 		// tithi before
-		if (gstr[200 + n2].IsEmpty() == FALSE)
+		if (GCStrings::getString(200 + n2].IsEmpty() == FALSE)
 		{
 			s2 = true;
 		}
@@ -1105,14 +1109,14 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	{
 		if (t.festivals.IsEmpty() == FALSE)
 			t.festivals += "#";
-		t.festivals += gstr[200 + n2];
+		t.festivals += GCStrings::getString(200 + n2];
 	}
 
 	if (s1)
 	{
 		if (t.festivals.IsEmpty() == FALSE)
 			t.festivals += "#";
-		t.festivals += gstr[200 + n];
+		t.festivals += GCStrings::getString(200 + n];
 	}
 */
 	//-----------------------------------
@@ -1164,7 +1168,7 @@ other_fest:
 		{
 			if (t.festivals.GetLength() > 0)
 				t.festivals += "#";
-			t.festivals += gstr[81];
+			t.festivals += GCStrings::getString(81);
 		}
 	}
 
@@ -1319,7 +1323,7 @@ other_fest:
 			// on last day of Caturmasya pratipat system is Bhisma Pancaka ending
 			if (t.festivals.GetLength() > 0)
 				t.festivals += "#";
-			t.festivals += gstr[82];
+			t.festivals += GCStrings::getString(82);
 		}
 	}
 
@@ -1378,7 +1382,7 @@ int TResultCalendar::MahadvadasiCalc(int nIndex, EARTHDATA earth)
 	{
 		// fasting day
 		m_pData[nMhdDay].nFastType = FAST_EKADASI;
-		m_pData[nMhdDay].ekadasi_vrata_name = GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
+		m_pData[nMhdDay].ekadasi_vrata_name = GCStrings::GetEkadasiName(t.astrodata.nMasa, t.astrodata.nPaksa);
 		m_pData[nMhdDay].ekadasi_parana = false;
 		m_pData[nMhdDay].eparana_time1 = 0.0;
 		m_pData[nMhdDay].eparana_time2 = 0.0;
@@ -1492,7 +1496,7 @@ double GcGetNaksatraEndHour(EARTHDATA earth, VCTIME yesterday, VCTIME today)
 	VCTIME nend;
 	VCTIME snd = yesterday;
 	snd.shour = 0.5;
-	GetNextNaksatra(earth, snd, nend);
+	GCNaksatra::GetNextNaksatra(earth, snd, nend);
 	return nend.GetJulian() - today.GetJulian() + nend.shour;
 }
 
@@ -1802,11 +1806,11 @@ but if PARANA BEGIN is after PARANA END
 
   */
 
-Boolean TResultCalendar::AddSpecFestival(VAISNAVADAY &day, int nSpecialFestival, const char * pszClass)
+bool TResultCalendar::AddSpecFestival(VAISNAVADAY &day, int nSpecialFestival, const char * pszClass)
 {
 	TString str;
 
-	if (GetSpecFestivalNameEx(str, nSpecialFestival))
+	if (GCStrings::GetSpecFestivalNameEx(str, nSpecialFestival))
 	{
 		if (day.festivals.IsEmpty() == FALSE)
 		{
@@ -1839,7 +1843,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 
 	if (t.nMhdType != EV_NULL)
 	{
-		str.Format("%s %s", gstr[87].c_str(), t.ekadasi_vrata_name);
+		str.Format("%s %s", GCStrings::getString(87).c_str(), t.ekadasi_vrata_name);
 		if (t.festivals.IsEmpty() == FALSE)
 		{
 			str += "#";
@@ -1848,7 +1852,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 		t.festivals = str;
 	}
 
-	ch = GetMahadvadasiName(t.nMhdType);
+	ch = GCStrings::GetMahadvadasiName(t.nMhdType);
 	if (ch)
 	{
 		str = ch;
@@ -1892,7 +1896,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 					s.festivals += pers;
 					s.festivals += ")";
 					pers = "#";
-					pers += gstr[860].c_str();//"(Fasting is done yesterday)"
+					pers += GCStrings::getString(860).c_str();//"(Fasting is done yesterday)"
 				}
 				else
 				{
@@ -1900,7 +1904,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 					s.festivals += pers;
 					s.festivals += ", with feast tomorrow)";
 					pers = "#";
-					pers += gstr[861].c_str();//"(Fasting is done yesterday, today is feast)";
+					pers += GCStrings::getString(861).c_str();//"(Fasting is done yesterday, today is feast)";
 				}
 				t.festivals.Delete(nf, nf2 - nf + 1);
 				t.festivals.Insert(nf, pers);
@@ -1909,9 +1913,9 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 			{
 				pers = "#";
 				if (GetShowSetVal(42)!=0)
-					pers += gstr[862].c_str();//"(Fasting till noon, with feast tomorrow)";
+					pers += GCStrings::getString(862).c_str();//"(Fasting till noon, with feast tomorrow)";
 				else
-					pers += gstr[756].c_str();//"(Fast today)"
+					pers += GCStrings::getString(756).c_str();//"(Fast today)"
 				t.festivals.Delete(nf, nf2 - nf + 1);
 				t.festivals.Insert(nf, pers);
 			}
@@ -1925,7 +1929,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 					else nftype = 0;
 				}
 				if (nftype != 0)
-					pers += GetFastingName(0x200 + nftype);
+					pers += GCStrings::GetFastingName(0x200 + nftype);
 				t.festivals.Delete(nf, nf2 - nf + 1);
 				t.festivals.Insert(nf, pers);
 			}
@@ -1950,7 +1954,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 		}
 		else
 		{
-			t.nFastType = 0x200 + fasting;
+			t.nFastType = (FastType)(0x200 + fasting);
 		}
 	}
 

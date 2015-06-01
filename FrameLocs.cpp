@@ -279,15 +279,15 @@ void CFrameLocs::AddLocationStr(CLocation *L)
 	int i;
 
 /*	sprintf(st_str, "%s\t%s\t%s\t%s\t%s", L->m_strCity.c_str(), L->m_strCountry.c_str(),
-		AvcGetTextLatitude(L->m_fLatitude), AvcGetTextLongitude(L->m_fLongitude),
+		EARTHDATA::GetTextLatitude(L->m_fLatitude), EARTHDATA::GetTextLongitude(L->m_fLongitude),
 		TTimeZone::GetTimeZoneName(L->m_nDST));
 	i = m_wndList.AddString(st_str);*/
 	i = m_wndLocs.InsertItem(0, L->m_strCity.c_str());
 	if (i >= 0)
 	{
 		m_wndLocs.SetItemText(i, 1, L->m_strCountry.c_str());
-		m_wndLocs.SetItemText(i, 2, AvcGetTextLatitude(L->m_fLatitude));
-		m_wndLocs.SetItemText(i, 3, AvcGetTextLongitude(L->m_fLongitude));
+		m_wndLocs.SetItemText(i, 2, EARTHDATA::GetTextLatitude(L->m_fLatitude));
+		m_wndLocs.SetItemText(i, 3, EARTHDATA::GetTextLongitude(L->m_fLongitude));
 		m_wndLocs.SetItemText(i, 4, TTimeZone::GetTimeZoneName(L->m_nDST));
 		m_wndLocs.SetItemData(i, (DWORD)L);
 //		m_wndList.SetItemDataPtr(i, L);
@@ -404,8 +404,8 @@ void CFrameLocs::OnLocationEditlocation()
 	{
 		m_wndLocs.SetItemText(n, 0, dlg.m_loc->m_strCity.c_str());
 		m_wndLocs.SetItemText(n, 1, dlg.m_loc->m_strCountry.c_str());
-		m_wndLocs.SetItemText(n, 2, AvcGetTextLatitude(dlg.m_loc->m_fLatitude));
-		m_wndLocs.SetItemText(n, 3, AvcGetTextLongitude(dlg.m_loc->m_fLongitude));
+		m_wndLocs.SetItemText(n, 2, EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude));
+		m_wndLocs.SetItemText(n, 3, EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude));
 		m_wndLocs.SetItemText(n, 4, TTimeZone::GetTimeZoneName(dlg.m_loc->m_nDST));
 		// check is this location is gMyLocation or gLastLocation
 		// if yes then change coordinates and names also in these variables
@@ -417,9 +417,9 @@ void CFrameLocs::OnLocationEditlocation()
 			gLastLocation.m_nDST = dlg.m_loc->m_nDST;
 			gLastLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
-			gLastLocation.m_strLatitude = AvcGetTextLatitude(dlg.m_loc->m_fLatitude);
-			gLastLocation.m_strLongitude = AvcGetTextLongitude(dlg.m_loc->m_fLongitude);
-			gLastLocation.m_strTimeZone = AvcGetTextTimeZone(dlg.m_loc->m_fTimezone);
+			gLastLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
+			gLastLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
+			gLastLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
 		}
 
 		if (bUpdMyLoc)
@@ -430,9 +430,9 @@ void CFrameLocs::OnLocationEditlocation()
 			gMyLocation.m_nDST = dlg.m_loc->m_nDST;
 			gMyLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
-			gMyLocation.m_strLatitude = AvcGetTextLatitude(dlg.m_loc->m_fLatitude);
-			gMyLocation.m_strLongitude = AvcGetTextLongitude(dlg.m_loc->m_fLongitude);
-			gMyLocation.m_strTimeZone = AvcGetTextTimeZone(dlg.m_loc->m_fTimezone);
+			gMyLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
+			gMyLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
+			gMyLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
 			theFrameServer.RecalculateAllTodayScreens();
 		}
 		//InitCityByCountry( g_nCurrentCountry );

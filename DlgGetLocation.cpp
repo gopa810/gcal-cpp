@@ -8,6 +8,7 @@
 #include "level_0.h"
 #include "vedic_ui.h"
 #include "TTimeZone.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -147,8 +148,8 @@ void DlgGetLocation::OnSelectLocation()
 		b_upd = true;
 		//UpdateDstByTimezone(m_location.m_fTimezone);
 
-		//cLat.SetWindowText(AvcGetTextLatitude());
-		//cLong.SetWindowText(AvcGetTextLongitude());
+		//cLat.SetWindowText(EARTHDATA::GetTextLatitude());
+		//cLong.SetWindowText(EARTHDATA::GetTextLongitude());
 		//cTimezone.SetCurSel(AvcGetNearestTimeZone(d.m_lc->m_fTimezone));
 		SetCurSelDST(d.m_lc->m_nDST);
 	}
@@ -178,9 +179,9 @@ void DlgGetLocation::OnButtonNext()
 	cLocName.GetWindowText(str);
 	m_location.m_strName = str;
 	m_location.m_fTimezone = TTimeZone::GetTimeZoneOffset(m_location.m_nDST);
-	m_location.m_strLatitude = AvcGetTextLatitude(m_location.m_fLatitude);
-	m_location.m_strLongitude = AvcGetTextLongitude(m_location.m_fLongitude);
-	m_location.m_strTimeZone = AvcGetTextTimeZone(m_location.m_fTimezone);
+	m_location.m_strLatitude = EARTHDATA::GetTextLatitude(m_location.m_fLatitude);
+	m_location.m_strLongitude = EARTHDATA::GetTextLongitude(m_location.m_fLongitude);
+	m_location.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(m_location.m_fTimezone);
 	m_location.m_strFullName.Format("%s (%s %s, %s)",
 		m_location.m_strName.c_str(),
 		m_location.m_strLatitude.c_str(),
@@ -313,37 +314,37 @@ void DlgGetLocation::UpdateDSTInfo()
 
 	if (dw == 0)
 	{
-		ret = gstr[807];
+		ret = GCStrings::getString(807);
 	}
 	else
 	{
 		TTimeZone::ExpandVal(dw, a);
 
-		ret = gstr[808];
+		ret = GCStrings::getString(808);
 		// pre datumovy den
 		if (a[1] == 1)
 		{
 
-			str.Format("since %s %s ", gstr[a[2] + 810].c_str(), gstr[a[0] + 794].c_str());
+			str.Format("since %s %s ", GCStrings::getString(a[2] + 810).c_str(), GCStrings::getString(a[0] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO1, str);
 		}
 		else
 		{
 			// pre tyzdenny den
-			str.Format("since %s %s %s ", gstr[a[2] + 781].c_str(), gstr[a[3] + 787].c_str(), gstr[a[0] + 794].c_str());
+			str.Format("since %s %s %s ", GCStrings::getString(a[2] + 781).c_str(), GCStrings::getString(a[3] + 787).c_str(), GCStrings::getString(a[0] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO1, str);
 		}
 		ret += str;
 
 		if (a[5] == 1)
 		{
-			str.Format("to %s %s", gstr[810 + a[6]].c_str(), gstr[a[4] + 794].c_str());
+			str.Format("to %s %s", GCStrings::getString(810 + a[6]).c_str(), GCStrings::getString(a[4] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO2, str);
 		}
 		else
 		{
 			// pre tyzdenny den
-			str.Format("to %s %s %s", gstr[a[6] + 781].c_str(), gstr[a[7] + 787].c_str(), gstr[a[4] + 794].c_str());
+			str.Format("to %s %s %s", GCStrings::getString(a[6] + 781).c_str(), GCStrings::getString(a[7] + 787).c_str(), GCStrings::getString(a[4] + 794).c_str());
 			//SetDlgItemText(IDC_STATIC_DST_INFO2, str);
 		}
 		ret += str;

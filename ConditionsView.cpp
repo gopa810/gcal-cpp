@@ -10,6 +10,9 @@
 #include "vedic_ui.h"
 #include "locationref.h"
 #include "dlggetlocation.h"
+
+#include "GCStrings.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -152,7 +155,7 @@ int CConditionsView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		, gLastLocation.m_strName.c_str()
 		, gLastLocation.m_strLatitude.c_str()
 		, gLastLocation.m_strLongitude.c_str()
-		, gstr[12].c_str()
+		, GCStrings::getString(12).c_str()
 		, gLastLocation.m_strTimeZone.c_str());
 	m_earth = (EARTHDATA)gLastLocation;
 	m_dst = gLastLocation.m_nDST;
@@ -210,7 +213,7 @@ int NaplnComboFestivalom(CComboBox * pc, int nClass)
 	for(i = 200; i < 560; i++)
 	{
 		j = 0;
-		while(AvcGetNextPartHash(gstr[i], s1, j))
+		while(AvcGetNextPartHash(GCStrings::getString(i), s1, j))
 		{
 			n = AvcGetFestivalClass(s1);
 			if (n == (nClass - 10))
@@ -240,34 +243,34 @@ int CConditionsView::NaplnComboBox(CComboBox *pc, int nClass)
 		break;
 	case 1:
 		pc->ResetContent();
-		n = pc->AddString(gstr[38]);
+		n = pc->AddString(GCStrings::getString(38));
 		pc->SetItemData(n, EV_NULL);
-		n = pc->AddString(GetMahadvadasiName(EV_UNMILANI));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_UNMILANI));
 		pc->SetItemData(n, EV_UNMILANI);
-		n = pc->AddString(GetMahadvadasiName(EV_TRISPRSA));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_TRISPRSA));
 		pc->SetItemData(n, EV_TRISPRSA);
 		n = pc->AddString("Unmilani Trisprsa Mahadvadasi");
 		pc->SetItemData(n, EV_UNMILANI_TRISPRSA);
-		n = pc->AddString(GetMahadvadasiName(EV_PAKSAVARDHINI));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_PAKSAVARDHINI));
 		pc->SetItemData(n, EV_PAKSAVARDHINI);
-		n = pc->AddString(GetMahadvadasiName(EV_JAYA));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_JAYA));
 		pc->SetItemData(n, EV_JAYA);
-		n = pc->AddString(GetMahadvadasiName(EV_VIJAYA));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_VIJAYA));
 		pc->SetItemData(n, EV_VIJAYA);
-		n = pc->AddString(GetMahadvadasiName(EV_PAPA_NASINI));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_PAPA_NASINI));
 		pc->SetItemData(n, EV_PAPA_NASINI);
-		n = pc->AddString(GetMahadvadasiName(EV_JAYANTI));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_JAYANTI));
 		pc->SetItemData(n, EV_JAYANTI);
-		n = pc->AddString(GetMahadvadasiName(EV_VYANJULI));
+		n = pc->AddString(GCStrings::GetMahadvadasiName(EV_VYANJULI));
 		pc->SetItemData(n, EV_VYANJULI);
 		break;
 	case 2:
 		pc->ResetContent();
-		pc->AddString(gstr[132]);
+		pc->AddString(GCStrings::getString(132));
 		pc->SetItemData(0, 0xff);
 		for(i = 0; i < 12; i++)
 		{
-			s1.Format("%s (%s)", GetSankrantiName(i), GetSankrantiNameEn(i));
+			s1.Format("%s (%s)", GCStrings::GetSankrantiName(i), GCStrings::GetSankrantiNameEn(i));
 			j = pc->AddString(s1);
 			pc->SetItemData(j, i);
 		}
@@ -276,7 +279,7 @@ int CConditionsView::NaplnComboBox(CComboBox *pc, int nClass)
 		pc->ResetContent();
 		for(i = 0; i < 30; i++)
 		{
-			s1.Format("%s (%s Paksa)", GetTithiName(i), GetPaksaName(i/15));
+			s1.Format("%s (%s Paksa)", GCStrings::GetTithiName(i), GCStrings::GetPaksaName(i/15));
 			j = pc->AddString(s1);
 			pc->SetItemData(j, i);
 		}
@@ -285,7 +288,7 @@ int CConditionsView::NaplnComboBox(CComboBox *pc, int nClass)
 		pc->ResetContent();
 		for(i = 0; i < 27; i++)
 		{
-			s1.Format("%s Naksatra", GetNaksatraName(i));
+			s1.Format("%s Naksatra", GCStrings::GetNaksatraName(i));
 			j = pc->AddString(s1);
 			pc->SetItemData(j, i);
 		}
@@ -294,85 +297,85 @@ int CConditionsView::NaplnComboBox(CComboBox *pc, int nClass)
 		pc->ResetContent();
 		for(i = 0; i < 27; i++)
 		{
-			s1.Format("%s Yoga", GetYogaName(i));
+			s1.Format("%s Yoga", GCStrings::GetYogaName(i));
 			j = pc->AddString(s1);
 			pc->SetItemData(j, i);
 		}
 		break;
 	case 6:
 		pc->ResetContent();
-		j = pc->AddString(gstr[134].c_str());
+		j = pc->AddString(GCStrings::getString(134).c_str());
 		pc->SetItemData(j, 0);
-		j = pc->AddString(gstr[751].c_str());
+		j = pc->AddString(GCStrings::getString(751).c_str());
 		pc->SetItemData(j, 1);
-		j = pc->AddString(gstr[752].c_str());
+		j = pc->AddString(GCStrings::getString(752).c_str());
 		pc->SetItemData(j, 2);
-		j = pc->AddString(gstr[753].c_str());
+		j = pc->AddString(GCStrings::getString(753).c_str());
 		pc->SetItemData(j, 3);
-		j = pc->AddString(gstr[754].c_str());
+		j = pc->AddString(GCStrings::getString(754).c_str());
 		pc->SetItemData(j, 4);
-		j = pc->AddString(gstr[755].c_str());
+		j = pc->AddString(GCStrings::getString(755).c_str());
 		pc->SetItemData(j, 5);
-		j = pc->AddString(gstr[135].c_str());
+		j = pc->AddString(GCStrings::getString(135).c_str());
 		pc->SetItemData(j, 6);
 		break;
 	case 7:
 		pc->ResetContent();
 		for(i = 0; i < 7; i++)
 		{
-			pc->SetItemData(pc->AddString(gstr[i].c_str()), i);
+			pc->SetItemData(pc->AddString(GCStrings::getString(i).c_str()), i);
 		}
 		break;
 	case 8:
 		pc->ResetContent();
 		for(i = 0; i < 14; i++)
 		{
-			pc->SetItemData(pc->AddString(gstr[600 + i].c_str()), i);
+			pc->SetItemData(pc->AddString(GCStrings::getString(600 + i).c_str()), i);
 		}
-		s1.Format("%s//%s", gstr[614].c_str(), gstr[629].c_str());
+		s1.Format("%s//%s", GCStrings::getString(614).c_str(), GCStrings::getString(629).c_str());
 		pc->SetItemData(pc->AddString(s1), 14);
 		break;
 	case 9:
 		pc->ResetContent();
-		pc->SetItemData(pc->AddString(gstr[712].c_str()), 1);
-		pc->SetItemData(pc->AddString(gstr[713].c_str()), 0);
+		pc->SetItemData(pc->AddString(GCStrings::getString(712).c_str()), 1);
+		pc->SetItemData(pc->AddString(GCStrings::getString(713).c_str()), 0);
 		break;
 	case 10:
 		pc->ResetContent();
-		n = pc->AddString(GetSpecFestivalName(SPEC_JANMASTAMI));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_JANMASTAMI));
 		pc->SetItemData(n, 328);
-		n = pc->AddString(GetSpecFestivalName(SPEC_GAURAPURNIMA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_GAURAPURNIMA));
 		pc->SetItemData(n, 529);
-		n = pc->AddString(GetSpecFestivalName(SPEC_RAMANAVAMI));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_RAMANAVAMI));
 		pc->SetItemData(n, 554);
 		NaplnComboFestivalom(pc, nClass);
 		break;
 	case 11:
 		pc->ResetContent();
-		n = pc->AddString(GetSpecFestivalName(SPEC_GOVARDHANPUJA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_GOVARDHANPUJA));
 		pc->SetItemData(n, 395);
-		n = pc->AddString(GetSpecFestivalName(SPEC_RATHAYATRA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_RATHAYATRA));
 		pc->SetItemData(n, 277);
-		n = pc->AddString(GetSpecFestivalName(SPEC_NANDAUTSAVA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_NANDAUTSAVA));
 		pc->SetItemData(n, 329);
 //					f.WriteString("\" depends=\"Sri Krsna Janmastami\" rel=\"+1\"/>\n");
-		n = pc->AddString(GetSpecFestivalName(SPEC_MISRAFESTIVAL));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_MISRAFESTIVAL));
 		pc->SetItemData(n, 530);
 //					f.WriteString("\" depends=\"Gaura Purnima\" rel=\"+1\"/>\n");
-		n = pc->AddString(GetSpecFestivalName(SPEC_HERAPANCAMI));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_HERAPANCAMI));
 		pc->SetItemData(n, 281);
 //					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"+4\"/>\n");
-		n = pc->AddString(GetSpecFestivalName(SPEC_RETURNRATHA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_RETURNRATHA));
 		pc->SetItemData(n, 285);
 //					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"+8\"/>\n");
-		n = pc->AddString(GetSpecFestivalName(SPEC_GUNDICAMARJANA));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_GUNDICAMARJANA));
 		pc->SetItemData(n, 276);
 //					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"-1\"/>\n");
 		NaplnComboFestivalom(pc, nClass);
 		break;
 	case 12:
 		pc->ResetContent();
-		n = pc->AddString(GetSpecFestivalName(SPEC_PRABHAPP));
+		n = pc->AddString(GCStrings::GetSpecFestivalName(SPEC_PRABHAPP));
 		pc->SetItemData(n, 329);
 		NaplnComboFestivalom(pc, nClass);
 		break;
@@ -386,11 +389,11 @@ int CConditionsView::NaplnComboBox(CComboBox *pc, int nClass)
 		break;
 	case 15:
 		pc->ResetContent();
-		n = pc->AddString(gstr[78]);
+		n = pc->AddString(GCStrings::getString(78));
 		pc->SetItemData(n, 1);
-		n = pc->AddString(gstr[79]);
+		n = pc->AddString(GCStrings::getString(79));
 		pc->SetItemData(n, 1);
-		n = pc->AddString(gstr[80]);
+		n = pc->AddString(GCStrings::getString(80));
 		pc->SetItemData(n, 1);
 		NaplnComboFestivalom(pc, nClass);
 		break;
@@ -441,7 +444,7 @@ BOOL CConditionsView::OnCommand(WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) == 130)
 		{
 			// set location
-			DlgGetLocation dlg(gstr[110]);
+			DlgGetLocation dlg(GCStrings::getString(110));
 			dlg.m_bFinal = TRUE;
 			TString str;
 
@@ -451,7 +454,7 @@ BOOL CConditionsView::OnCommand(WPARAM wParam, LPARAM lParam)
 					, gLastLocation.m_strName.c_str()
 					, gLastLocation.m_strLatitude.c_str()
 					, gLastLocation.m_strLongitude.c_str()
-					, gstr[12].c_str()
+					, GCStrings::getString(12).c_str()
 					, gLastLocation.m_strTimeZone.c_str());
 				m_earth = (EARTHDATA)gLastLocation;
 				m_dst = gLastLocation.m_nDST;

@@ -8,7 +8,7 @@
 #define DCEX_MOONRISE          4
 #define DCEX_SUNRISE           5
 
-DAYHOURS GetTithiTimes(EARTHDATA, VCTIME vc, DAYHOURS &titBeg, DAYHOURS &titEnd, DAYHOURS sunRise);
+double GetTithiTimes(EARTHDATA, VCTIME vc, double &titBeg, double &titEnd, double sunRise);
 
 double GetPrevConjunction(VCTIME &, EARTHDATA);
 double GetNextConjunction(VCTIME &, EARTHDATA);

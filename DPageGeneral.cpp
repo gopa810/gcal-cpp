@@ -6,6 +6,7 @@
 #include "DPageGeneral.h"
 #include "showset.h"
 #include "strings.h"
+#include "GCStrings.h"
 
 extern CShowSetting gss[];
 
@@ -68,7 +69,7 @@ BOOL DPageGeneral::OnSetActive()
 
 	SendDlgItemMessage(IDC_COMBO2, CB_RESETCONTENT);
 	for(i=0; i<7; i++)
-		SendDlgItemMessage(IDC_COMBO2, CB_ADDSTRING, 0, (LPARAM)LPCTSTR(gstr[i].c_str()));
+		SendDlgItemMessage(IDC_COMBO2, CB_ADDSTRING, 0, (LPARAM)LPCTSTR(GCStrings::getString(i).c_str()));
 	SendDlgItemMessage(IDC_COMBO2, CB_SETCURSEL, gss[40].val);
 	SendDlgItemMessage(IDC_COMBO3, CB_SETCURSEL, gss[49].val);
 

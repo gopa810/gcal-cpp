@@ -8,6 +8,7 @@
 #include "vedic_ui.h"
 #include "level_6.h"
 #include "strings.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -134,7 +135,7 @@ BOOL DlgGetStartDate::OnInitDialog()
 
 	for(i = 0; i < 12; i++)
 	{
-		w_month.AddString(gstr[760 + i].c_str());
+		w_month.AddString(GCStrings::getString(760 + i).c_str());
 	}
 
 	if (s_init == 0 || m_resultA.gyear < 0 || m_resultA.gyear > 2500)

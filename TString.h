@@ -7,6 +7,8 @@
 #define ___MAC_AFX____
 
 // PORTABLE
+typedef unsigned int UInt32;
+typedef int SInt32;
 
 char * AvcGetTextBufferBig(void);
 
@@ -269,7 +271,7 @@ public:
 	{
 		return m_nLength;
 	}
-	Boolean IsEmpty(void)
+	bool IsEmpty(void)
 	{
 		return (m_pData == NULL) || (m_nLength == 0) ? true : false;
 	}

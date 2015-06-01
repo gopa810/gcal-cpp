@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "XmlFile.h"
 // PORTABLE
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -74,7 +75,7 @@ TFileXml & TFileXml::operator<<(const char * s)
 TFileXml & TFileXml::operator<<(VCTIME vc)
 {
 	TString s;
-	s.Format("%d %s %d", vc.day, AvcGetMonthAbr(vc.month), vc.year);
+	s.Format("%d %s %d", vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year);
 	fputs(s, fout);
 	return * this;
 }

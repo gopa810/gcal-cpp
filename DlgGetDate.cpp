@@ -5,6 +5,7 @@
 #include "vcal5beta.h"
 #include "DlgGetDate.h"
 #include "level_3.h"
+#include "TTimeZone.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -105,7 +106,7 @@ BOOL DlgGetDate::OnInitDialog()
 
 	CDialog::OnInitDialog();
 	
-	SetDlgItemText(IDC_STATIC_TZ, AvcGetTextTimeZone(s_event.tzone));
+	SetDlgItemText(IDC_STATIC_TZ, TTimeZone::GetTimeZoneOffsetText(s_event.tzone));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

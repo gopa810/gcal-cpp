@@ -9,10 +9,8 @@ int DayCalc(VCTIME date, EARTHDATA earth, DAYDATA &day);
 int MasaCalc(VCTIME date, DAYDATA day, EARTHDATA earth,int&);
 VCTIME GetFirstDayOfYear(EARTHDATA,int);
 VCTIME GetFirstDayOfMasa(EARTHDATA earth, int GYear, int nMasa);
-int GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate);
-int GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &prevDate);
-int GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate);
-int GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate);
+
+
 double DayCalcEx(VCTIME date, EARTHDATA earth, int nType);
 
 #define MADHUSUDANA_MASA 0

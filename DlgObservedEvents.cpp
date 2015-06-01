@@ -8,6 +8,7 @@
 #include "strings.h"
 #include "level_0.h"
 #include "TFile.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -80,66 +81,68 @@ void DlgObservedEvents::OnExport()
 					for(i = 0; i < 360; i++)
 					{
 						n = 0;
-						if (gstr[200+i].IsEmpty() == FALSE)
+						if (GCStrings::getString(200+i).IsEmpty() == FALSE)
 						{
-							str2 = gstr[200 + i];
+							str2 = GCStrings::getString(200 + i);
 							n = str2.Find("#");
 							while(n >= 0)
 							{
 								str2.Left(n, str3);
-								str.Format("\t<event name=\"%s\" tithi=\"%s\" paksa=\"%s\" masa=\"%s\" />\n", str3.c_str(), GetTithiName(i % 30), GetPaksaName((i/15)%2), GetMasaName(i/30));
+								str.Format("\t<event name=\"%s\" tithi=\"%s\" paksa=\"%s\" masa=\"%s\" />\n", str3.c_str(), GCStrings::GetTithiName(i % 30), 
+									GCStrings::GetPaksaName((i/15)%2), GCStrings::GetMasaName(i/30));
 								str2.Delete(0, n+1);
 								f.WriteString(str);
 								n = str2.Find("#");
 							}
 							if (str2.IsEmpty() == FALSE)
 							{
-								str.Format("\t<event name=\"%s\" tithi=\"%s\" paksa=\"%s\" masa=\"%s\" />\n", str2.c_str(), GetTithiName(i % 30), GetPaksaName((i/15)%2), GetMasaName(i/30));
+								str.Format("\t<event name=\"%s\" tithi=\"%s\" paksa=\"%s\" masa=\"%s\" />\n", str2.c_str(), 
+									GCStrings::GetTithiName(i % 30), GCStrings::GetPaksaName((i/15)%2), GCStrings::GetMasaName(i/30));
 								f.WriteString(str);
 							}
 						}
 					}
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_JANMASTAMI));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_JANMASTAMI));
 					f.WriteString("\" tithi=\"Astami\" paksa=\"Krsna\" masa=\"Hrsikesa\" />\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_GOVARDHANPUJA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_GOVARDHANPUJA));
 					f.WriteString("\" tithi=\"Pratipat\" paksa=\"Gaura\" masa=\"Damodara\" />\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_RATHAYATRA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_RATHAYATRA));
 					f.WriteString("\" tithi=\"Dvitiya\" paksa=\"Gaura\" masa=\"Vamana\" />\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_GAURAPURNIMA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_GAURAPURNIMA));
 					f.WriteString("\" tithi=\"Purnima\" paksa=\"Gaura\" masa=\"Govinda\" />\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_NANDAUTSAVA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_NANDAUTSAVA));
 					f.WriteString("\" depends=\"Sri Krsna Janmastami\" rel=\"+1\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_PRABHAPP));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_PRABHAPP));
 					f.WriteString("\" depends=\"Sri Krsna Janmastami\" rel=\"+1\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_MISRAFESTIVAL));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_MISRAFESTIVAL));
 					f.WriteString("\" depends=\"Gaura Purnima\" rel=\"+1\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_HERAPANCAMI));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_HERAPANCAMI));
 					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"+4\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_RETURNRATHA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_RETURNRATHA));
 					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"+8\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_GUNDICAMARJANA));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_GUNDICAMARJANA));
 					f.WriteString("\" depends=\"Ratha Yatra\" rel=\"-1\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(gstr[78]);
+					f.WriteString(GCStrings::getString(78));
 					f.WriteString("\" sankranti=\"Makara\" rel=\"0\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(gstr[79]);
+					f.WriteString(GCStrings::getString(79));
 					f.WriteString("\" sankranti=\"Mesha\" rel=\"0\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(gstr[80]);
+					f.WriteString(GCStrings::getString(80));
 					f.WriteString("\" sankranti=\"Vrsabha\" rel=\"-1\"/>\n");
 					f.WriteString("\t<event name=\"");
-					f.WriteString(GetSpecFestivalName(SPEC_RAMANAVAMI));
+					f.WriteString(GCStrings::GetSpecFestivalName(SPEC_RAMANAVAMI));
 					f.WriteString("\" tithi=\"Navami\" paksa=\"Gaura\" masa=\"Visnu\" />\n");
 					f.WriteString("</xml>\n");
 				}
@@ -170,9 +173,9 @@ BOOL DlgObservedEvents::OnInitDialog()
 	for(int i = 0; i < 360; i++)
 	{
 		n = 0;
-		if (gstr[200+i].IsEmpty() == FALSE)
+		if (GCStrings::getString(200+i).IsEmpty() == FALSE)
 		{
-			pSrc = gstr[200 + i];
+			pSrc = GCStrings::getString(200 + i);
 
 			for(ct = 0; pSrc[ct]; ct++)
 			{
@@ -188,7 +191,7 @@ BOOL DlgObservedEvents::OnInitDialog()
 						szTemp[255] = 0;
 					else
 						szTemp[nTemp] = 0;
-					str.Format("%s\t%s, %s Paksa, %s Masa", szTemp, GetTithiName(i % 30), GetPaksaName((i/15)%2), GetMasaName(i/30));
+					str.Format("%s\t%s, %s Paksa, %s Masa", szTemp, GCStrings::GetTithiName(i % 30), GCStrings::GetPaksaName((i/15)%2), GCStrings::GetMasaName(i/30));
 					m_list.AddString(str);
 					nTemp = 0;
 				}
@@ -214,7 +217,7 @@ BOOL DlgObservedEvents::OnInitDialog()
 					szTemp[255] = 0;
 				else
 					szTemp[nTemp] = 0;
-				str.Format("%s\t%s, %s Paksa, %s Masa", szTemp, GetTithiName(i % 30), GetPaksaName((i/15)%2), GetMasaName(i/30));
+				str.Format("%s\t%s, %s Paksa, %s Masa", szTemp, GCStrings::GetTithiName(i % 30), GCStrings::GetPaksaName((i/15)%2), GCStrings::GetMasaName(i/30));
 				m_list.AddString(str);
 				nTemp = 0;
 			}

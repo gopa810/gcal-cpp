@@ -8,6 +8,7 @@
 #include "TResultApp.h"
 #include "TFileRichList.h"
 #include "avc.h"
+#include "GCStrings.h"
 
 const char * MSG_ERROR_1 = "Incorrect format for longitude. Correct examples: 35E05, 23W45";
 const char * MSG_ERROR_2 = "Incorrect format for latitude. Correct examples: 45N05, 13S45";
@@ -16,7 +17,7 @@ extern VCTIME gToday;
 extern VCTIME gTomorrow;
 extern VCTIME gYesterday;
 
-//void SunPosition(VCTIME vct, EARTHDATA ed, SUNDATA &sun, DAYHOURS DayHours);
+//void SunPosition(VCTIME vct, EARTHDATA ed, SUNDATA &sun, double double);
 int is_daylight_time(VCTIME vc, int nIndex);
 
 
@@ -357,28 +358,6 @@ Boolean AvcGetNextShowSet(int &nItem, int &nCheck, const char * &pszText)
 	return TRUE;
 }
 
-void AvcGetDateText(TString &str, VCTIME vc)
-{
-	if ((vc.day > 0) && (vc.day < 32) && (vc.month > 0) && (vc.month < 13) && (vc.year >= 1500) && (vc.year < 4000))
-	{
-		if (vc == gToday)
-		{
-			str.Format("%d %s %d (%s)", vc.day, AvcGetMonthAbr(vc.month), vc.year, gstr[43].c_str());
-		}
-		else if (vc == gTomorrow)
-		{
-			str.Format("%d %s %d (%s)", vc.day, AvcGetMonthAbr(vc.month), vc.year, gstr[854].c_str());
-		}
-		else if (vc == gYesterday)
-		{
-			str.Format("%d %s %d (%s)", vc.day, AvcGetMonthAbr(vc.month), vc.year, gstr[853].c_str());
-		}
-		else
-		{
-			str.Format("%d %s %d", vc.day, AvcGetMonthAbr(vc.month), vc.year);
-		}
-	}
-}
 
 int AvcGetNextPartHash(TString &str, TString &strLine, int & i)
 {
@@ -536,9 +515,9 @@ int AvcMasaToComboMasa(int nMasa)
 int AvcGetLocationAsText(TString &str, EARTHDATA earth)
 {
 	str.Format("%s: %s  %s: %s  %s: %s", 
-		gstr[10].c_str(), AvcGetTextLatitude(earth.latitude_deg), 
-		gstr[11].c_str(), AvcGetTextLongitude(earth.longitude_deg),
-		gstr[12].c_str(), AvcGetTextTimeZone(earth.tzone));
+		GCStrings::getString(10).c_str(), EARTHDATA::GetTextLatitude(earth.latitude_deg), 
+		GCStrings::getString(11).c_str(), EARTHDATA::GetTextLongitude(earth.longitude_deg),
+		GCStrings::getString(12).c_str(), TTimeZone::GetTimeZoneOffsetText(earth.tzone));
 
 	return 1;
 }
@@ -565,7 +544,7 @@ const char * AvcDateToString(VCTIME vc)
 {
 	static TCHAR ts[32];
 
-	sprintf(ts, "%d %s %04d", vc.day, AvcGetMonthAbr(vc.month), vc.year);
+	sprintf(ts, "%d %s %04d", vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year);
 
 	return ts;
 }
@@ -831,8 +810,8 @@ const char * FormatDate(VCTIME vc, VATIME va)
 	static char sz[128];
 
 	sprintf(sz, "%d %s %d\r\n%s, %s Paksa, %s Masa, %d",
-		vc.day, AvcGetMonthAbr(vc.month), vc.year,
-		GetTithiName(va.tithi%15), GetPaksaName(va.tithi/15), GetMasaName(va.masa), va.gyear);
+		vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year,
+		GCStrings::GetTithiName(va.tithi%15), GCStrings::GetPaksaName(va.tithi/15), GCStrings::GetMasaName(va.masa), va.gyear);
 
 	return sz;
 }
@@ -978,12 +957,12 @@ int AvcSaveStrings(const char * pszFile)
 		{
 			for(i = a[j][0]; i <= a[j][1]; i++)
 			{
-				if (gstr[i].GetLength() > 0)
+				if (GCStrings::getString(i).GetLength() > 0)
 				{
 					trf.Clear();
 					trf.AddTag(78);
 					trf.AddInt(i);
-					trf.AddText(gstr[i].c_str());
+					trf.AddText(GCStrings::getString(i).c_str());
 					trf.WriteLine();
 					v++;
 				}

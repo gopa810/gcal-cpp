@@ -8,6 +8,7 @@
 #include "CustomEvent.h"
 #include "vedic_ui.h"
 #include "avc.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -69,9 +70,9 @@ BOOL DlgCustomEventDialog::OnInitDialog()
 	pos = gCustomEventList.list;
 	while(pos)
 	{
-		n = m_list.InsertItem(1000, GetTithiName(pos->nTithi));
-		m_list.SetItemText(n, 1, GetPaksaName(pos->nTithi / 15));
-		m_list.SetItemText(n, 2, GetMasaName(pos->nMasa));
+		n = m_list.InsertItem(1000, GCStrings::GetTithiName(pos->nTithi));
+		m_list.SetItemText(n, 1, GCStrings::GetPaksaName(pos->nTithi / 15));
+		m_list.SetItemText(n, 2, GCStrings::GetMasaName(pos->nMasa));
 		m_list.SetItemText(n, 3, pos->strText);
 		m_list.SetItemData(n, pos->nTithi + pos->nMasa*30);
 		pos = pos->next;
@@ -159,9 +160,9 @@ AE_TypeAgain:
 			ce.nTithi = nTithi;
 			ce.strText = degt.m_strText;
 
-			n = m_list.InsertItem(1000, GetTithiName(ce.nTithi));
-			m_list.SetItemText(n, 1, GetPaksaName(ce.nTithi / 15));
-			m_list.SetItemText(n, 2, GetMasaName(ce.nMasa));
+			n = m_list.InsertItem(1000, GCStrings::GetTithiName(ce.nTithi));
+			m_list.SetItemText(n, 1, GCStrings::GetPaksaName(ce.nTithi / 15));
+			m_list.SetItemText(n, 2, GCStrings::GetMasaName(ce.nMasa));
 			m_list.SetItemText(n, 3, ce.strText);
 			m_list.SetItemData(n, ce.nTithi + ce.nMasa*30);
 
@@ -265,9 +266,9 @@ void DlgCustomEventDialog::OnButtonEdit()
 		{
 			data = dece.m_nTithi + dece.m_nMasa*30;
 			m_list.SetItemData(i, data);
-			m_list.SetItemText(i, 0, GetTithiName(dece.m_nTithi));
-			m_list.SetItemText(i, 1, GetPaksaName(dece.m_nTithi/15));
-			m_list.SetItemText(i, 2, GetMasaName(dece.m_nMasa));
+			m_list.SetItemText(i, 0, GCStrings::GetTithiName(dece.m_nTithi));
+			m_list.SetItemText(i, 1, GCStrings::GetPaksaName(dece.m_nTithi/15));
+			m_list.SetItemText(i, 2, GCStrings::GetMasaName(dece.m_nMasa));
 			m_list.SetItemText(i, 3, dece.m_strText);
 	
 		}

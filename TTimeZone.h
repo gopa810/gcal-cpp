@@ -29,6 +29,8 @@ public:
 	static int GetTimeZoneOffsetInteger(int nIndex);
 	static const char * GetTimeZoneName(int nIndex);
 	static TTimeZone gzone[];
+	static char * GetTimeZoneOffsetTextArg(double d);
+	static char * GetTimeZoneOffsetText(double d);
 
 	const char * name;
 	int offset;

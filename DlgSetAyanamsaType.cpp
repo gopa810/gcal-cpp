@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgSetAyanamsaType.h"
+#include "GCAyanamsha.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -11,11 +12,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-const char * GetAyanamsaName(int);
 const char * GetSankMethodName(int i);
-
-int SetAyanamsaType(int);
-int GetAyanamsaType();
 int GetSankrantiType();
 int SetSankrantiType(int);
 void SetShowSetVal(int, int);
@@ -55,12 +52,12 @@ BOOL DlgSetAyanamsaType::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_list.AddString(GetAyanamsaName(0));
-	m_list.AddString(GetAyanamsaName(1));
-	m_list.AddString(GetAyanamsaName(2));
-	m_list.AddString(GetAyanamsaName(3));
+	m_list.AddString(GCAyanamsha::GetAyanamsaName(0));
+	m_list.AddString(GCAyanamsha::GetAyanamsaName(1));
+	m_list.AddString(GCAyanamsha::GetAyanamsaName(2));
+	m_list.AddString(GCAyanamsha::GetAyanamsaName(3));
 
-	m_list.SetCurSel(GetAyanamsaType());
+	m_list.SetCurSel(GCAyanamsha::GetAyanamsaType());
 
 	m_san.AddString(GetSankMethodName(0));
 	m_san.AddString(GetSankMethodName(1));
@@ -77,7 +74,7 @@ BOOL DlgSetAyanamsaType::OnInitDialog()
 
 void DlgSetAyanamsaType::OnOK() 
 {
-	SetAyanamsaType(m_list.GetCurSel());
+	GCAyanamsha::SetAyanamsaType(m_list.GetCurSel());
 	SetSankrantiType(m_san.GetCurSel());
 	SetShowSetVal(44, IsDlgButtonChecked(IDC_CHECK1));
 

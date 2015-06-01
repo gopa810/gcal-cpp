@@ -6,6 +6,7 @@
 #include "vcal5beta.h"
 #include "DlgEventsGaubdTM.h"
 #include "vedic_ui.h"
+#include "GCStrings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -93,31 +94,31 @@ BOOL DlgEventsGaubdTM::OnInitDialog()
 	int i = 0, n;
 	TString str;
 
-	str.Format("%s Paksa", GetPaksaName(0));
+	str.Format("%s Paksa", GCStrings::GetPaksaName(0));
 	i = m_list1.AddString(str);
 	m_list1.SetItemData(i, -1);
 	
 	for(n = 0; n < 15; n++)
 	{
-		str.Format("     %s Tithi", GetTithiName(n));
+		str.Format("     %s Tithi", GCStrings::GetTithiName(n));
 		i = m_list1.AddString(str);
 		m_list1.SetItemData(i, n);
 	}
 
-	str.Format("%s Paksa", GetPaksaName(1));
+	str.Format("%s Paksa", GCStrings::GetPaksaName(1));
 	i = m_list1.AddString(str);
 	m_list1.SetItemData(i, -1);
 
 	for(n = 15; n < 30; n++)
 	{
-		str.Format("     %s Tithi", GetTithiName(n));
+		str.Format("     %s Tithi", GCStrings::GetTithiName(n));
 		i = m_list1.AddString(str);
 		m_list1.SetItemData(i, n);
 	}
 
 	for(n = 0; n < 12; n++)
 	{
-		str.Format(" %s Masa", GetMasaName((n + 11)%12));
+		str.Format(" %s Masa", GCStrings::GetMasaName((n + 11)%12));
 		i = m_list2.AddString(str);
 		m_list2.SetItemData(i, (n + 11)%12);
 	}
