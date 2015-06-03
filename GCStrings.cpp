@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "GCStrings.h"
 #include "TString.h"
+#include "TFileRichList.h"
 #include "enums.h"
+#include "GCDisplaySettings.h"
 
 extern TString gstr[];
 extern int gstr_Modified;
-int GetShowSetVal(int i);
 
 GCStrings::GCStrings(void)
 {
@@ -131,7 +132,7 @@ const char * GCStrings::GetPaksaName(int i)
 
 const char * GCStrings::GetMasaName(int i)
 {
-	switch(GetShowSetVal(49))
+	switch(GCDisplaySettings::getValue(49))
 	{
 	case 0: // VAISNAVA
 		return GCStrings::getString(720 + i % 13);
@@ -400,3 +401,93 @@ const char * GCStrings::GetEventClassText(int i)
 	return "";
 }
 
+const char * GCStrings::GetDayOfWeek(int i)
+{
+	return gstr[i].c_str();
+}
+
+int GCStrings::readFile(const char * pszFile)
+{
+	int v = 0;
+	TFileRichList rf;
+
+	if (rf.Open(pszFile, "rt") != 0)
+	{
+		int index = 0;
+		while(rf.ReadLine())
+		{
+			if (atoi(rf.GetTag())==78)
+			{
+				index = atoi(rf.GetField(0));
+				if (index >= 0 && index < 900)
+				{
+					gstr[index] = rf.GetField(1);
+					v++;
+				}
+			}
+		}
+		rf.Close();
+	}
+	else
+	{
+		return -1;
+	}
+
+	return v;
+}
+
+int GCStrings::writeFile(const char * pszFile)
+{
+	int i, j, v = 0;
+	// a[x][0] je zaciatocny index
+	// a[x][1] je konecny index skupiny (vratane)
+	int a[3][2] =
+	{
+		{ 0, 128 },
+		{ 135, 199 },
+		{ 561, 899 }
+	};
+	TFileRichList trf;
+
+	if (trf.Open(pszFile, "wt"))
+	{
+		// save 0 - 128
+		// save 135 - 199
+		// save 561 - 899
+		for(j = 0; j < 3; j++)
+		{
+			for(i = a[j][0]; i <= a[j][1]; i++)
+			{
+				if (GCStrings::getString(i).GetLength() > 0)
+				{
+					trf.Clear();
+					trf.AddTag(78);
+					trf.AddInt(i);
+					trf.AddText(GCStrings::getString(i).c_str());
+					trf.WriteLine();
+					v++;
+				}
+			}
+		}
+		trf.Close();
+	}
+	else
+	{
+		return -1;
+	}
+
+	return v;
+}
+
+const char * GCStrings::GetKalaName(KalaType i)
+{
+	switch(i)
+	{
+	case KT_RAHU_KALAM:
+		return "Rahu kalam";
+	case KT_YAMA_GHANTI:
+		return "Yama ghanti";
+	case KT_GULI_KALAM:
+		return "Guli kalam";
+	}
+}

@@ -19,7 +19,6 @@ static char THIS_FILE[] = __FILE__;
 extern CLocationRef gLastLocation;
 extern CLocationRef gMyLocation;
 extern int g_dstSelMethod;
-extern TString gstr[];
 
 const char * AvcGetEarthPosFromString(const char * str, bool bNorth, double &Longitude);
 

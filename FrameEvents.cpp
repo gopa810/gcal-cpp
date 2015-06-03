@@ -10,6 +10,7 @@
 #include "CustomEvent.h"
 #include "DlgEditCustomEvent.h"
 #include "GCStrings.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -20,7 +21,6 @@ static char THIS_FILE[]=__FILE__;
 extern GCalApp theApp;
 
 int AvcComboMasaToMasa(int);
-int GetShowSetVal(int);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -429,7 +429,7 @@ void CFrameEvents::OnEventsNewevent()
 void CFrameEvents::OnUpdateEventsEditevent(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	//if (GetShowSetVal(44))
+	//if (GCDisplaySettings::getValue(44))
 		pCmdUI->Enable(m_wndList.GetFirstSelectedItemPosition() != NULL);
 	//else
 	//	pCmdUI->Enable(FALSE);
@@ -452,7 +452,7 @@ void CFrameEvents::OnUpdateEventsDeleteevent(CCmdUI* pCmdUI)
 	}
 	else ind = -1;
 
-	if (GetShowSetVal(44) || nAllowed)
+	if (GCDisplaySettings::getValue(44) || nAllowed)
 		pCmdUI->Enable(ind >= 0);	
 	else
 		pCmdUI->Enable(FALSE);

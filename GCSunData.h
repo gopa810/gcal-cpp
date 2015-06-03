@@ -2,6 +2,8 @@
 
 #include "GCDayHours.h"
 #include "GCGregorianTime.h"
+#include "GCEarthData.h"
+#include "enums.h"
 
 class SUNDATA
 {
@@ -32,6 +34,11 @@ public:
 	static double GetSunLongitude(VCTIME vct);
 	static double SunGetPerigee(int year, int month, int day);
 	static double SunGetMeanLong(int year, int month, int day);
+	
+	void SunPosition(VCTIME vct, EARTHDATA ed, double dayHours);
+	void SunCalc(VCTIME vct, EARTHDATA earth);
+
+	static void CalculateKala(double sunRise, double sunSet, int dayWeek, double * r1, double * r2, KalaType kt);
 };
 
 

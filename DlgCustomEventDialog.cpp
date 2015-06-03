@@ -88,7 +88,7 @@ BOOL DlgCustomEventDialog::OnInitDialog()
 //#include "DlgGetTime.h"
 #include "DlgGetLocation.h"
 #include "DlgEventsGetText.h"
-#include "level_3.h"
+#include "level_6.h"
 
 void DlgCustomEventDialog::OnAddEvent() 
 {
@@ -136,8 +136,8 @@ AE_TypeAgain:
 					vc.month = dgd.m_nMonth;
 					vc.day   = dgd.m_nDay;
 					vc.shour = (dgd.m_nHour*60.0 + dgd.m_nMin) / 1440.0;
-					DayCalc(vc, earth, day);
-					nMasa = MasaCalc(vc, day, earth, day.nGaurabdaYear);
+					day.DayCalc(vc, earth);
+					nMasa = day.MasaCalc(vc, earth);
 					nTithi = day.nTithi;
 				}
 				else if (dgd.m_nNextStep == -1)

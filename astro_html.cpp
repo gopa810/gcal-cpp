@@ -22,7 +22,7 @@
 
 #include "LocationRef.h"
 #include "XmlFile.h"
-#include "level_4.h"
+#include "level_6.h"
 #include "strings.h"
 #include "vedic_ui.h"
 #include "level_5_days.h"
@@ -34,12 +34,12 @@
 #include "GCStrings.h"
 #include "GCMoonData.h"
 #include "GCAyanamsha.h"
+#include "GCDisplaySettings.h"
 
 #define DAYS_TO_ENDWEEK(i) (21-(i-g_firstday_in_week))%7
 #define DAYS_FROM_BEGINWEEK(i) (i-g_firstday_in_week+14)%7
 #define DAY_INDEX(i) (i+g_firstday_in_week)%7
 
-int GetShowSetVal(int i);
 void CalcAppDay(CLocationRef &, VCTIME, TResultApp &);
 int CalcCalendar(TResultCalendar &, CLocationRef &, VCTIME, int);
 int CalcMasaList(TResultMasaList &, CLocationRef &, int, int);
@@ -217,41 +217,57 @@ int WriteEventsHTML(TResultEvents &inEvents, FILE * f)
 
 		switch(dnr.nType)
 		{
-		case 10:
+		case CCTYPE_S_ARUN:
 			fprintf(f, "<td>Arunodaya</td><td>%02d:%02d:%02d</td></tr><tr>\n",
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 11:
+		case CCTYPE_S_RISE:
 			fprintf(f, "<td>Sunrise</td><td>%02d:%02d:%02d</td></tr><tr>\n",
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 12:
+		case CCTYPE_S_NOON:
 			fprintf(f, "<td>Noon</td><td>%02d:%02d:%02d</td></tr><tr>\n",
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 13:
+		case CCTYPE_S_SET:
 			fprintf(f, "<td>Sunset</td><td>%02d:%02d:%02d</td></tr><tr>\n",
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 20:
+		case CCTYPE_TITHI:
 			fprintf(f, "<td>%s Tithi</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
 				GCStrings::GetTithiName(dnr.nData),
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 21:
+		case CCTYPE_NAKS:
 			fprintf(f, "<td>%s Naksatra</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
 				GCStrings::GetNaksatraName(dnr.nData),
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 22:
+		case CCTYPE_SANK:
 			fprintf(f, "<td>%s Sankranti</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
 				GCStrings::GetSankrantiName(dnr.nData)
 				, dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
-		case 23:
+		case CCTYPE_CONJ:
 			fprintf(f, "<td>Conjunction in %s rasi</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
 				GCStrings::GetSankrantiName(dnr.nData)
 				, dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_KALA_START:
+			fprintf(f, "<td>");
+			fprintf(f, GCStrings::GetKalaName((KalaType)dnr.nData));
+			fprintf(f, " starts</td>");
+			fprintf(f, "<td>");
+			fprintf(f, dnr.Time.c_str());
+			fprintf(f, "</td></tr><tr>");
+			break;
+		case CCTYPE_KALA_END:
+			fprintf(f, "<td>");
+			fprintf(f, GCStrings::GetKalaName((KalaType)dnr.nData));
+			fprintf(f, " ends</td>");
+			fprintf(f, "<td>");
+			fprintf(f, dnr.Time.c_str());
+			fprintf(f, "</td></tr><tr>");
 			break;
 		default:
 			break;
@@ -400,12 +416,12 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 			nPrevMasa = pvd->astrodata.nMasa;
 
 			if (((pvd->ekadasi_parana) || (pvd->festivals.GetLength() > 0) ||
-				(pvd->sankranti_zodiac >= 0) || (GetShowSetVal(7) == 1 && pvd->was_ksaya) ||
-				(GetShowSetVal(8) == 1 && pvd->is_vriddhi) ||
-				((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK)) ||
-				((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK)) ||
-				((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))) == FALSE
-				&& (GetShowSetVal(20) != 0))
+				(pvd->sankranti_zodiac >= 0) || (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya) ||
+				(GCDisplaySettings::getValue(8) == 1 && pvd->is_vriddhi) ||
+				((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK)) ||
+				((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK)) ||
+				((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))) == FALSE
+				&& (GCDisplaySettings::getValue(20) != 0))
 					 continue;
 
 			// date data
@@ -552,7 +568,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				xml << str;
 			}
 
-			if (GetShowSetVal(7) == 1 && pvd->was_ksaya)
+			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)
 			{
 				double h1, m1, h2, m2;
 				VCTIME ksayaDate;
@@ -569,12 +585,12 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				xml << str;
 			}
 
-			if (GetShowSetVal(8) == 1 && pvd->is_vriddhi)
+			if (GCDisplaySettings::getValue(8) == 1 && pvd->is_vriddhi)
 			{
 				xml << "Second day of vriddhi tithi<br>\n";
 			}
 
-			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				xml << GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
 							   + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str();
@@ -585,7 +601,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				}
 			}
 
-			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				xml << GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
 							   + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str();
@@ -596,7 +612,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				}
 			}
 
-			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				xml << GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
 							   + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str();
@@ -642,7 +658,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 
 int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 {
-	int g_firstday_in_week = GetShowSetVal(40);
+	int g_firstday_in_week = GCDisplaySettings::getValue(40);
 	int k, y, lwd;
 	TString str, st;
 	VCTIME date;
@@ -1040,7 +1056,7 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 			if (str2.GetLength() > 1)
 			{
 				nFestClass = p->GetFestivalClass(str2);
-				if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+				if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 				{
 					if (prevCountFest > 0)
 						fprintf(f, "<br>");
@@ -1052,7 +1068,7 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 	}
 
 
-	if (GetShowSetVal(16) == 1 && p->sankranti_zodiac >= 0)
+	if (GCDisplaySettings::getValue(16) == 1 && p->sankranti_zodiac >= 0)
 	{
 		if (prevCountFest == 0)
 			fprintf(f, "<table style=\'border-width:1pt;border-color:black;border-style:solid\'><tr><td style=\'font-size:9pt;background:%s;padding-left:25pt;padding-right:35pt;padding-top:15pt;padding-bottom:15pt;vertical-align:center\'>\n", gcal_html_getDayBackground(p));
@@ -1071,7 +1087,7 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		prevCountFest++;
 	}
 
-	if (GetShowSetVal(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+	if (GCDisplaySettings::getValue(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 	{
 		double h, m;
 		VCTIME dd;
@@ -1095,7 +1111,7 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		prevCountFest++;
 	}
 
-	if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+	if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 	{
 		if (p->is_vriddhi)
 		{
@@ -1171,20 +1187,20 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 
 	fprintf(f, "<p>");
 	// tithi at arunodaya
-	if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+	if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 	{
 		fprintf(f, "<br>%s: %s", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(p->astrodata.nTithiArunodaya));
 	}
 
 	//"Arunodaya Time",//1
-	if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+	if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 	{
 		fprintf(f, "<br>%s %d:%02d (%s)\r\n", GCStrings::getString(99).c_str(), p->astrodata.sun.arunodaya.hour
 			, p->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(p->nDST));
 	}
 
 	//"Moonrise Time",//4
-	if (GetShowSetVal(4) == 1)
+	if (GCDisplaySettings::getValue(4) == 1)
 	{
 		fprintf(f, "<br>");
 		if (p->moonrise.hour < 0)
@@ -1196,9 +1212,9 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		}
 	}
 	//"Moonset Time",//5
-	if (GetShowSetVal(5) == 1)
+	if (GCDisplaySettings::getValue(5) == 1)
 	{
-		if (GetShowSetVal(4) == 1)
+		if (GCDisplaySettings::getValue(4) == 1)
 			fprintf(f, "&nbsp;&nbsp;&nbsp;");
 		else
 			fprintf(f, "<br>");
@@ -1211,32 +1227,32 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		}
 	}
 	///"Sun Longitude",//9
-	if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 	{
 		fprintf(f, "<br>%s: %f (*)\r\n", GCStrings::getString(100).c_str(), p->astrodata.sun.longitude_deg);
 	}
 	//"Moon Longitude",//10
-	if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 	{
-		if (GetShowSetVal(9)==1)
+		if (GCDisplaySettings::getValue(9)==1)
 			fprintf(f, ", ");
 		else
 			fprintf(f, "<br>");
 		fprintf(f, "%s: %f (*)\r\n", GCStrings::getString(101).c_str(), p->astrodata.moon.longitude_deg);
 	}
 	//"Ayanamsha value",//11
-	if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 	{
-		if (GetShowSetVal(9)==1 || GetShowSetVal(10)==1)
+		if (GCDisplaySettings::getValue(9)==1 || GCDisplaySettings::getValue(10)==1)
 			fprintf(f, ", ");
 		else
 			fprintf(f, "<br>");
 		fprintf(f, "<br>%s %f (%s) (*)\r\n", GCStrings::getString(102).c_str(), p->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 	}
 	//"Julian Day",//12
-	if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 	{
-		if (GetShowSetVal(9)==1 || GetShowSetVal(10)==1 || GetShowSetVal(11)==1 )
+		if (GCDisplaySettings::getValue(9)==1 || GCDisplaySettings::getValue(10)==1 || GCDisplaySettings::getValue(11)==1 )
 			fprintf(f, ", ");
 		else
 			fprintf(f, "<br>");
@@ -1246,11 +1262,11 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 	/*BEGIN GCAL 1.4.3*/
 	DAYTIME tdA, tdB;
 
-	if (GetShowSetVal(29))
+	if (GCDisplaySettings::getValue(29))
 	{
 		fprintf(f, "<br>%s %2d:%02d ",
 			GCStrings::getString(51).c_str(), p->astrodata.sun.rise.hour, p->astrodata.sun.rise.min );
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.rise;
 			tdB = p->astrodata.sun.rise;
@@ -1260,10 +1276,10 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		}
 		fprintf(f, " (%s)", GCStrings::GetDSTSignature(p->nDST));
 	}
-	if (GetShowSetVal(30))
+	if (GCDisplaySettings::getValue(30))
 	{
 		fprintf(f, "<br>%s    %2d:%02d ", GCStrings::getString(857).c_str(), p->astrodata.sun.noon.hour, p->astrodata.sun.noon.min);
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.noon;
 			tdB = p->astrodata.sun.noon;
@@ -1273,10 +1289,10 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		}
 		fprintf(f, " (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));
 	}
-	if (GetShowSetVal(31))
+	if (GCDisplaySettings::getValue(31))
 	{
 		fprintf(f, "<br>%s  %2d:%02d ", GCStrings::getString(52).c_str(), p->astrodata.sun.set.hour, p->astrodata.sun.set.min);
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.set;
 			tdB = p->astrodata.sun.set;
@@ -1286,16 +1302,16 @@ void WriteTodayInfoHTML(VCTIME vc, CLocationRef & loc, FILE * f)
 		}
 		fprintf(f, " (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));
 	}
-	if (GetShowSetVal(33))
+	if (GCDisplaySettings::getValue(33))
 	{
 		fprintf(f,"<br>%s info  Moon in %s %s",
 			GCStrings::getString(51).c_str(), 
 			GCStrings::GetNaksatraName(p->astrodata.nNaksatra), GCStrings::getString(15).c_str());
-		if (GetShowSetVal(47))
+		if (GCDisplaySettings::getValue(47))
 		{
 			fprintf(f, ", %.1f%% passed (%s Pada)", p->astrodata.nNaksatraElapse, GCStrings::getString(811+int(p->astrodata.nNaksatraElapse/25)).c_str());
 		}
-		if (GetShowSetVal(46))
+		if (GCDisplaySettings::getValue(46))
 		{
 			fprintf(f, ", Moon in the %s %s", GCStrings::GetSankrantiName(p->astrodata.nMoonRasi), GCStrings::getString(105).c_str());
 		}

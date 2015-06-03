@@ -25,6 +25,9 @@ DlgGetEventSpec::DlgGetEventSpec(CWnd* pParent /*=NULL*/)
 	m_naks = FALSE;
 	m_sank = FALSE;
 	m_conj = FALSE;
+	m_rahu_kalam = FALSE;
+	m_yama_ghanti = FALSE;
+	m_guli_kalam = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -39,6 +42,11 @@ void DlgGetEventSpec::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK4, m_sank);
 	DDX_Check(pDX, IDC_CHECK5, m_conj);
 	//}}AFX_DATA_MAP
+	DDX_Check(pDX, IDC_CHECK6, m_rahu_kalam);
+	DDX_Check(pDX, IDC_CHECK7, m_yama_ghanti);
+	DDX_Check(pDX, IDC_CHECK8, m_guli_kalam);
+	DDX_Check(pDX, IDC_CHECK9, m_moon_rasi);
+	DDX_Check(pDX, IDC_CHECK10, m_moon_times);
 }
 
 
@@ -48,6 +56,7 @@ BEGIN_MESSAGE_MAP(DlgGetEventSpec, CDialog)
 	ON_BN_CLICKED(IDC_RADIO1, OnRadio1)
 	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_CHECK6, &DlgGetEventSpec::OnBnClickedCheck6)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,6 +83,11 @@ void DlgGetEventSpec::OnOK()
 	if (m_sank) m_fOptions |= CCE_SNK;
 	if (m_tithi) m_fOptions |= CCE_TIT;
 	if (m_conj) m_fOptions |= CCE_CNJ;
+	if (m_rahu_kalam) m_fOptions |= CCE_RKK;
+	if (m_yama_ghanti) m_fOptions |= CCE_YGK;
+	if (m_guli_kalam) m_fOptions |= CCE_GKK;
+	if (m_moon_rasi) m_fOptions |= CCE_MRA;
+	if (m_moon_times) m_fOptions |= CCE_MON;
 
 	m_fOptions |= m_fSort;
 
@@ -100,6 +114,11 @@ BOOL DlgGetEventSpec::OnInitDialog()
 	m_sank = (m_fOptions & CCE_SNK) ? TRUE : FALSE;
 	m_sun  = (m_fOptions & CCE_SUN) ? TRUE : FALSE;
 	m_tithi = (m_fOptions & CCE_TIT) ? TRUE : FALSE;
+	m_rahu_kalam = (m_fOptions & CCE_RKK) ? TRUE : FALSE;
+	m_yama_ghanti = (m_fOptions & CCE_YGK) ? TRUE : FALSE;
+	m_guli_kalam = (m_fOptions & CCE_GKK) ? TRUE : FALSE;
+	m_moon_rasi = (m_fOptions & CCE_MRA) ? true : false;
+	m_moon_times = (m_fOptions & CCE_MON) ? true : false;
 
 	CDialog::OnInitDialog();
 
@@ -109,4 +128,10 @@ BOOL DlgGetEventSpec::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void DlgGetEventSpec::OnBnClickedCheck6()
+{
+	// TODO: Add your control notification handler code here
 }

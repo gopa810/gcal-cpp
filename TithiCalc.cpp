@@ -4,11 +4,11 @@
 #include "stdafx.h"
 #include "VCal5beta.h"
 #include "TithiCalc.h"
-//#include "level_4.h"
 #include "vedic_ui.h"
 #include "level_6.h"
 #include "strings.h"
 #include "GCStrings.h"
+#include "GCCalendar.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -147,7 +147,7 @@ BOOL DlgGetStartDate::OnInitDialog()
 		m_resultC.shour = double(0.5);
 		m_resultC.tzone = m_earth.tzone;
 
-		VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+		GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
 
 		s_init = 1;
 
@@ -225,7 +225,7 @@ void DlgGetStartDate::SynchroGregorianToGaurabda()
 	m_resultC.NextDay();
 	m_resultC.PreviousDay();
 
-	VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+	GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
 
 	w_tithi.SetCurSel(m_resultA.tithi);
 	w_masa.SetCurSel(AvcMasaToComboMasa(m_resultA.masa));
@@ -274,7 +274,7 @@ void DlgGetStartDate::SynchroGaurabdaToGregorian()
 		return;
 	}
 
-	VATIMEtoVCTIME(m_resultA, m_resultC, m_earth);
+	GCCalendar::VATIMEtoVCTIME(m_resultA, m_resultC, m_earth);
 
 	if (m_resultC.year < 0)
 	{
@@ -310,7 +310,7 @@ BOOL DlgGetStartDate::OnCommand(WPARAM wParam, LPARAM lParam)
 		w_day.SetCurSel(m_resultC.day - 1);
 		w_month.SetCurSel(m_resultC.month - 1);
 		SetDlgItemInt(IDC_EDIT2, m_resultC.year, FALSE);
-		VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+		GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
 		w_tithi.SetCurSel(m_resultA.tithi);
 		w_masa.SetCurSel(AvcMasaToComboMasa(m_resultA.masa));
 		SetDlgItemInt(IDC_EDIT1, m_resultA.gyear, FALSE);

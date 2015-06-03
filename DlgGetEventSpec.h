@@ -51,6 +51,13 @@ protected:
 	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedCheck6();
+	BOOL m_rahu_kalam;
+	BOOL m_yama_ghanti;
+	BOOL m_guli_kalam;
+	BOOL m_moon_rasi;
+	BOOL m_moon_times;
 };
 
 //{{AFX_INSERT_LOCATION}}

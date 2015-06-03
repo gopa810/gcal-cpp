@@ -3,11 +3,9 @@
 #include "vedic_ui.h"
 #include "strings.h"
 #include "TTimeZone.h"
-#include "level_3.h"
+#include "level_6.h"
 #include "enums.h"
 #include "GCStrings.h"
-
-int GetShowSetVal(int i);
 
 // PORTABLE 
 /************************************************************************

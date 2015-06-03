@@ -45,6 +45,14 @@ public:
 
 	DAYDATA(void);
 
+
+	int DayCalc(VCTIME date, EARTHDATA earth);
+	int MasaCalc(VCTIME date, EARTHDATA earth);
+
+	static unsigned int gGaurBeg[];
+	static VCTIME GetFirstDayOfYear(EARTHDATA,int);
+	static VCTIME GetFirstDayOfMasa(EARTHDATA earth, int GYear, int nMasa);
+
 };
 
 

@@ -22,7 +22,5 @@
 #define GSTR_HELP_FILE 16 /*GCAL 5.0*/
 
 const char * GCalApp_GetFileName(int);
-int AvcSaveStrings(const char * pszFile);
-int AvcLoadStrings(const char * pszFile);
 
 #endif

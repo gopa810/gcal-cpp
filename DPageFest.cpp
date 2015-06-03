@@ -6,7 +6,7 @@
 #include "DPageFest.h"
 #include "showset.h"
 #include "CustomEvent.h"
-extern CShowSetting gss[];
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -65,16 +65,16 @@ BOOL DPageFest::OnSetActive()
 	SendDlgItemMessage(IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)(const char *)("Purnima System"));
 	SendDlgItemMessage(IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)(const char *)("Pratipat System"));
 	SendDlgItemMessage(IDC_COMBO1, CB_ADDSTRING, 0, (LPARAM)(const char *)("Ekadasi System"));
-	if (gss[13].val == 1)
+	if (GCDisplaySettings::getValue(13) == 1)
 		i = 0;
-	else if (gss[14].val == 1)
+	else if (GCDisplaySettings::getValue(14) == 1)
 		i = 1;
 	else
 		i = 2;
 	SendDlgItemMessage(IDC_COMBO1, CB_SETCURSEL, i);
 
-	CheckDlgButton(IDC_CHECK2, gss[16].val);
-	CheckDlgButton(IDC_CHECK3, gss[17].val);
+	CheckDlgButton(IDC_CHECK2, GCDisplaySettings::getValue(16));
+	CheckDlgButton(IDC_CHECK3, GCDisplaySettings::getValue(17));
 
 	int chks[10][2];
 	for(i=0;i<10;i++)
@@ -89,30 +89,30 @@ BOOL DPageFest::OnSetActive()
 	{
 		if (chks[i][1]>0 && chks[i][0]==0)
 		{
-			gss[22+i].val=1;
+			GCDisplaySettings::setValue(22+i, 1);
 		}
 		else if (chks[i][1]==0 && chks[i][0]>0)
 		{
-			gss[22+i].val=0;
+			GCDisplaySettings::setValue(22+i, 0);
 		}
 		else
 		{
-			gss[22+i].val=2;
+			GCDisplaySettings::setValue(22+i, 2);
 		}
 	}
-	CheckDlgButton(IDC_CHECK4, gss[22].val);
-	CheckDlgButton(IDC_CHECK5, gss[23].val);
-	CheckDlgButton(IDC_CHECK6, gss[24].val);
-	CheckDlgButton(IDC_CHECK7, gss[25].val);
-	CheckDlgButton(IDC_CHECK8, gss[26].val);
-	CheckDlgButton(IDC_CHECK9, gss[27].val);
-	CheckDlgButton(IDC_CHECK10, gss[28].val);
-	CheckDlgButton(IDC_CHECK1,  gss[36].val);
-	CheckDlgButton(IDC_CHECK11, gss[37].val);
-	CheckDlgButton(IDC_CHECK12, gss[38].val);
-	CheckDlgButton(IDC_CHECK13, gss[39].val);
-	CheckDlgButton(IDC_CHECK14, gss[42].val);
-	CheckDlgButton(IDC_CHECK15, gss[41].val);
+	CheckDlgButton(IDC_CHECK4, GCDisplaySettings::getValue(22));
+	CheckDlgButton(IDC_CHECK5, GCDisplaySettings::getValue(23));
+	CheckDlgButton(IDC_CHECK6, GCDisplaySettings::getValue(24));
+	CheckDlgButton(IDC_CHECK7, GCDisplaySettings::getValue(25));
+	CheckDlgButton(IDC_CHECK8, GCDisplaySettings::getValue(26));
+	CheckDlgButton(IDC_CHECK9, GCDisplaySettings::getValue(27));
+	CheckDlgButton(IDC_CHECK10, GCDisplaySettings::getValue(28));
+	CheckDlgButton(IDC_CHECK1,  GCDisplaySettings::getValue(36));
+	CheckDlgButton(IDC_CHECK11, GCDisplaySettings::getValue(37));
+	CheckDlgButton(IDC_CHECK12, GCDisplaySettings::getValue(38));
+	CheckDlgButton(IDC_CHECK13, GCDisplaySettings::getValue(39));
+	CheckDlgButton(IDC_CHECK14, GCDisplaySettings::getValue(42));
+	CheckDlgButton(IDC_CHECK15, GCDisplaySettings::getValue(41));
 
 	// TODO: Add your specialized code here and/or call the base class
 	
@@ -138,40 +138,40 @@ BOOL DPageFest::OnKillActive()
 	int i = 0;
 	// TODO: Add your specialized code here and/or call the base class
 	i = SendDlgItemMessage(IDC_COMBO1, CB_GETCURSEL);
-	gss[16].val = IsDlgButtonChecked(IDC_CHECK2);
-	gss[17].val = IsDlgButtonChecked(IDC_CHECK3);
+	GCDisplaySettings::setValue(16, IsDlgButtonChecked(IDC_CHECK2));
+	GCDisplaySettings::setValue(17, IsDlgButtonChecked(IDC_CHECK3));
 	
-	gss[22].val = IsDlgButtonChecked(IDC_CHECK4);
-	gss[23].val = IsDlgButtonChecked(IDC_CHECK5);
-	gss[24].val = IsDlgButtonChecked(IDC_CHECK6);
-	gss[25].val = IsDlgButtonChecked(IDC_CHECK7);
-	gss[26].val = IsDlgButtonChecked(IDC_CHECK8);
-	gss[27].val = IsDlgButtonChecked(IDC_CHECK9);
-	gss[28].val = IsDlgButtonChecked(IDC_CHECK10);
-	gss[36].val = IsDlgButtonChecked(IDC_CHECK1);
-	gss[37].val = IsDlgButtonChecked(IDC_CHECK11);
-	gss[38].val = IsDlgButtonChecked(IDC_CHECK12);
-	gss[39].val = IsDlgButtonChecked(IDC_CHECK13);
-	gss[41].val = IsDlgButtonChecked(IDC_CHECK15);
-	gss[42].val = IsDlgButtonChecked(IDC_CHECK14);
+	GCDisplaySettings::setValue(22, IsDlgButtonChecked(IDC_CHECK4));
+	GCDisplaySettings::setValue(23, IsDlgButtonChecked(IDC_CHECK5));
+	GCDisplaySettings::setValue(24, IsDlgButtonChecked(IDC_CHECK6));
+	GCDisplaySettings::setValue(25, IsDlgButtonChecked(IDC_CHECK7));
+	GCDisplaySettings::setValue(26, IsDlgButtonChecked(IDC_CHECK8));
+	GCDisplaySettings::setValue(27, IsDlgButtonChecked(IDC_CHECK9));
+	GCDisplaySettings::setValue(28, IsDlgButtonChecked(IDC_CHECK10));
+	GCDisplaySettings::setValue(36, IsDlgButtonChecked(IDC_CHECK1));
+	GCDisplaySettings::setValue(37, IsDlgButtonChecked(IDC_CHECK11));
+	GCDisplaySettings::setValue(38, IsDlgButtonChecked(IDC_CHECK12));
+	GCDisplaySettings::setValue(39, IsDlgButtonChecked(IDC_CHECK13));
+	GCDisplaySettings::setValue(41, IsDlgButtonChecked(IDC_CHECK15));
+	GCDisplaySettings::setValue(42, IsDlgButtonChecked(IDC_CHECK14));
 
 	if (i >= 0 && i < 3)
 	{
-		gss[13 + i].val = 1;
-		gss[13 + (i + 1)%3].val = 0;
-		gss[13 + (i + 2)%3].val = 0;
+		GCDisplaySettings::setValue(13 + i, 1);
+		GCDisplaySettings::setValue(13 + (i + 1)%3, 0);
+		GCDisplaySettings::setValue(13 + (i + 2)%3, 0);
 	}
 	
 	CCustomEvent * p = gCustomEventList.list;
 	while(p)
 	{
 		i = p->nClass;
-		if (gss[22+i].val == 0)
+		if (GCDisplaySettings::getValue(22+i) == 0)
 		{
 			p->nVisible = 0;
 			gCustomEventList_Modified = 1;
 		}
-		else if (gss[22+i].val == 1)
+		else if (GCDisplaySettings::getValue(22+i) == 1)
 		{
 			p->nVisible = 1;
 			gCustomEventList_Modified = 1;
@@ -179,7 +179,7 @@ BOOL DPageFest::OnKillActive()
 		p = p->next;
 	}
 
-	gCustomEventList_Modified = (gCustomEventList.setOldStyleFast(gss[42].val) ? 1 : gCustomEventList_Modified);
+	gCustomEventList_Modified = (gCustomEventList.setOldStyleFast(GCDisplaySettings::getValue(42)) ? 1 : gCustomEventList_Modified);
 
 	return CPropertyPage::OnKillActive();
 }

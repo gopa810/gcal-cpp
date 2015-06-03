@@ -7,8 +7,6 @@
 //
 //==================================================================
 
-int gAyaType = 1;
-int gSanType = 2;
 int g_dstSelMethod = 2;
 const char * gpszSeparator = "----------------------------------------------------------------------------------";
 CLocationRef gMyLocation;

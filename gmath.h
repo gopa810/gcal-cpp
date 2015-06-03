@@ -10,6 +10,7 @@
 // pi / 180
 #define rads 0.0174532925199432958
 
+#define AU 149597869.0
 
 double cos_d(double x);
 double sin_d(double x);

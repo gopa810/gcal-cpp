@@ -11,5 +11,6 @@ public:
 
 	static int GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate);
 	static int GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &prevDate);
+	static double CalculateMidnightNaksatra(VCTIME date, EARTHDATA earth);
 };
 

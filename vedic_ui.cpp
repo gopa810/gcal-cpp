@@ -3,8 +3,6 @@
 #include "strings.h"
 #include "enums.h"
 
-int GetShowSetVal(int i);
-
 // PORTABLE
 
 

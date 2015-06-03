@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LocationRef.h"
-#include "level_4.h"
+#include "level_6.h"
 #include "vedic_ui.h"
 #include "strings.h"
 #include "TTimeZone.h"
@@ -9,6 +9,8 @@
 #include "TFileRichList.h"
 #include "avc.h"
 #include "GCStrings.h"
+#include "GCCalendar.h"
+#include "GCDisplaySettings.h"
 
 const char * MSG_ERROR_1 = "Incorrect format for longitude. Correct examples: 35E05, 23W45";
 const char * MSG_ERROR_2 = "Incorrect format for latitude. Correct examples: 45N05, 13S45";
@@ -182,182 +184,6 @@ void AddTextLineRtf(TString &str, const char * pt)
 	str += "\r\n\\par ";
 	str += pt;
 }
-
-
-
-#include "showset.h"
-
-CShowSetting gss[] =
-{
-	{0, 0, "ARTI", "Tithi at arunodaya"},//0
-	{0, 0, "ARTM", "Arunodaya Time"},//1
-	{0, 0, "SRTM", "Sunrise Time"},//2
-	{0, 0, "SSTM", "Sunset Time"},//3
-	{0, 0, "MRTM", "Moonrise Time"},//4
-	{0, 0, "MSTM", "Moonset Time"},//5
-	{1, 1, "FEST", "Festivals"},//6
-	{0, 0, "KSAY", "Info about ksaya tithi"},//7
-	{0, 0, "VRDH", "Info about vriddhi tithi"},//8
-	{0, 0, "SLON", "Sun Longitude"},//9
-	{0, 0, "MLON", "Moon Longitude"},//10
-	{0, 0, "AYAN", "Ayanamsha value"},//11
-	{0, 0, "JDAY", "Julian Day"},//12
-	{1, 1, "CPUR", "Caturmasya Purnima System"}, //13
-	{0, 0, "CPRA", "Caturmasya Pratipat System"}, //14
-	{0, 0, "CEKA", "Caturmasya Ekadasi System"}, //15
-	{1, 1, "SANI", "Sankranti Info"}, //16
-	{1, 1, "EKAI", "Ekadasi Info"}, //17
-	{1, 1, "VHDR", "Masa Header Info"}, //18
-	{0, 0, "PHDR", "Month Header Info"}, //19
-	{0, 0, "EDNS", "Do not show empty days"}, //20
-	{0, 0, "SBEM", "Show begining of masa"}, //21
-	{1, 1, "F000", "Appearance days of the Lord"},//22
-	{1, 1, "F001", "Events in the pastimes of the Lord"},//23
-	{1, 1, "F002", "App, Disapp of Recent Acaryas"},//24
-	{1, 1, "F003", "App, Disapp of Mahaprabhu's Associates and Other Acaryas"},//25
-	{1, 1, "F004", "ISKCON's Historical Events"},//26
-	{1, 1, "F005", "Bengal-specific Holidays"},//27
-	{1, 1, "F006", "My Personal Events"}, //28
-	/* BEGIN GCAL 1.4.3 */
-	{1, 1, "TSSR", "Todat Sunrise"},  //29 Today sunrise
-	{1, 1, "TSSN", "Today Noon"},  //30 today noon
-	{1, 1, "TSSS", "Today Sunset"},  //31 today sunset
-	{0, 0, "TSAN", "Sandhya Times"},  //32 today + sandhya times
-	{1, 1, "TSIN", "Sunrise Info"},  //33 today sunrise info
-	{0, 0, "ASIN", "Noon Time"},  //34 astro - noon time
-	{1, 1, "NDST", "Notice about DST"}, //35 notice about the change of the DST
-	{1, 1, "DNAK", "Naksatra"}, // 36 naksatra info for each day
-	{1, 1, "DYOG", "Yoga"}, //37 yoga info for each day
-	{1, 1, "FFLG", "Fasting Flag"},//38
-	{1, 1, "DPAK", "Paksa Info"},//39 paksa info
-	{0, 0, "FDIW", "First Day in Week"},//40 first day in week
-	{0, 0, "DRAS", "Rasi"}, //41 moon rasi for each calendar day
-	{0, 0, "OSFA", "Old Style Fasting text"}, //42 old style fasting text
-	{0, 0, "MLNT", "Name of month - type"}, //43 month type name 0-vaisnava,1-bengal,2-hindu,3-vedic
-	/* END GCAL 1.4.3 */
-	{0, 0, "EDBL", "Editable Default Events"}, //44 editable default events
-	{0, 0, "TSBM", "Today Brahma Muhurta"},     //45 brahma muhurta in today screen
-	{0, 0, "TROM", "Today Rasi of the Moon"}, // 46 rasi of the moon in today screen
-	{0, 0, "TNPD", "Today Naksatra Pada details"}, // 47 naksatra pada details in today screen
-	{0, 0, "ADCS", "Child Names Suggestions"}, // 48 child name suggestions in Appearance Day screen
-	{0, 0, "MNFO", "Masa Name Format"}, // 49 format of masa name
-	{0, 0, "EPDR", "Ekadasi Parana details"}, // 50 ekadasi parana details
-	{0, 0, "ANIV", "Aniversary show format"} // 51 format of aniversary info
-};
-
-int GetShowSetCount()
-{
-	return sizeof(gss) / sizeof(CShowSetting);
-}
-
-int GetShowSetChangesCount()
-{
-	int i, count = 0;
-	int size = GetShowSetCount();
-
-	for(i = 0; i < size; i++)
-	{
-		if (gss[i].val != gss[i].old_val)
-			count++;
-		gss[i].old_val = gss[i].val;
-	}
-
-	return count;
-}
-
-char * GetShowSetName(int i)
-{
-	return gss[i].text;
-}
-
-char * GetShowSetSignature(int i)
-{
-	return gss[i].sig;
-}
-
-int GetShowSetVal(int i)
-{
-	return gss[i].val;
-}
-
-void SetShowSetVal(int i, int val)
-{
-	gss[i].val = val;
-	gss[i].old_val = val;
-}
-
-void SetShowSetVal(const char * pszSign, int val)
-{
-	int i, max = GetShowSetCount();
-
-	for(i = 0; i < max; i++)
-	{
-		if (_tcscmp(gss[i].sig, pszSign) == 0)
-		{
-			gss[i].val = val;
-			gss[i].old_val = val;
-			break;
-		}
-	}
-}
-
-void AvcShowSetReadFile(const char * psz)
-{
-	TString strA, strB;
-	TFile file;
-
-	if (file.Open(psz, "r") == TRUE)
-	{
-		while(file.ReadPropertyLine(strA, strB))
-		{
-			if (strA.GetLength() > 1 && strA.GetAt(0) == '#')
-			{
-			}
-			else
-			{
-				SetShowSetVal(strA, atoi(strB));
-			}
-		}
-
-		file.Close();
-		::DeleteFile(psz);
-	}
-}
-
-/*void AvcShowSetWriteFile(const char * pszFile)
-{
-	TFile file;
-
-	if (file.Open(pszFile, "w") == TRUE)
-	{
-		int i, max = GetShowSetCount();
-		TString str;
-		for(i = 0; i < max; i++)
-		{
-			str.Format("#\r\n# %s\r\n#\r\n\r\n%s=%d\r\n\r\n", GetShowSetName(i), GetShowSetSignature(i),
-				GetShowSetVal(i));
-			file.WriteString(str);
-		}
-		file.Close();
-	}
-}*/
-
-int AvcGetShowSetCount()
-{
-	return GetShowSetCount();
-}
-
-Boolean AvcGetNextShowSet(int &nItem, int &nCheck, const char * &pszText)
-{
-	if (nItem >= GetShowSetCount())
-		return FALSE;
-
-	nCheck = gss[nItem].val;
-	pszText = gss[nItem].text;
-	nItem++;
-	return TRUE;
-}
-
 
 int AvcGetNextPartHash(TString &str, TString &strLine, int & i)
 {
@@ -672,7 +498,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 
 	nCount++;
 
-	if (GetShowSetVal(17) == 1)
+	if (GCDisplaySettings::getValue(17) == 1)
 	{
 		if (pvd->ekadasi_parana)
 		{
@@ -680,7 +506,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		}
 	}
 
-	if (GetShowSetVal(6) == 1)
+	if (GCDisplaySettings::getValue(6) == 1)
 	{
 		if (pvd->festivals)
 		{
@@ -690,7 +516,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 				if (str2.GetLength() > 1)
 				{
 					nFestClass = pvd->GetFestivalClass(str2);
-					if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+					if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 					{
 						nCount++;
 					}
@@ -699,17 +525,17 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		}
 	}
 
-	if (GetShowSetVal(16) == 1 && pvd->sankranti_zodiac >= 0)
+	if (GCDisplaySettings::getValue(16) == 1 && pvd->sankranti_zodiac >= 0)
 	{
 		nCount++;
 	}
 
-	if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+	if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 	{
 		nCount++;
 	}
 
-	if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+	if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 	{
 		if (pvd->is_vriddhi)
 		{
@@ -722,7 +548,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		nCount++;
 	}
 
-	if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+	if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 	{
 		nCount++;
 		if ((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY) == 0x1)
@@ -731,7 +557,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		}
 	}
 
-	if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+	if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 	{
 		nCount++;
 		if ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) == 0x100)
@@ -740,7 +566,7 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		}
 	}
 
-	if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+	if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 	{
 		nCount++;
 		if ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) == 0x10000)
@@ -750,54 +576,54 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 	}
 
 	// tithi at arunodaya
-	if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+	if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 	{
 		nCount++;
 	}
 
 	//"Arunodaya Time",//1
-	if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+	if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 	{
 		nCount++;
 	}
 	//"Sunrise Time",//2
 	//"Sunset Time",//3
-	if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+	if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 	{
 		nCount++;
 	}
-	if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+	if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 	{
 		nCount++;
 
 	}
 	//"Moonrise Time",//4
-	if (GetShowSetVal(4) == 1)
+	if (GCDisplaySettings::getValue(4) == 1)
 	{
 		nCount++;
 	}
 	//"Moonset Time",//5
-	if (GetShowSetVal(5) == 1)
+	if (GCDisplaySettings::getValue(5) == 1)
 	{
 		nCount++;
 	}
 	///"Sun Longitude",//9
-	if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 	{
 		nCount++;
 	}
 	//"Moon Longitude",//10
-	if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 	{
 		nCount++;
 	}
 	//"Ayanamsha value",//11
-	if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 	{
 		nCount++;
 	}
 	//"Julian Day",//12
-	if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+	if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 	{
 		nCount++;
 	}
@@ -824,13 +650,13 @@ int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd
 		vcEnd = vcStart;
 		if (nCount > 30240) nCount = 30240;
 		vcEnd += nCount;
-		VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
 		break;
 	case 2:
 		vcEnd = vcStart;
 		if (nCount > 4320) nCount = 4320;
 		vcEnd += nCount*7;
-		VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
 		break;
 	case 3:
 		vcEnd = vcStart;
@@ -841,13 +667,13 @@ int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd
 			vcEnd.year++;
 			vcEnd.month -= 12;
 		}
-		VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
 		break;
 	case 4:
 		vcEnd = vcStart;
 		if (nCount > 90) nCount = 90;
 		vcEnd.year += nCount;
-		VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
 		break;
 	case 5:
 		vaEnd = vaStart;
@@ -863,7 +689,7 @@ int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd
 			vaEnd.masa -= 12;
 			vaEnd.gyear++;
 		}
-		VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
 		break;
 	case 6:
 		vaEnd = vaStart;
@@ -878,9 +704,9 @@ int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd
 				vcEnd.year++;
 				vcEnd.month -= 12;
 			}
-			VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+			GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
 			vaEnd.tithi = vaStart.tithi;
-			VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
 		}
 		else
 		{
@@ -891,89 +717,17 @@ int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd
 				vaEnd.gyear++;
 			}
 			vaEnd.masa = AvcComboMasaToMasa(vaEnd.masa);
-			VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
 		}
 		break;
 	case 7:
 		vaEnd = vaStart;
 		if (nCount > 90) nCount = 90;
 		vaEnd.gyear += nCount;
-		VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
 		break;
 	}
 
 	return 1;
 }
 
-int AvcLoadStrings(const char * pszFile)
-{
-	int v = 0;
-	TFileRichList rf;
-
-	if (rf.Open(pszFile, "rt") != 0)
-	{
-		int index = 0;
-		while(rf.ReadLine())
-		{
-			if (atoi(rf.GetTag())==78)
-			{
-				index = atoi(rf.GetField(0));
-				if (index >= 0 && index < 900)
-				{
-					gstr[index] = rf.GetField(1);
-					v++;
-				}
-			}
-		}
-		rf.Close();
-	}
-	else
-	{
-		return -1;
-	}
-
-	return v;
-}
-
-int AvcSaveStrings(const char * pszFile)
-{
-	int i, j, v = 0;
-	// a[x][0] je zaciatocny index
-	// a[x][1] je konecny index skupiny (vratane)
-	int a[3][2] =
-	{
-		{ 0, 128 },
-		{ 135, 199 },
-		{ 561, 899 }
-	};
-	TFileRichList trf;
-
-	if (trf.Open(pszFile, "wt"))
-	{
-		// save 0 - 128
-		// save 135 - 199
-		// save 561 - 899
-		for(j = 0; j < 3; j++)
-		{
-			for(i = a[j][0]; i <= a[j][1]; i++)
-			{
-				if (GCStrings::getString(i).GetLength() > 0)
-				{
-					trf.Clear();
-					trf.AddTag(78);
-					trf.AddInt(i);
-					trf.AddText(GCStrings::getString(i).c_str());
-					trf.WriteLine();
-					v++;
-				}
-			}
-		}
-		trf.Close();
-	}
-	else
-	{
-		return -1;
-	}
-
-	return v;
-}

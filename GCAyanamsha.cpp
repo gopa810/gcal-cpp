@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GCAyanamsha.h"
 
-extern int gAyaType;
+int gAyaType = 1;
 
 GCAyanamsha::GCAyanamsha(void)
 {

@@ -19,6 +19,8 @@
 #include "TFileRichList.h"
 #include "TCountry.h"
 #include "GCStrings.h"
+#include "GCCalendar.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -27,12 +29,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 void AvcShowSetWriteFile(const char *);
-void AvcShowSetReadFile(const char * psz);
-int AvcGetShowSetCount();
-int GetShowSetVal(int);
-void SetShowSetVal(int,int);
 void InitTips(FILE * hFile);
-void TestFunc(void);
 
 extern int g_ShowMode;
 extern int g_NoteSize;
@@ -225,9 +222,7 @@ BOOL GCalApp::InitInstance()
 		m_pMainWnd = pMainFrame;
 
 		ShowTipAtStartup();
-#ifdef _DEBUG
-		TestFunc();
-#endif
+		
 	}
 
 	// Since the dialog has been closed, return FALSE so that we exit the
@@ -343,7 +338,7 @@ void GCalApp::InitInstanceData()
 				theFrameServer.m_rectMain.bottom = atoi(rf.GetField(3));
 				break;
 			case 12711:
-				SetShowSetVal(atoi(rf.GetField(0)), atoi(rf.GetField(1)));
+				GCDisplaySettings::setValue(atoi(rf.GetField(0)), atoi(rf.GetField(1)));
 				break;
 			default:
 				break;
@@ -356,7 +351,7 @@ void GCalApp::InitInstanceData()
 	//
 	// strings
 	//
-	AvcLoadStrings(GCalApp_GetFileName(GSTR_TEXT_FILE));
+	GCStrings::readFile(GCalApp_GetFileName(GSTR_TEXT_FILE));
 
 	// inicializacia jazyka
 //	InitLanguageOutputFromFile("d:\\work\\gcal-debug\\lang\\czech.lng");
@@ -403,7 +398,7 @@ void GCalApp::InitInstanceData()
 	//
 	// inicializacia zobrazovanych nastaveni
 	//
-	AvcShowSetReadFile(GCalApp_GetFileName(GSTR_SSET_FILE));
+	GCDisplaySettings::readFile(GCalApp_GetFileName(GSTR_SSET_FILE));
 
 
 	////////////////////////////////////////////////////////
@@ -413,7 +408,7 @@ void GCalApp::InitInstanceData()
 	CustomEventListReadFile(GCalApp_GetFileName(GSTR_CE_FILE));
 	CustomEventListReadFile_RL(GCalApp_GetFileName(GSTR_CEX_FILE));
 
-	gCustomEventList.setOldStyleFast(GetShowSetVal(42));
+	gCustomEventList.setOldStyleFast(GCDisplaySettings::getValue(42));
 
 	if (f.Open(GCalApp_GetFileName(GSTR_HELP_FILE), "r")==TRUE)
 	{
@@ -483,9 +478,9 @@ int GCalApp::ExitInstance()
 			str.Format("12710 %d|%d|%d|%d\n", theFrameServer.m_rectMain.left, theFrameServer.m_rectMain.top,
 				theFrameServer.m_rectMain.right, theFrameServer.m_rectMain.bottom );
 			f.WriteString(str.c_str());
-			for(int y=0; y < AvcGetShowSetCount(); y++)
+			for(int y=0; y < GCDisplaySettings::getCount(); y++)
 			{
-				str.Format("12711 %d|%d\n", y, GetShowSetVal(y));
+				str.Format("12711 %d|%d\n", y, GCDisplaySettings::getValue(y));
 				f.WriteString(str.c_str());
 			}
 
@@ -505,7 +500,7 @@ int GCalApp::ExitInstance()
 
 	if (gstr_Modified)
 	{
-		AvcSaveStrings(GCalApp_GetFileName(GSTR_TEXT_FILE));
+		GCStrings::writeFile(GCalApp_GetFileName(GSTR_TEXT_FILE));
 	}
 
 	CustomEventListWriteFile_RL(GCalApp_GetFileName(GSTR_CEX_FILE));
@@ -896,9 +891,9 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 	case 13:
 	case 14:
 		if (vcStart.year == 0 && vaStart.gyear != 0)
-			VATIMEtoVCTIME(vaStart, vcStart, (EARTHDATA)loc);
+			GCCalendar::VATIMEtoVCTIME(vaStart, vcStart, (EARTHDATA)loc);
 		if (vcEnd.year == 0 && vaEnd.gyear != 0)
-			VATIMEtoVCTIME(vaEnd, vcEnd, (EARTHDATA)loc);		
+			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, (EARTHDATA)loc);		
 		break;
 	default:
 		break;
@@ -947,8 +942,8 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 		WriteXML_FirstDay_Year(fout, loc, vcStart);
 		break;
 	case 16:
-		vcStart = GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
-		vcEnd = GetFirstDayOfYear((EARTHDATA)loc, vcStart.year + 1);
+		vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
+		vcEnd = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year + 1);
 		nCount = int(vcEnd.GetJulian() - vcStart.GetJulian());
 		CalcCalendar(calendar, loc, vcStart, nCount);
 		WriteCalendarXml(calendar, fout);

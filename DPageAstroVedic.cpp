@@ -5,8 +5,7 @@
 #include "vcal5beta.h"
 #include "DPageAstroVedic.h"
 #include "showset.h"
-
-extern CShowSetting gss[];
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,14 +55,14 @@ void DPageToday::OnOK()
 BOOL DPageToday::OnSetActive() 
 {
 	// TODO: Add your specialized code here and/or call the base class
-	CheckDlgButton(IDC_CHECK1, gss[29].val);
-	CheckDlgButton(IDC_CHECK2, gss[30].val);
-	CheckDlgButton(IDC_CHECK3, gss[31].val);
-	CheckDlgButton(IDC_CHECK4, gss[32].val);
-	CheckDlgButton(IDC_CHECK5, gss[33].val);
-	CheckDlgButton(IDC_CHECK6, gss[45].val);
-	CheckDlgButton(IDC_CHECK7, gss[46].val);
-	CheckDlgButton(IDC_CHECK8, gss[47].val);
+	CheckDlgButton(IDC_CHECK1, GCDisplaySettings::getValue(29));
+	CheckDlgButton(IDC_CHECK2, GCDisplaySettings::getValue(30));
+	CheckDlgButton(IDC_CHECK3, GCDisplaySettings::getValue(31));
+	CheckDlgButton(IDC_CHECK4, GCDisplaySettings::getValue(32));
+	CheckDlgButton(IDC_CHECK5, GCDisplaySettings::getValue(33));
+	CheckDlgButton(IDC_CHECK6, GCDisplaySettings::getValue(45));
+	CheckDlgButton(IDC_CHECK7, GCDisplaySettings::getValue(46));
+	CheckDlgButton(IDC_CHECK8, GCDisplaySettings::getValue(47));
 	
 	return CPropertyPage::OnSetActive();
 }
@@ -71,14 +70,14 @@ BOOL DPageToday::OnSetActive()
 BOOL DPageToday::OnKillActive() 
 {
 	// TODO: Add your specialized code here and/or call the base class
-	gss[29].val = IsDlgButtonChecked(IDC_CHECK1);
-	gss[30].val = IsDlgButtonChecked(IDC_CHECK2);
-	gss[31].val = IsDlgButtonChecked(IDC_CHECK3);
-	gss[32].val = IsDlgButtonChecked(IDC_CHECK4);
-	gss[33].val = IsDlgButtonChecked(IDC_CHECK5);
-	gss[45].val = IsDlgButtonChecked(IDC_CHECK6);
-	gss[46].val = IsDlgButtonChecked(IDC_CHECK7);
-	gss[47].val = IsDlgButtonChecked(IDC_CHECK8);
+	GCDisplaySettings::setValue(29, IsDlgButtonChecked(IDC_CHECK1));
+	GCDisplaySettings::setValue(30, IsDlgButtonChecked(IDC_CHECK2));
+	GCDisplaySettings::setValue(31, IsDlgButtonChecked(IDC_CHECK3));
+	GCDisplaySettings::setValue(32, IsDlgButtonChecked(IDC_CHECK4));
+	GCDisplaySettings::setValue(33, IsDlgButtonChecked(IDC_CHECK5));
+	GCDisplaySettings::setValue(45, IsDlgButtonChecked(IDC_CHECK6));
+	GCDisplaySettings::setValue(46, IsDlgButtonChecked(IDC_CHECK7));
+	GCDisplaySettings::setValue(47, IsDlgButtonChecked(IDC_CHECK8));
 	
 	return CPropertyPage::OnKillActive();
 }

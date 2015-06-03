@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "platform.h"
-#include "level_3.h"
 #include "level_6.h"
 #include "vedic_ui.h"
 #include "strings.h"
@@ -16,12 +15,17 @@
 #include "GCTithi.h"
 #include "GCNaksatra.h"
 #include "GCAyanamsha.h"
+#include "GCSankranti.h"
+#include "GCConjunction.h"
+#include "GCCalendar.h"
+#include "GCSunData.h"
+#include "GCDisplaySettings.h"
+#include "GCMoonData.h"
 
 extern TString gAyaName;
 extern const char * gpszSeparator;
 void time_print(TString &str, DAYTIME dt);
 int is_daylight_time(VCTIME, int);
-int GetShowSetVal(int i);
 void AddTextLine(TString &, const char *);
 void AddTextLineRtf(TString &str, const char * pt);
 void AppendColorTable(TString &str);
@@ -41,7 +45,7 @@ void AddNoteText(TString &str)
 	str += "\r\nNotes:\r\n\r\n";
 	str += "DST - Time is in \'Daylight Saving Time\'\r\nLT  - Time is in \'Local Time\'\r\n";
 
-	if (GetShowSetVal(9) > 0 || GetShowSetVal(10) > 0 || GetShowSetVal(11) > 0 || GetShowSetVal(12) > 0)
+	if (GCDisplaySettings::getValue(9) > 0 || GCDisplaySettings::getValue(10) > 0 || GCDisplaySettings::getValue(11) > 0 || GCDisplaySettings::getValue(12) > 0)
 	{
 		str += "(*) - value at the moment of sunrise\r\n";
 	}
@@ -99,24 +103,68 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 
 	vcAdd = vc;
 	vcAdd.InitWeekDay();
+
+	double sunRise, sunSet;
+	double r1, r2;
+
 	while(vcAdd.IsBeforeThis(vcEnd))
 	{
 		if (fOptions & CCE_SUN)
 		{
 			ndst = is_daylight_time2(vcAdd, loc.m_nDST);
-			SunCalc(vcAdd, earth, sun);
+			sun.SunCalc(vcAdd, earth);
 
 			vcAdd.shour = sun.arunodaya.GetDayTime();
 			inEvents.AddEvent(vcAdd, CCTYPE_S_ARUN, 0, ndst);
 
-			vcAdd.shour = sun.rise.GetDayTime();
+			vcAdd.shour = sunRise = sun.rise.GetDayTime();
 			inEvents.AddEvent(vcAdd, CCTYPE_S_RISE, 0, ndst);
 
 			vcAdd.shour = sun.noon.GetDayTime();
 			inEvents.AddEvent(vcAdd, CCTYPE_S_NOON, 0, ndst);
 
-			vcAdd.shour = sun.set.GetDayTime();
+			vcAdd.shour = sunSet = sun.set.GetDayTime();
 			inEvents.AddEvent(vcAdd, CCTYPE_S_SET, 0, ndst);
+		}
+		else
+		{
+			ndst = is_daylight_time2(vcAdd, loc.m_nDST);
+			sun.SunCalc(vcAdd, earth);
+			sunRise = sun.rise.GetDayTime();
+			sunSet = sun.set.GetDayTime();
+		}
+
+		if (fOptions & CCE_RKK)
+		{
+			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_RAHU_KALAM);
+
+			vcAdd.shour = r1;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_START, KT_RAHU_KALAM, ndst); 
+
+			vcAdd.shour = r2;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_RAHU_KALAM, ndst);
+		}
+
+		if (fOptions & CCE_YGK)
+		{
+			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_YAMA_GHANTI);
+
+			vcAdd.shour = r1;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_START, KT_YAMA_GHANTI, ndst); 
+
+			vcAdd.shour = r2;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_YAMA_GHANTI, ndst);
+		}
+
+		if (fOptions & CCE_GKK)
+		{
+			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_GULI_KALAM);
+
+			vcAdd.shour = r1;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_START, KT_GULI_KALAM, ndst); 
+
+			vcAdd.shour = r2;
+			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_GULI_KALAM, ndst);
 		}
 
 		vcAdd.NextDay();
@@ -182,7 +230,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
-			vcNext = GetNextSankranti(vcAdd, nData);
+			vcNext = GCSankranti::GetNextSankranti(vcAdd, nData);
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
@@ -205,7 +253,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
-			dlong = GetNextConjunction(vcAdd, vcNext, true, earth);
+			dlong = GCConjunction::GetNextConjunction(vcAdd, vcNext, true, earth);
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
@@ -220,7 +268,23 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			vcAdd.NextDay();
 		}
 	}
-	
+
+	if (fOptions & CCE_MON)
+	{
+		vcAdd = vc;
+		vcAdd.shour = 0.0;
+		while(vcAdd.IsBeforeThis(vcEnd))
+		{
+			vcNext = MOONDATA::GetNextRise(earth, vcAdd, true);
+			inEvents.AddEvent(vcNext, CCTYPE_M_RISE, 0, ndst);
+
+			vcNext = MOONDATA::GetNextRise(earth, vcNext, false);
+			inEvents.AddEvent(vcNext, CCTYPE_M_SET, 0, ndst);
+
+			vcAdd = vcNext;
+		}
+	}
+
 	if (fOptions & CCE_SORT)
 		inEvents.Sort(true);
 	else
@@ -258,7 +322,8 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 		{
 			if (prevd.day != dnr.Time.day || prevd.month != dnr.Time.month || prevd.year != dnr.Time.year)
 			{
-				str.Format("\r\n ===========  %d %s %d  ==========================================\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year);
+				str.Format("\r\n ===========  %d %s %d  - %s ====================================\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
+					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
 			prevd = dnr.Time;
@@ -269,26 +334,37 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 			{
 				switch(dnr.nType)
 				{
-				case 10:
-				case 11:
-				case 12:
-				case 13:
+				case CCTYPE_S_RISE:
+				case CCTYPE_S_SET:
+				case CCTYPE_S_NOON:
+				case CCTYPE_S_ARUN:
 					if (prevt < 10 || prevt >= 14)
 					{
 						res += "\r\n ========== SUNRISE, SUNSET ==========================================\r\n\r\n";
 					}
 					break;
-				case 20:
+				case CCTYPE_M_RISE:
+				case CCTYPE_M_SET:
+					if (prevt < 40 || prevt >= 42)
+					{
+						res += "\r\n ========== MOONRISE, MOONSET ==========================================\r\n\r\n";
+					}
+					break;
+				case CCTYPE_TITHI:
 					res += "\r\n ========== TITHIS ===================================================\r\n\r\n";
 					break;
-				case 21:
+				case CCTYPE_NAKS:
 					res += "\r\n ========== NAKSATRAS ================================================\r\n\r\n";
 					break;
-				case 22:
+				case CCTYPE_SANK:
 					res += "\r\n ========== SANKRANTIS ===============================================\r\n\r\n";
 					break;
-				case 23:
+				case CCTYPE_CONJ:
 					res += "\r\n ========== SUN-MOON CONJUNCTIONS ====================================\r\n\r\n";
+					break;
+				case CCTYPE_KALA_START:
+				case CCTYPE_KALA_END:
+					res += "\r\n =========== KALAS ===================================================\r\n\r\n";
 					break;
 				}
 			}
@@ -364,6 +440,40 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 			res += GCStrings::GetSankrantiName(dnr.nData);
 			res += " rasi";
 			res += "\r\n";
+			break;
+		case CCTYPE_KALA_START:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetKalaName((KalaType)dnr.nData);
+			res += " starts";
+			res += "\r\n";
+			break;
+		case CCTYPE_KALA_END:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetKalaName((KalaType)dnr.nData);
+			res += " ends";
+			res += "\r\n";
+			break;
+		case CCTYPE_M_RISE:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   moonrise\r\n";
+			break;
+		case CCTYPE_M_SET:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   moonset\r\n";
 			break;
 		default:
 			break;
@@ -488,7 +598,8 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 		{
 			if (prevd.day != dnr.Time.day || prevd.month != dnr.Time.month || prevd.year != dnr.Time.year)
 			{
-				str.Format("\\par\r\n ===========  %d %s %d  ==========================================\\par\\par\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year);
+				str.Format("\\par\r\n ===========  %d %s %d  == %s ===================================\\par\\par\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
+					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
 			prevd = dnr.Time;
@@ -595,6 +706,42 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += " rasi";
 			res += "\\par\r\n";
 			break;
+		case CCTYPE_KALA_START:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetKalaName((KalaType)dnr.nData);
+			res += " starts";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_KALA_END:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetKalaName((KalaType)dnr.nData);
+			res += " ends";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_M_RISE:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   moonrise\r\n";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_M_SET:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   moonset\r\n";
+			res += "\\par\r\n";
+			break;
 		default:
 			break;
 		}
@@ -622,7 +769,7 @@ void AddNoteRtf(TString &str)
 	str += "\\par {\\b Notes:}\\par\\pard\r\n\r\n";
 	str += "\\tab DST - Time is in \'Daylight Saving Time\'\\par\r\n\\tab LT  - Time is in \'Local Time\'\\par\r\n";
 
-	if (GetShowSetVal(9) > 0 || GetShowSetVal(10) > 0 || GetShowSetVal(11) > 0 || GetShowSetVal(12) > 0)
+	if (GCDisplaySettings::getValue(9) > 0 || GCDisplaySettings::getValue(10) > 0 || GCDisplaySettings::getValue(11) > 0 || GCDisplaySettings::getValue(12) > 0)
 	{
 		str += "\\tab (*) - value at the moment of sunrise\\par\r\n";
 	}
@@ -705,7 +852,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 	char * spaces = "                                                                                ";
 	int lastmasa = -1;
 	int lastmonth = -1;
-	bool bCalcMoon = (GetShowSetVal(4) > 0 || GetShowSetVal(5) > 0);
+	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 
 	DlgCalcProgress dcp;
 
@@ -745,7 +892,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 
 		if (pvd)
 		{
-			if ((GetShowSetVal(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
+			if ((GCDisplaySettings::getValue(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
 			{
 				m_text += "\r\n";
 				str.Format("%s %s, Gaurabda %d", GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22], pvd->astrodata.nGaurabdaYear);
@@ -770,7 +917,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				lastmasa = pvd->astrodata.nMasa;
 			}
 
-			if ((GetShowSetVal(19) == 1) && (pvd->date.month != lastmonth))
+			if ((GCDisplaySettings::getValue(19) == 1) && (pvd->date.month != lastmonth))
 			{
 				m_text += "\r\n";
 				str.Format("%s %d", GCStrings::getString(759 + pvd->date.month], pvd->date.year);
@@ -801,7 +948,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 			}
 			AddListText(dayText, str, str2);
 
-			if (GetShowSetVal(17) == 1)
+			if (GCDisplaySettings::getValue(17) == 1)
 			{
 				if (pvd->ekadasi_parana)
 				{
@@ -811,7 +958,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				}
 			}
 
-			if (GetShowSetVal(6) == 1)
+			if (GCDisplaySettings::getValue(6) == 1)
 			{
 				if (pvd->festivals)
 				{
@@ -824,7 +971,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				}
 			}
 
-			if (GetShowSetVal(16) == 1 && pvd->sankranti_zodiac >= 0)
+			if (GCDisplaySettings::getValue(16) == 1 && pvd->sankranti_zodiac >= 0)
 			{
 				double h1, m1;
 				m1 = modf(pvd->sankranti_day.shour*24, &h1);
@@ -845,7 +992,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				dayText += "\r\n";
 			}
 
-			if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 			{
 				double h, m;
 				VAISNAVADAY * p;
@@ -869,7 +1016,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				AddListText(dayText, str);
 			}
 
-			if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+			if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 			{
 				if (pvd->is_vriddhi)
 					AddListText(dayText, GCStrings::getString(90]);
@@ -881,7 +1028,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				AddListText(dayText, GCStrings::getString( 111 + n ]);
 			}
 
-			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				str.Format("%s [PURNIMA SYSTEM]"
 					, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -894,7 +1041,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				}
 			}
 
-			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				str.Format("%s [PRATIPAT SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -907,7 +1054,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				}
 			}
 
-			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				str.Format("%s [EKADASI SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -921,14 +1068,14 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 			}
 
 			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str.Format("%s: %s", GCStrings::getString(98], GetTithiName(pvd->astrodata.nTithiArunodaya));
 				AddListText(dayText, str);
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(99], pvd->astrodata.sun.arunodaya.hour
 					, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -936,13 +1083,13 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 			}
 			//"Sunrise Time",//2
 			//"Sunset Time",//3
-			if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+			if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(51], pvd->astrodata.sun.rise.hour
 					, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
 				AddListText(dayText, str);
 			}
-			if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+			if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(52], pvd->astrodata.sun.set.hour
 					, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -950,7 +1097,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 
 			}
 			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(136];
@@ -962,7 +1109,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				AddListText(dayText, str);
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(137];
@@ -974,31 +1121,31 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 				AddListText(dayText, str);
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(100], pvd->astrodata.sun.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(101], pvd->astrodata.moon.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f (%s)", GCStrings::getString(102], pvd->astrodata.msAyanamsa, GetAyanamsaName(GetAyanamsaType()));
 				AddListText(dayText, str);
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f", GCStrings::getString(103], pvd->astrodata.jdate);
 				AddListText(dayText, str);
 			}
 
-			if (GetShowSetVal(21) == 1)
+			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -1019,7 +1166,7 @@ int CalcCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int 
 			}
 
 		_resolve_text:
-			if (GetShowSetVal(20) == 0)
+			if (GCDisplaySettings::getValue(20) == 0)
 				m_text += dayText;
 			else if (dayText.GetLength() > 90)
 				m_text += dayText;
@@ -1042,7 +1189,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 
 		dayText.Empty();
 		/* BEGIN GCAL 1.4.3 */
-		pvd->GetTextA(str, GetShowSetVal(39), GetShowSetVal(36), GetShowSetVal(37), GetShowSetVal(38), GetShowSetVal(41));
+		pvd->GetTextA(str, GCDisplaySettings::getValue(39), GCDisplaySettings::getValue(36), GCDisplaySettings::getValue(37), GCDisplaySettings::getValue(38), GCDisplaySettings::getValue(41));
 		/* END GCAL 1.4.3 */
 		str.Mid(16, str.GetLength(), str2);
 		str.Left(15, str3);
@@ -1054,7 +1201,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 		}
 		AddListText(dayText, str, str2);
 
-		if (GetShowSetVal(17) == 1)
+		if (GCDisplaySettings::getValue(17) == 1)
 		{
 			if (pvd->ekadasi_parana)
 			{
@@ -1064,7 +1211,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if (GetShowSetVal(6) == 1)
+		if (GCDisplaySettings::getValue(6) == 1)
 		{
 			if (pvd->festivals.GetLength() > 0)
 			{
@@ -1074,14 +1221,14 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 					if (str2.GetLength() > 1)
 					{
 						nFestClass = pvd->GetFestivalClass(str2);
-						if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+						if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 							AddListText(dayText, str2);
 					}
 				}
 			}
 		}
 
-		if (GetShowSetVal(16) == 1 && pvd->sankranti_zodiac >= 0)
+		if (GCDisplaySettings::getValue(16) == 1 && pvd->sankranti_zodiac >= 0)
 		{
 			//double h1, m1;
 			//m1 = modf(pvd->sankranti_day.shour*24, &h1);
@@ -1102,7 +1249,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			dayText += "\r\n";
 		}
 
-		if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+		if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 		{
 			double h, m;
 			VCTIME ksayaDate;
@@ -1128,7 +1275,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			AddListText(dayText, str);
 		}
 
-		if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+		if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 		{
 			if (pvd->is_vriddhi)
 				AddListText(dayText, GCStrings::getString(90));
@@ -1140,7 +1287,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			AddListText(dayText, GCStrings::getString( 111 + n ));
 		}
 
-		if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+		if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 		{
 			str.Format("%s [PURNIMA SYSTEM]"
 				, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -1153,7 +1300,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+		if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 		{
 			str.Format("%s [PRATIPAT SYSTEM]"
 				, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -1166,7 +1313,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+		if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 		{
 			str.Format("%s [EKADASI SYSTEM]"
 				, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -1180,14 +1327,14 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 		}
 
 		// tithi at arunodaya
-		if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+		if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 		{
 			str.Format("%s: %s", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
 			AddListText(dayText, str);
 		}
 
 		//"Arunodaya Time",//1
-		if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+		if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(99).c_str(), pvd->astrodata.sun.arunodaya.hour
 				, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -1195,7 +1342,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 		}
 		//"Sunrise Time",//2
 		//"Sunset Time",//3
-		if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+		if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), pvd->astrodata.sun.rise.hour
 				, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -1203,21 +1350,21 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 		}
 		/* BEGIN GCAL 1.4.3 */
 		// Noon time
-		if (GetShowSetVal(34) == 1)//m_dshow.m_sunset)
+		if (GCDisplaySettings::getValue(34) == 1)//m_dshow.m_sunset)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(857).c_str(), pvd->astrodata.sun.noon.hour
 				, pvd->astrodata.sun.noon.min, GCStrings::GetDSTSignature(pvd->nDST));
 			AddListText(dayText, str);
 		}
 		/* END GCAL 1.4.3 */
-		if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+		if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), pvd->astrodata.sun.set.hour
 				, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
 			AddListText(dayText, str);
 		}
 		//"Moonrise Time",//4
-		if (GetShowSetVal(4) == 1)
+		if (GCDisplaySettings::getValue(4) == 1)
 		{
 			if (pvd->moonrise.hour < 0)
 				str = GCStrings::getString(136).c_str();
@@ -1229,7 +1376,7 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			AddListText(dayText, str);
 		}
 		//"Moonset Time",//5
-		if (GetShowSetVal(5) == 1)
+		if (GCDisplaySettings::getValue(5) == 1)
 		{
 			if (pvd->moonrise.hour < 0)
 				str = GCStrings::getString(137);
@@ -1241,25 +1388,25 @@ int AvcGetOldCalendarDayText(VAISNAVADAY * pvd, TString &dayText)
 			AddListText(dayText, str);
 		}
 		///"Sun Longitude",//9
-		if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s: %f (*)", GCStrings::getString(100).c_str(), pvd->astrodata.sun.longitude_deg);
 			AddListText(dayText, str);
 		}
 		//"Moon Longitude",//10
-		if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s: %f (*)", GCStrings::getString(101).c_str(), pvd->astrodata.moon.longitude_deg);
 			AddListText(dayText, str);
 		}
 		//"Ayanamsha value",//11
-		if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s %f (%s) (*)", GCStrings::getString(102).c_str(), pvd->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 			AddListText(dayText, str);
 		}
 		//"Julian Day",//12
-		if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s %f (*)", GCStrings::getString(103).c_str(), pvd->astrodata.jdate);
 			AddListText(dayText, str);
@@ -1280,7 +1427,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 	int tp1;
 	double rate;
 	DlgCalcProgress dcp;
-	bool bCalcMoon = (GetShowSetVal(4) > 0 || GetShowSetVal(5) > 0);
+	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 
 	m_text.Empty();
 
@@ -1307,7 +1454,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 		if (pvd)
 		{
 			nMasaHeader = 0;
-			if ((GetShowSetVal(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
+			if ((GCDisplaySettings::getValue(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
 			{
 				nMasaHeader = 1;
 				m_text += "\r\n";
@@ -1327,7 +1474,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 				lastmasa = pvd->astrodata.nMasa;
 			}
 
-			if ((GetShowSetVal(19) == 1) && (pvd->date.month != lastmonth))
+			if ((GCDisplaySettings::getValue(19) == 1) && (pvd->date.month != lastmonth))
 			{
 				nMasaHeader = 1;
 				m_text += "\r\n";
@@ -1350,12 +1497,12 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 				/* BEGIN GCAL 1.4.3 */
 				nMasaHeader = m_text.GetLength();
 				m_text += " DATE            TITHI                         ";
-				if (GetShowSetVal(39)) m_text += "PAKSA ";
+				if (GCDisplaySettings::getValue(39)) m_text += "PAKSA ";
 				else m_text += "      ";
-				if (GetShowSetVal(37)) m_text += "YOGA      ";
-				if (GetShowSetVal(36)) m_text += "NAKSATRA       ";
-				if (GetShowSetVal(38)) m_text += "FAST ";
-				if (GetShowSetVal(41)) m_text += "RASI           ";
+				if (GCDisplaySettings::getValue(37)) m_text += "YOGA      ";
+				if (GCDisplaySettings::getValue(36)) m_text += "NAKSATRA       ";
+				if (GCDisplaySettings::getValue(38)) m_text += "FAST ";
+				if (GCDisplaySettings::getValue(41)) m_text += "RASI           ";
 				nMasaHeader = m_text.GetLength() - nMasaHeader;
 				m_text += "\r\n";
 				/* END GCAL 1.4.3 */
@@ -1371,7 +1518,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 			if (AvcGetOldCalendarDayText(pvd, dayText) > 0)
 				goto _resolve_text;
 
-			if (GetShowSetVal(21) == 1)
+			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -1391,7 +1538,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 			/* BEGIN GCAL 1.4.3 */
-			if (GetShowSetVal(35) && prevd && nextd)
+			if (GCDisplaySettings::getValue(35) && prevd && nextd)
 			{
 				if (prevd->nDST == 0 && pvd->nDST==1)
 					AddListText(dayText, GCStrings::getString(855).c_str());
@@ -1402,7 +1549,7 @@ int FormatCalendarOld(TResultCalendar &daybuff, TString &m_text)
 			/* END GCAL 1.4.3 */
 
 		_resolve_text:
-			if (GetShowSetVal(20) == 0)
+			if (GCDisplaySettings::getValue(20) == 0)
 				m_text += dayText;
 			else if (dayText.GetLength() > 90)
 				m_text += dayText;
@@ -1552,7 +1699,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				goto _resolve_text;
 			}
 
-//			if (GetShowSetVal(17) == 1)
+//			if (GCDisplaySettings::getValue(17) == 1)
 			{
 //				double h1, m1;
 				if (pvd->ekadasi_parana)
@@ -1589,7 +1736,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-//			if (GetShowSetVal(6) == 1)
+//			if (GCDisplaySettings::getValue(6) == 1)
 			{
 				if (pvd->festivals)
 				{
@@ -1599,7 +1746,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 						if (str2.GetLength() > 1)
 						{
 							nFestClass = pvd->GetFestivalClass(str2);
-							if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+							if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 							{
 								dayText += SPACE_BEFORE_LINE;
 								dayText += str2;
@@ -1610,7 +1757,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if (/*GetShowSetVal(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
+			if (/*GCDisplaySettings::getValue(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
 			{
 				str.Format(" %s %s", GCStrings::GetSankrantiName(pvd->sankranti_zodiac), GCStrings::getString(56).c_str());
 				dayText += SPACE_BEFORE_LINE;
@@ -1618,7 +1765,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += "\n";
 			}
 
-/*			if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+/*			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 			{
 				double h, m;
 				VAISNAVADAY * p;
@@ -1642,7 +1789,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}*/
 
-			/*if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+			/*if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 			{
 				if (pvd->is_vriddhi)
 					AddListText(dayText, GCStrings::getString(90]);
@@ -1656,7 +1803,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += "\n";
 			}
 
-			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				str.Format("%s [PURNIMA SYSTEM]"
 					, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -1672,7 +1819,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				str.Format("%s [PRATIPAT SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -1689,7 +1836,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				str.Format("%s [EKADASI SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -1707,14 +1854,14 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 			}
 
 /*			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str.Format("%s: %s", GCStrings::getString(98], GetTithiName(pvd->astrodata.nTithiArunodaya));
 				AddListText(dayText, str);
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(99], pvd->astrodata.sun.arunodaya.hour
 					, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -1722,7 +1869,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 			}
 */			//"Sunrise Time",//2
 			//"Sunset Time",//3
-			if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+			if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), pvd->astrodata.sun.rise.hour
 					, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -1730,7 +1877,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += str;
 				dayText += "\n";
 			}
-			if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+			if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), pvd->astrodata.sun.set.hour
 					, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -1740,7 +1887,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 
 			}
 /*			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(136];
@@ -1752,7 +1899,7 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(137];
@@ -1764,31 +1911,31 @@ int FormatCalendarICAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(100], pvd->astrodata.sun.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(101], pvd->astrodata.moon.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f (%s)", GCStrings::getString(102], pvd->astrodata.msAyanamsa, GetAyanamsaName(GetAyanamsaType()));
 				AddListText(dayText, str);
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f", GCStrings::getString(103], pvd->astrodata.jdate);
 				AddListText(dayText, str);
 			}
 
-*///			if (GetShowSetVal(21) == 1)
+*///			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -1906,7 +2053,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				goto _resolve_text;
 			}
 
-//			if (GetShowSetVal(17) == 1)
+//			if (GCDisplaySettings::getValue(17) == 1)
 			{
 //				double h1, m1;
 				if (pvd->ekadasi_parana)
@@ -1942,7 +2089,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-//			if (GetShowSetVal(6) == 1)
+//			if (GCDisplaySettings::getValue(6) == 1)
 			{
 				if (pvd->festivals)
 				{
@@ -1952,7 +2099,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 						if (str2.GetLength() > 1)
 						{
 							nFestClass = pvd->GetFestivalClass(str2);
-							if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+							if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 							{
 								dayText += str2;
 								dayText += "; ";
@@ -1962,13 +2109,13 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if (/*GetShowSetVal(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
+			if (/*GCDisplaySettings::getValue(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
 			{
 				str.Format("%s %s; ", GCStrings::GetSankrantiName(pvd->sankranti_zodiac), GCStrings::getString(56).c_str());
 				dayText += str;
 			}
 
-/*			if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+/*			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 			{
 				double h, m;
 				VAISNAVADAY * p;
@@ -1992,7 +2139,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}*/
 
-			/*if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+			/*if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 			{
 				if (pvd->is_vriddhi)
 					AddListText(dayText, GCStrings::getString(90]);
@@ -2005,7 +2152,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				dayText += "; ";
 			}
 
-			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				str.Format("%s [PURNIMA SYSTEM]; "
 					, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -2019,7 +2166,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				str.Format("%s [PRATIPAT SYSTEM]; "
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -2033,7 +2180,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				str.Format("%s [EKADASI SYSTEM]; "
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -2048,14 +2195,14 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 			}
 
 /*			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str.Format("%s: %s", GCStrings::getString(98], GetTithiName(pvd->astrodata.nTithiArunodaya));
 				AddListText(dayText, str);
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(99], pvd->astrodata.sun.arunodaya.hour
 					, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -2063,13 +2210,13 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 			}
 */			//"Sunrise Time",//2
 			//"Sunset Time",//3
-			if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+			if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 			{
 				str.Format("Sunrise %d:%02d; ", pvd->astrodata.sun.rise.hour
 					, pvd->astrodata.sun.rise.min);
 				dayText += str;
 			}
-			if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+			if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 			{
 				str.Format("Sunset %d:%02d; ", pvd->astrodata.sun.set.hour, 
 					pvd->astrodata.sun.set.min);
@@ -2077,7 +2224,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 			}
 
 /*			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(136];
@@ -2089,7 +2236,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(137];
@@ -2101,31 +2248,31 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(100], pvd->astrodata.sun.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(101], pvd->astrodata.moon.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f (%s)", GCStrings::getString(102], pvd->astrodata.msAyanamsa, GetAyanamsaName(GetAyanamsaType()));
 				AddListText(dayText, str);
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f", GCStrings::getString(103], pvd->astrodata.jdate);
 				AddListText(dayText, str);
 			}
 
-*///			if (GetShowSetVal(21) == 1)
+*///			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -2148,7 +2295,7 @@ int FormatCalendarCSV(TResultCalendar &daybuff, TString &m_text)
 			}
 
 		_resolve_text:
-			if (dayText.GetLength() > initialLength || (GetShowSetVal(20) == 0))
+			if (dayText.GetLength() > initialLength || (GCDisplaySettings::getValue(20) == 0))
 			{
 				m_text += "\"";
 				m_text += dayText;
@@ -2298,7 +2445,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				goto _resolve_text;
 			}
 
-//			if (GetShowSetVal(17) == 1)
+//			if (GCDisplaySettings::getValue(17) == 1)
 			{
 				double h1, m1;
 				if (pvd->ekadasi_parana)
@@ -2331,7 +2478,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-//			if (GetShowSetVal(6) == 1)
+//			if (GCDisplaySettings::getValue(6) == 1)
 			{
 				if (pvd->festivals)
 				{
@@ -2341,7 +2488,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 						if (str2.GetLength() > 1)
 						{
 							nFestClass = pvd->GetFestivalClass(str2);
-							if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+							if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 							{
 								dayText += SPACE_BEFORE_LINE;
 								dayText += str2;
@@ -2352,7 +2499,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if (/*GetShowSetVal(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
+			if (/*GCDisplaySettings::getValue(16) == 1 &&*/ pvd->sankranti_zodiac >= 0)
 			{
 				str.Format(" %s %s", GCStrings::GetSankrantiName(pvd->sankranti_zodiac), GCStrings::getString(56).c_str());
 				dayText += SPACE_BEFORE_LINE;
@@ -2360,7 +2507,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += "\n";
 			}
 
-/*			if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+/*			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 			{
 				double h, m;
 				VAISNAVADAY * p;
@@ -2384,7 +2531,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}*/
 
-			/*if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+			/*if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 			{
 				if (pvd->is_vriddhi)
 					AddListText(dayText, GCStrings::getString(90]);
@@ -2398,7 +2545,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += "\n";
 			}
 
-			if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
 				str.Format("%s [PURNIMA SYSTEM]"
 					, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -2414,7 +2561,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
 				str.Format("%s [PRATIPAT SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -2431,7 +2578,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 
-			if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
 				str.Format("%s [EKADASI SYSTEM]"
 					, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -2449,14 +2596,14 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 			}
 
 /*			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str.Format("%s: %s", GCStrings::getString(98], GetTithiName(pvd->astrodata.nTithiArunodaya));
 				AddListText(dayText, str);
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(99], pvd->astrodata.sun.arunodaya.hour
 					, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -2464,7 +2611,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 			}
 */			//"Sunrise Time",//2
 			//"Sunset Time",//3
-			if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+			if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), pvd->astrodata.sun.rise.hour
 					, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -2472,7 +2619,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				dayText += str;
 				dayText += "\n";
 			}
-			if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+			if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 			{
 				str.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), pvd->astrodata.sun.set.hour
 					, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -2482,7 +2629,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 
 			}
 /*			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(136];
@@ -2494,7 +2641,7 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (pvd->moonrise.hour < 0)
 					str = GCStrings::getString(137];
@@ -2506,31 +2653,31 @@ int FormatCalendarVCAL(TResultCalendar &daybuff, TString &m_text)
 				AddListText(dayText, str);
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(100], pvd->astrodata.sun.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s: %f", GCStrings::getString(101], pvd->astrodata.moon.longitude_deg);
 				AddListText(dayText, str);
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f (%s)", GCStrings::getString(102], pvd->astrodata.msAyanamsa, GetAyanamsaName(GetAyanamsaType()));
 				AddListText(dayText, str);
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str.Format("%s %f", GCStrings::getString(103], pvd->astrodata.jdate);
 				AddListText(dayText, str);
 			}
 
-*///			if (GetShowSetVal(21) == 1)
+*///			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -2634,7 +2781,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 			if (str2.GetLength() > 1)
 			{
 				nFestClass = p->GetFestivalClass(str2);
-				if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+				if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 				{
 					str += "   ";
 					str += str2;
@@ -2646,7 +2793,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 
 	str += "\r\n";
 
-	if (GetShowSetVal(16) == 1 && p->sankranti_zodiac >= 0)
+	if (GCDisplaySettings::getValue(16) == 1 && p->sankranti_zodiac >= 0)
 	{
 		//double h1, m1;
 		//m1 = modf(p->sankranti_day.shour*24, &h1);
@@ -2667,7 +2814,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str += "\r\n";
 	}
 
-	if (GetShowSetVal(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+	if (GCDisplaySettings::getValue(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 	{
 		double h, m;
 		VCTIME dd;
@@ -2690,7 +2837,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str4;
 	}
 	// adding fasting
-			if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+			if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 			{
 				if (p->is_vriddhi)
 				{
@@ -2741,14 +2888,14 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		}
 	}
 			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str2.Format("%s: %s\r\n", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(p->astrodata.nTithiArunodaya));
 				str += str2;
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str2.Format("%s %d:%02d (%s)\r\n", GCStrings::getString(99).c_str(), p->astrodata.sun.arunodaya.hour
 					, p->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(p->nDST));
@@ -2756,7 +2903,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 			}
 
 			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (p->moonrise.hour < 0)
 					str2 = GCStrings::getString(136);
@@ -2769,7 +2916,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 				str += "\r\n";
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (p->moonrise.hour < 0)
 					str2 = GCStrings::getString(137);
@@ -2782,25 +2929,25 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 				str += "\r\n";
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s: %f (*)\r\n", GCStrings::getString(100).c_str(), p->astrodata.sun.longitude_deg);
 				str += str2;
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s: %f (*)\r\n", GCStrings::getString(101).c_str(), p->astrodata.moon.longitude_deg);
 				str += str2;
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s %f (%s) (*)\r\n", GCStrings::getString(102).c_str(), p->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 				str += str2;
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s %f (*)\r\n", GCStrings::getString(103).c_str(), p->astrodata.jdate);
 				str += str2;
@@ -2809,7 +2956,7 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 	/*BEGIN GCAL 1.4.3*/
 	DAYTIME tdA, tdB;
 
-	if (GetShowSetVal(45))
+	if (GCDisplaySettings::getValue(45))
 	{
 		tdA = p->astrodata.sun.rise;
 		tdB = p->astrodata.sun.rise;
@@ -2820,12 +2967,12 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str2;
 	}
 
-	if (GetShowSetVal(29))
+	if (GCDisplaySettings::getValue(29))
 	{
 		str2.Format("\r\n%s %2d:%02d ",
 			GCStrings::getString(51).c_str(), p->astrodata.sun.rise.hour, p->astrodata.sun.rise.min );
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.rise;
 			tdB = p->astrodata.sun.rise;
@@ -2837,11 +2984,11 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str2.Format(" (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
 	}
-	if (GetShowSetVal(30))
+	if (GCDisplaySettings::getValue(30))
 	{
 		str2.Format("%s    %2d:%02d ", GCStrings::getString(857).c_str(), p->astrodata.sun.noon.hour, p->astrodata.sun.noon.min);
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.noon;
 			tdB = p->astrodata.sun.noon;
@@ -2853,11 +3000,11 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str2.Format(" (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
 	}
-	if (GetShowSetVal(31))
+	if (GCDisplaySettings::getValue(31))
 	{
 		str2.Format("%s  %2d:%02d ", GCStrings::getString(52).c_str(), p->astrodata.sun.set.hour, p->astrodata.sun.set.min);
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.set;
 			tdB = p->astrodata.sun.set;
@@ -2870,18 +3017,18 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str2;
 	}
 
-	if (GetShowSetVal(33))
+	if (GCDisplaySettings::getValue(33))
 	{
 		str2.Format("\r\n%s info\r\n   Moon in %s %s",
 			GCStrings::getString(51).c_str(), 
 			GCStrings::GetNaksatraName(p->astrodata.nNaksatra), GCStrings::getString(15).c_str());
 		str += str2;
-		if (GetShowSetVal(47))
+		if (GCDisplaySettings::getValue(47))
 		{
 			str2.Format(", %.1f%% passed (%s Pada)", p->astrodata.nNaksatraElapse, GCStrings::getString(811+int(p->astrodata.nNaksatraElapse/25)).c_str());
 			str += str2;
 		}
-		if (GetShowSetVal(46))
+		if (GCDisplaySettings::getValue(46))
 		{
 			str2.Format(", Moon in %s %s", GCStrings::GetSankrantiName(p->astrodata.nMoonRasi), GCStrings::getString(105).c_str());
 			str += str2;
@@ -2891,6 +3038,8 @@ void AvcGetTodayInfo(VCTIME vc, CLocationRef & loc, TString &str)
 			GCStrings::GetSankrantiName(p->astrodata.nSunRasi), GCStrings::getString(105).c_str());
 		str += str2;
 	}
+
+
 
 	AddNoteText(str);
 
@@ -2955,7 +3104,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 			if (str2.GetLength() > 1)
 			{
 				nFestClass = p->GetFestivalClass(str2);
-				if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+				if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 				{
 					str += "\\tab ";
 					str += str2;
@@ -2967,7 +3116,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 
 	str += "\\par\r\n";
 
-	if (GetShowSetVal(16) == 1 && p->sankranti_zodiac >= 0)
+	if (GCDisplaySettings::getValue(16) == 1 && p->sankranti_zodiac >= 0)
 	{
 		//double h1, m1;
 		//m1 = modf(p->sankranti_day.shour*24, &h1);
@@ -2988,7 +3137,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str += "\\par\r\n";
 	}
 
-	if (GetShowSetVal(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+	if (GCDisplaySettings::getValue(7) == 1 && p->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 	{
 		double h, m;
 		VCTIME dd;
@@ -3011,7 +3160,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str4;
 	}
 	// adding fasting
-	if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+	if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 	{
 		if (p->is_vriddhi)
 		{
@@ -3062,14 +3211,14 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		}
 	}
 			// tithi at arunodaya
-			if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+			if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 			{
 				str2.Format("%s: %s\\par\r\n", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(p->astrodata.nTithiArunodaya));
 				str += str2;
 			}
 
 			//"Arunodaya Time",//1
-			if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+			if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 			{
 				str2.Format("%s %d:%02d (%s)\\par\r\n", GCStrings::getString(99).c_str(), p->astrodata.sun.arunodaya.hour
 					, p->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(p->nDST));
@@ -3077,7 +3226,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 			}
 
 			//"Moonrise Time",//4
-			if (GetShowSetVal(4) == 1)
+			if (GCDisplaySettings::getValue(4) == 1)
 			{
 				if (p->moonrise.hour < 0)
 					str2 = GCStrings::getString(136);
@@ -3090,7 +3239,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 				str += "\\par\r\n";
 			}
 			//"Moonset Time",//5
-			if (GetShowSetVal(5) == 1)
+			if (GCDisplaySettings::getValue(5) == 1)
 			{
 				if (p->moonrise.hour < 0)
 					str2 = GCStrings::getString(137);
@@ -3103,25 +3252,25 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 				str += "\\par\r\n";
 			}
 			///"Sun Longitude",//9
-			if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s: %f (*)\\par\r\n", GCStrings::getString(100).c_str(), p->astrodata.sun.longitude_deg);
 				str += str2;
 			}
 			//"Moon Longitude",//10
-			if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s: %f (*)\\par\r\n", GCStrings::getString(101).c_str(), p->astrodata.moon.longitude_deg);
 				str += str2;
 			}
 			//"Ayanamsha value",//11
-			if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s %f (%s) (*)\\par\r\n", GCStrings::getString(102).c_str(), p->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 				str += str2;
 			}
 			//"Julian Day",//12
-			if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+			if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 			{
 				str2.Format("%s %f (*)\\par\r\n", GCStrings::getString(103).c_str(), p->astrodata.jdate);
 				str += str2;
@@ -3130,7 +3279,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 	/*BEGIN GCAL 1.4.3*/
 	DAYTIME tdA, tdB;
 
-	if (GetShowSetVal(45))
+	if (GCDisplaySettings::getValue(45))
 	{
 		tdA = p->astrodata.sun.rise;
 		tdB = p->astrodata.sun.rise;
@@ -3141,12 +3290,12 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str2;
 	}
 
-	if (GetShowSetVal(29))
+	if (GCDisplaySettings::getValue(29))
 	{
 		str2.Format("\\par\r\n%s %2d:%02d ",
 			GCStrings::getString(51).c_str(), p->astrodata.sun.rise.hour, p->astrodata.sun.rise.min );
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.rise;
 			tdB = p->astrodata.sun.rise;
@@ -3158,11 +3307,11 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str2.Format(" (%s)\\par\r\n", GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
 	}
-	if (GetShowSetVal(30))
+	if (GCDisplaySettings::getValue(30))
 	{
 		str2.Format("%s    %2d:%02d ", GCStrings::getString(857).c_str(), p->astrodata.sun.noon.hour, p->astrodata.sun.noon.min);
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.noon;
 			tdB = p->astrodata.sun.noon;
@@ -3174,11 +3323,11 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str2.Format(" (%s)\\par\r\n", GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
 	}
-	if (GetShowSetVal(31))
+	if (GCDisplaySettings::getValue(31))
 	{
 		str2.Format("%s  %2d:%02d ", GCStrings::getString(52).c_str(), p->astrodata.sun.set.hour, p->astrodata.sun.set.min);
 		str += str2;
-		if (GetShowSetVal(32))
+		if (GCDisplaySettings::getValue(32))
 		{
 			tdA = p->astrodata.sun.set;
 			tdB = p->astrodata.sun.set;
@@ -3190,18 +3339,18 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str2.Format(" (%s)\\par\r\n", GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
 	}
-	if (GetShowSetVal(33))
+	if (GCDisplaySettings::getValue(33))
 	{
 		str2.Format("\\par\r\n%s info\\par\r\n   Moon in %s %s",
 			GCStrings::getString(51).c_str(), 
 			GCStrings::GetNaksatraName(p->astrodata.nNaksatra), GCStrings::getString(15).c_str());
 		str += str2;
-		if (GetShowSetVal(47))
+		if (GCDisplaySettings::getValue(47))
 		{
 			str2.Format(", %.1f%% passed (%s Pada)", p->astrodata.nNaksatraElapse, GCStrings::getString(811+int(p->astrodata.nNaksatraElapse/25)).c_str());
 			str += str2;
 		}
-		if (GetShowSetVal(46))
+		if (GCDisplaySettings::getValue(46))
 		{
 			str2.Format(", Moon in %s %s", GCStrings::GetSankrantiName(p->astrodata.nMoonRasi), GCStrings::getString(105).c_str());
 			str += str2;
@@ -3212,6 +3361,22 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		str += str2;
 	}
 	/* END GCAL 1.4.3 */
+		MOONDATA md;
+	VCTIME vct;
+	vct.shour = 0.0;
+	EARTHDATA ed = (EARTHDATA)loc;
+	double jd;
+	str += "\\par \n--------moon---------------\n\n \\par\\par ";
+	for(int i = 0; i <= 48; i++)
+	{
+		vct.shour = i / 48.0;
+		jd = vct.GetJulianComplete();
+		md.Calculate(vct.GetJulianComplete(), ed);
+		str2.Format("Hour %.1f      rektas: %.3f  long: %.3f  st:%.3f\n horz: %.3f\\par ", i/2.0, md.rektaszension, md.longitude_deg,
+			EARTHDATA::star_time(jd), put_in_360(EARTHDATA::star_time(jd) - ed.longitude_deg));
+		str += str2;
+	}
+	str += "\n\n \\par";
 
 	AddNoteRtf(str);
 }
@@ -3237,7 +3402,7 @@ void CalcAppDay(CLocationRef &location, VCTIME event, TResultApp & app)
 	vcsun.shour -= vcsun.tzone/24.0;
 	vcsun.NormalizeValues();
 	vcsun.tzone = 0.0;
-	SunPosition(vcsun, m_earth, d.sun, vcsun.shour - 0.5);
+	d.sun.SunPosition(vcsun, m_earth, vcsun.shour - 0.5);
 	d.moon.Calculate(vcsun.GetJulianComplete(), m_earth);
 	d.msDistance = put_in_360( d.moon.longitude_deg - d.sun.longitude_deg - 180.0);
 	d.msAyanamsa = GCAyanamsha::GetAyanamsa( vc.GetJulianComplete() );
@@ -3254,7 +3419,7 @@ void CalcAppDay(CLocationRef &location, VCTIME event, TResultApp & app)
 	dd = ( dd * 3.0) / 40.0;
 	d.nNaksatra = int(floor(dd));
 	d.nNaksatraElapse = (dd - floor(dd)) * 100.0;
-	d.nMasa = MasaCalc(vc, d, m_earth, d.nGaurabdaYear);
+	d.nMasa = d.MasaCalc(vc, m_earth);
 	d.nMoonRasi = GCRasi::GetRasi(d.moon.longitude_deg, d.msAyanamsa);
 	d.nSunRasi = GCRasi::GetRasi(d.sun.longitude_deg, d.msAyanamsa);
 
@@ -3272,14 +3437,14 @@ void CalcAppDay(CLocationRef &location, VCTIME event, TResultApp & app)
 
 	va.tithi = d.nTithi;
 	va.masa  = d.nMasa;
-	va.gyear = GetGaurabdaYear(vc, m_earth);
+	va.gyear = GCCalendar::GetGaurabdaYear(vc, m_earth);
 	if (va.gyear < d.nGaurabdaYear)
 		va.gyear = d.nGaurabdaYear;
 
 
 	for(int i = 0; i < 6; i++)
 	{
-		VATIMEtoVCTIME(va, vctemp, m_earth);
+		GCCalendar::VATIMEtoVCTIME(va, vctemp, m_earth);
 		if (va.gyear > d.nGaurabdaYear)
 		{
 			if (m < TRESULT_APP_CELEBS)
@@ -3358,7 +3523,7 @@ void FormatAppDayText(TResultApp & app, TString &strResult)
 	str.Format("%15s : %d", GCStrings::getString(23).c_str(), d.nGaurabdaYear);
 	AddTextLine(strText, str);
 
-	if (GetShowSetVal(48))
+	if (GCDisplaySettings::getValue(48))
 	{
 		AddTextLine(strText, "");
 		AddTextLine(strText, GCStrings::getString(17).c_str());
@@ -3453,7 +3618,7 @@ void FormatAppDayRtf(TResultApp & app, TString &strResult)
 	str.Format("\\tab %s : {\\b %d}", GCStrings::getString(23).c_str(), d.nGaurabdaYear);
 	AddTextLineRtf(strText, str);
 
-	if (GetShowSetVal(48))
+	if (GCDisplaySettings::getValue(48))
 	{
 		AddTextLineRtf(strText, "");
 		str.Format("{\\fs%d %s}", g_Header2Size, GCStrings::getString(17).c_str());
@@ -3548,8 +3713,8 @@ int CalcMasaList(TResultMasaList &mlist, CLocationRef &loc, int nYear, int nCoun
 
 	mlist.n_startYear = nYear;
 	mlist.n_countYears = nCount;
-	mlist.vc_start = d  = GetFirstDayOfYear((EARTHDATA)loc, nYear);
-	mlist.vc_end   = de = GetFirstDayOfYear((EARTHDATA)loc, nYear + nCount);
+	mlist.vc_start = d  = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear);
+	mlist.vc_end   = de = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear + nCount);
 	mlist.m_location = loc;
 
 	if (mlist.alloc(nCount) == false)
@@ -3565,10 +3730,10 @@ int CalcMasaList(TResultMasaList &mlist, CLocationRef &loc, int nYear, int nCoun
 	AvcProgressWindowCreate();
 	while(d.IsBeforeThis(de))
 	{
-		DayCalc(d, earth, day);
+		day.DayCalc(d, earth);
 		if (prev_paksa != day.nPaksa)
 		{
-			day.nMasa = MasaCalc(d, day, earth, day.nGaurabdaYear);
+			day.nMasa = day.MasaCalc(d, earth);
 			
 			if (lm != day.nMasa)
 			{
@@ -3673,7 +3838,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 
 		dayText.Empty();
 		/* BEGIN GCAL 1.4.3 */
-		pvd->GetTextRtf(str, GetShowSetVal(39), GetShowSetVal(36), GetShowSetVal(37), GetShowSetVal(38), GetShowSetVal(41));
+		pvd->GetTextRtf(str, GCDisplaySettings::getValue(39), GCDisplaySettings::getValue(36), GCDisplaySettings::getValue(37), GCDisplaySettings::getValue(38), GCDisplaySettings::getValue(41));
 		/* END GCAL 1.4.3 */
 		//str.Mid(16, str.GetLength(), str2);
 		//str.Left(15, str3);
@@ -3686,7 +3851,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 		dayText += str;
 //		AddListRtf(dayText, str, str2);
 
-		if (GetShowSetVal(17) == 1)
+		if (GCDisplaySettings::getValue(17) == 1)
 		{
 			if (pvd->ekadasi_parana)
 			{
@@ -3696,7 +3861,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if (GetShowSetVal(6) == 1)
+		if (GCDisplaySettings::getValue(6) == 1)
 		{
 			if (pvd->festivals.GetLength() > 0)
 			{
@@ -3706,14 +3871,14 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 					if (str2.GetLength() > 1)
 					{
 						nFestClass = pvd->GetFestivalClass(str2);
-						if (nFestClass < 0 || GetShowSetVal(22 + nFestClass) == 1)
+						if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
 							AddListRtf(dayText, str2);
 					}
 				}
 			}
 		}
 
-		if (GetShowSetVal(16) == 1 && pvd->sankranti_zodiac >= 0)
+		if (GCDisplaySettings::getValue(16) == 1 && pvd->sankranti_zodiac >= 0)
 		{
 			//double h1, m1;
 			//m1 = modf(pvd->sankranti_day.shour*24, &h1);
@@ -3735,7 +3900,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			//dayText += "\\par\r\n";
 		}
 
-		if (GetShowSetVal(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
+		if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
 		{
 			double h, m;
 			VCTIME ksayaDate;
@@ -3759,7 +3924,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			AddListRtf(dayText, str);
 		}
 
-		if (GetShowSetVal(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
+		if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
 		{
 			if (pvd->is_vriddhi)
 				AddListRtf(dayText, GCStrings::getString(90));
@@ -3771,7 +3936,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			AddListRtf(dayText, GCStrings::getString( 111 + n ));
 		}
 
-		if ((GetShowSetVal(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
+		if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 		{
 			str.Format("%s [PURNIMA SYSTEM]"
 				, GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
@@ -3784,7 +3949,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if ((GetShowSetVal(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
+		if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 		{
 			str.Format("%s [PRATIPAT SYSTEM]"
 				, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
@@ -3797,7 +3962,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			}
 		}
 
-		if ((GetShowSetVal(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
+		if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 		{
 			str.Format("%s [EKADASI SYSTEM]"
 				, GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
@@ -3811,14 +3976,14 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 		}
 
 		// tithi at arunodaya
-		if (GetShowSetVal(0) == 1)//m_dshow.m_tithi_arun)
+		if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
 		{
 			str.Format("%s: %s", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
 			AddListRtf(dayText, str);
 		}
 
 		//"Arunodaya Time",//1
-		if (GetShowSetVal(1) == 1)//m_dshow.m_arunodaya)
+		if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(99).c_str(), pvd->astrodata.sun.arunodaya.hour
 				, pvd->astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -3826,7 +3991,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 		}
 		//"Sunrise Time",//2
 		//"Sunset Time",//3
-		if (GetShowSetVal(2) == 1)//m_dshow.m_sunrise)
+		if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), pvd->astrodata.sun.rise.hour
 				, pvd->astrodata.sun.rise.min, GCStrings::GetDSTSignature(pvd->nDST));
@@ -3834,21 +3999,21 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 		}
 		/* BEGIN GCAL 1.4.3 */
 		// Noon time
-		if (GetShowSetVal(34) == 1)//m_dshow.m_sunset)
+		if (GCDisplaySettings::getValue(34) == 1)//m_dshow.m_sunset)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(857).c_str(), pvd->astrodata.sun.noon.hour
 				, pvd->astrodata.sun.noon.min, GCStrings::GetDSTSignature(pvd->nDST));
 			AddListRtf(dayText, str);
 		}
 		/* END GCAL 1.4.3 */
-		if (GetShowSetVal(3) == 1)//m_dshow.m_sunset)
+		if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
 		{
 			str.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), pvd->astrodata.sun.set.hour
 				, pvd->astrodata.sun.set.min, GCStrings::GetDSTSignature(pvd->nDST));
 			AddListRtf(dayText, str);
 		}
 		//"Moonrise Time",//4
-		if (GetShowSetVal(4) == 1)
+		if (GCDisplaySettings::getValue(4) == 1)
 		{
 			if (pvd->moonrise.hour < 0)
 				str = GCStrings::getString(136).c_str();
@@ -3860,7 +4025,7 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			AddListRtf(dayText, str);
 		}
 		//"Moonset Time",//5
-		if (GetShowSetVal(5) == 1)
+		if (GCDisplaySettings::getValue(5) == 1)
 		{
 			if (pvd->moonrise.hour < 0)
 				str = GCStrings::getString(137);
@@ -3872,25 +4037,25 @@ int FormatCalendarDayRtf(VAISNAVADAY * pvd, TString &dayText)
 			AddListRtf(dayText, str);
 		}
 		///"Sun Longitude",//9
-		if (GetShowSetVal(9) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s: %f (*)", GCStrings::getString(100).c_str(), pvd->astrodata.sun.longitude_deg);
 			AddListRtf(dayText, str);
 		}
 		//"Moon Longitude",//10
-		if (GetShowSetVal(10) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s: %f (*)", GCStrings::getString(101).c_str(), pvd->astrodata.moon.longitude_deg);
 			AddListRtf(dayText, str);
 		}
 		//"Ayanamsha value",//11
-		if (GetShowSetVal(11) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s %f (%s) (*)", GCStrings::getString(102).c_str(), pvd->astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
 			AddListRtf(dayText, str);
 		}
 		//"Julian Day",//12
-		if (GetShowSetVal(12) == 1)//m_dshow.m_sun_long)
+		if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
 		{
 			str.Format("%s %f (*)", GCStrings::getString(103).c_str(), pvd->astrodata.jdate);
 			AddListRtf(dayText, str);
@@ -3926,7 +4091,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 	int lastmonth = -1;
 //	int tp1;
 //	double rate;
-	bool bCalcMoon = (GetShowSetVal(4) > 0 || GetShowSetVal(5) > 0);
+	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 
 	m_text.Empty();
 
@@ -3942,7 +4107,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 		if (pvd)
 		{
 			bShowColumnHeaders = 0;
-			if ((GetShowSetVal(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
+			if ((GCDisplaySettings::getValue(18) == 1) && (pvd->astrodata.nMasa != lastmasa))
 			{
 				if (bShowColumnHeaders == 0)
 					m_text += "\\par ";
@@ -3969,7 +4134,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 				lastmasa = pvd->astrodata.nMasa;
 			}
 
-			if ((GetShowSetVal(19) == 1) && (pvd->date.month != lastmonth))
+			if ((GCDisplaySettings::getValue(19) == 1) && (pvd->date.month != lastmonth))
 			{
 				if (bShowColumnHeaders == 0)
 					m_text += "\\par ";
@@ -4012,31 +4177,31 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 				int tabStop = 5760*g_TextSize/24;
 				str.Format("\\pard\\tx%d\\tx%d ",2000*g_TextSize/24, tabStop);
 				m_text += str;
-				if (GetShowSetVal(39))
+				if (GCDisplaySettings::getValue(39))
 				{
 					tabStop += 990*g_TextSize/24;
 					str.Format("\\tx%d", tabStop);
 					m_text += str;
 				}
-				if (GetShowSetVal(37))
+				if (GCDisplaySettings::getValue(37))
 				{
 					tabStop += 1720*g_TextSize/24;
 					str.Format("\\tx%d", tabStop);
 					m_text += str;
 				}
-				if (GetShowSetVal(36))
+				if (GCDisplaySettings::getValue(36))
 				{
 					tabStop += 1800*g_TextSize/24;
 					str.Format("\\tx%d", tabStop);
 					m_text += str;
 				}
-				if (GetShowSetVal(38))
+				if (GCDisplaySettings::getValue(38))
 				{
 					tabStop += 750*g_TextSize/24;
 					str.Format("\\tx%d", tabStop);
 					m_text += str;
 				}
-				if (GetShowSetVal(41))
+				if (GCDisplaySettings::getValue(41))
 				{
 					tabStop += 1850*g_TextSize/24;
 					str.Format("\\tx%d", tabStop);
@@ -4050,20 +4215,20 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 				m_text += str;
 				str.Format("{\\highlight15\\cf7\\fs%d\\b DATE\\tab TITHI", g_NoteSize);
 				m_text += str;
-				if (GetShowSetVal(39)) {
+				if (GCDisplaySettings::getValue(39)) {
 					m_text += "\\tab PAKSA";
 				}
-				if (GetShowSetVal(37)) {
+				if (GCDisplaySettings::getValue(37)) {
 					m_text += "\\tab YOGA";
 				}
-				if (GetShowSetVal(36)) {
+				if (GCDisplaySettings::getValue(36)) {
 					m_text += "\\tab NAKSATRA";
 				}
-				if (GetShowSetVal(38))
+				if (GCDisplaySettings::getValue(38))
 				{
 					m_text += "\\tab FAST";
 				}
-				if (GetShowSetVal(41))
+				if (GCDisplaySettings::getValue(41))
 				{
 					m_text += "\\tab RASI";
 				}
@@ -4077,7 +4242,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 
 			FormatCalendarDayRtf(pvd, dayText);
 
-			if (GetShowSetVal(21) == 1)
+			if (GCDisplaySettings::getValue(21) == 1)
 			{
 				if (prevd != NULL)
 				{
@@ -4097,7 +4262,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 				}
 			}
 			/* BEGIN GCAL 1.4.3 */
-			if (GetShowSetVal(35) && prevd && nextd)
+			if (GCDisplaySettings::getValue(35) && prevd && nextd)
 			{
 				if (prevd->nDST == 0 && pvd->nDST==1)
 					AddListRtf(dayText, GCStrings::getString(855).c_str());
@@ -4107,7 +4272,7 @@ int FormatCalendarRtf(TResultCalendar &daybuff, TString &m_text)
 
 			/* END GCAL 1.4.3 */
 
-			if (GetShowSetVal(20) == 0)
+			if (GCDisplaySettings::getValue(20) == 0)
 				m_text += dayText;
 			else if (dayText.GetLength() > 90)
 				m_text += dayText;

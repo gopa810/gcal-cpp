@@ -6,14 +6,13 @@
 #include "DlgEditCustomEvent.h"
 #include "vedic_ui.h"
 #include "GCStrings.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-int GetShowSetVal(int);
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditCustomEvent dialog
@@ -94,7 +93,7 @@ BOOL DlgEditCustomEvent::OnInitDialog()
 	if (m_nClass != 6)
 		p->EnableWindow(FALSE);
 	else
-		p->EnableWindow(GetShowSetVal(44)==1);
+		p->EnableWindow(GCDisplaySettings::getValue(44)==1);
 	
 	p = (CComboBox *)GetDlgItem(IDC_COMBO4);
 	p->AddString("no fast");

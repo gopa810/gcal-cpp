@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include "vcal5beta.h"
-#include "level_5.h"
 #include "DayFindBuffer.h"
 #include "strings.h"
 #include "GCStrings.h"
+#include "GCSankranti.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -16,12 +16,9 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 
-#define FOREACH_INDEX(i) for(i=0;i<nTotalCount;i++)
-typedef char * pchar;
 extern int gp_Fasting[];
 
 int is_daylight_time(VCTIME vc, int nIndex);
-int GetSankrantiType();
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -73,7 +70,7 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 
 	// 1
 	// initialization of days
-	FOREACH_INDEX(i)
+	for(i = 0; i < nTotalCount; i++)
 	{
 		m_pData[i].date = date;
 		m_pData[i].date.dayOfWeek = weekday;
@@ -96,18 +93,19 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 
 	// 4
 	// init of astro data
-	FOREACH_INDEX(i)
+	for(i = 0; i < nTotalCount; i++)
 	{
-		DayCalc(m_pData[i].date, earth, m_pData[i].astrodata);
+		m_pData[i].astrodata.DayCalc(m_pData[i].date, earth);
 	}
 
 	// 5
 	// init of masa
-	FOREACH_INDEX(i)
+	for(i = 0; i < nTotalCount; i++)
 	{
 		if ((i == 0) || (m_pData[i-1].astrodata.nPaksa != m_pData[i].astrodata.nPaksa))
 		{
-			m = MasaCalc(m_pData[i].date, m_pData[i].astrodata, earth, nYear);
+			m = m_pData[i].astrodata.MasaCalc(m_pData[i].date, earth);
+			nYear = m_pData[i].astrodata.nGaurabdaYear;
 		}
 		m_pData[i].astrodata.nMasa = m;
 		m_pData[i].astrodata.nGaurabdaYear = nYear;
@@ -155,7 +153,7 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 	int i_target;
 	do
 	{
-		date = GetNextSankranti(date, zodiac);
+		date = GCSankranti::GetNextSankranti(date, zodiac);
 		date.shour += is_daylight_time(date, nDST);
 		date.NormalizeValues();
 
@@ -164,7 +162,7 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 		{
 			i_target = -1;
 
-			switch(GetSankrantiType())
+			switch(GCSankranti::GetSankrantiType())
 			{
 			case 0:
 				if (date.CompareYMD(m_pData[i].date) == 0)

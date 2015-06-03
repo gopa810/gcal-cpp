@@ -315,4 +315,178 @@ double SUNDATA::SunGetPerigee(int year, int month, int day)
 	return per;
 }
 
+/*************************************/
+/*    sun functions                  */
+/*                                   */
+/*    sun longitude                  */
+/*    sunrise, sunset time           */
+/*                                   */
+/*************************************/
+
+//////////////////////////////////////////////////////////////////////////
+//
+// VCTIME vct [in] - valid must be each member of this structure
+//
+
+// from vct uses members: year, month, day
+// double is in range 0.0 - 1.0
+
+void SUNDATA::SunPosition(VCTIME vct, EARTHDATA ed, double dayHours)
+{
+	double DG = pi / 180;
+	double RAD = 180 / pi;
+
+	double x;
+
+	double dLatitude = ed.latitude_deg;
+	double dLongitude = ed.longitude_deg;
+
+	// mean ecliptic longitude of the sun 
+	double mel = SUNDATA::SunGetMeanLong(vct.year, vct.month, vct.day) + (360/365.25)*dayHours/360.0;
+
+	// ecliptic longitude of perigee 
+	double elp = SUNDATA::SunGetPerigee(vct.year, vct.month, vct.day);
+
+	// mean anomaly of the sun
+	double mas = mel - elp;
+
+	// ecliptic longitude of the sun
+	double els = 0.0;
+	this->longitude_deg = els = mel + 1.915 * sin(mas * DG) + 0.02 * sin (2 * DG * mas);
+
+	// declination of the sun
+	this->declination_deg = RAD * asin (0.39777 * sin(els * DG));
+
+	// right ascension of the sun
+	this->right_asc_deg = els - RAD * atan2( sin(2*els*DG), 23.2377 + cos(2 * DG * els));
+
+	// equation of time
+	double eqt = 0.0;
+	eqt = this->right_asc_deg - mel;
+
+
+	// definition of event
+	double eventdef = 0.01454;
+/*	switch(ed.obs)
+	{
+	case 1:	// civil twilight
+		eventdef = 0.10453;
+		break;
+	case 2:	// nautical twilight
+		eventdef = 0.20791;
+		break;
+	case 3:	// astronomical twilight
+		eventdef = 0.30902;
+		break;
+	default:// center of the sun on the horizont
+		eventdef = 0.01454;
+		break;
+	}*/
+
+	eventdef = (eventdef / cos(dLatitude * DG)) / cos(this->declination_deg * DG);
+
+	x = tan(dLatitude * DG) * tan(this->declination_deg * DG) + eventdef;
+
+	// initial values for the case
+	// that no rise no set for that day
+	this->sunrise_deg = this->sunset_deg = -360.0;
+
+	if ((x >= -1.0) && (x <= 1.0))
+	{
+		// time of sunrise
+		this->sunrise_deg = 90.0 - dLongitude - RAD * asin(x) + eqt;
+
+		// time of sunset
+		this->sunset_deg = 270.0 - dLongitude + RAD * asin(x) + eqt;
+	}
+
+
+
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// return values are in sun.arunodaya, sun.rise, sun.set, sun.noon, sun.length
+// if values are less than zero, that means, no sunrise, no sunset in that day
+//
+// brahma 1 = calculation at brahma muhurta begining
+// brahma 0 = calculation at sunrise
+
+
+void SUNDATA::SunCalc(VCTIME vct, EARTHDATA earth)
+{
+	SUNDATA s_rise, s_set;
+
+	// first calculation
+	// for 12:00 universal time
+	s_rise.SunPosition(vct, earth, 0.0);
+	// second calculation
+	// for time of sunrise
+	s_rise.SunPosition(vct, earth, s_rise.sunrise_deg - 180);
+	// third (last) calculation
+	// for time of sunrise
+	s_rise.SunPosition(vct, earth, s_rise.sunrise_deg - 180);
+	// first calculation
+	// for 12:00 universal time
+	s_set.SunPosition(vct, earth, 0.0);
+	// second calculation
+	// for time of sunrise
+	s_set.SunPosition(vct, earth, s_set.sunset_deg - 180);
+	// third (last) calculation
+	// for time of sunrise
+	s_set.SunPosition(vct, earth, s_set.sunset_deg - 180);
+
+	// calculate times
+	this->longitude_arun_deg = s_rise.longitude_deg - (24.0 / 365.25);
+	this->longitude_deg = s_rise.longitude_deg;
+	this->longitude_set_deg = s_set.longitude_deg;
+
+	this->arunodaya_deg = s_rise.sunrise_deg - 24.0;
+	this->sunrise_deg = s_rise.sunrise_deg;
+	this->sunset_deg = s_set.sunset_deg;
+	this->length_deg = s_set.sunset_deg - s_rise.sunrise_deg;
+
+	// arunodaya is 96 min before sunrise
+	//  sunrise_deg is from range 0-360 so 96min=24deg
+	this->arunodaya.SetDegTime(this->arunodaya_deg + earth.tzone*15.0);
+	// sunrise
+	this->rise.SetDegTime(this->sunrise_deg + earth.tzone*15.0);
+	// noon
+	this->noon.SetDegTime((this->sunset_deg + this->sunrise_deg)/2  + earth.tzone*15.0);
+	// sunset
+	this->set.SetDegTime(this->sunset_deg + earth.tzone*15.0);
+	// length
+	this->length.SetDegTime(this->length_deg);
+
+}
+
+
+void SUNDATA::CalculateKala(double sunRise, double sunSet, int dayWeek, double * r1, double * r2, KalaType type)
+{
+	double period;
+
+	if (type == KT_RAHU_KALAM)
+	{
+		static int a[] = {7,1,6,4,5,3,2};
+		period = (sunSet - sunRise) / 8.0;
+		*r1 = sunRise + a[dayWeek] * period;
+		*r2 = *r1 + period;
+	}
+	else if (type == KT_YAMA_GHANTI)
+	{
+		static int a[] = {4,3,2,1,0,6,5};
+		period = (sunSet - sunRise) / 8.0;
+		*r1 = sunRise + a[dayWeek] * period;
+		*r2 = *r1 + period;
+	}
+	else if (type == KT_GULI_KALAM)
+	{
+		static int a[] = {6,5,4,3,2,1,0};
+		period = (sunSet - sunRise) / 8.0;
+		*r1 = sunRise + a[dayWeek] * period;
+		*r2 = *r1 + period;
+	}
+}
 

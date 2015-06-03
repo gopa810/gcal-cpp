@@ -129,7 +129,7 @@ void DlgStringManager::OnImport()
 
 	if (cfd.DoModal() == IDOK)
 	{
-		i = AvcLoadStrings(cfd.GetPathName());
+		i = GCStrings::readFile(cfd.GetPathName());
 		if (i < 0)
 			MessageBox("Cannot open file", "Import Strings", MB_OK | MB_ICONSTOP);
 		else
@@ -153,7 +153,7 @@ void DlgStringManager::OnExport()
 	if (cfd.DoModal() == IDOK)
 	{
 		SaveStringsToMemory();
-		i = AvcSaveStrings(cfd.GetPathName());
+		i = GCStrings::writeFile(cfd.GetPathName());
 		if (i < 0)
 			MessageBox("Cannot write file", "Export Strings", MB_OK | MB_ICONSTOP);
 		else

@@ -138,3 +138,8 @@ double rad2deg(double x)
 {
 	return x / rads;
 }
+
+double frac(double x) 
+{
+	return x - floor(x);
+}

@@ -13,6 +13,19 @@ GCNaksatra::~GCNaksatra(void)
 {
 }
 
+double GCNaksatra::CalculateMidnightNaksatra(VCTIME date, EARTHDATA earth)
+{
+	double d;
+	double jdate;
+	MOONDATA moon;
+
+	date.shour = 1.0;
+	jdate = date.GetJulianDetailed();
+	moon.Calculate(jdate, earth);
+	d = put_in_360( moon.longitude_deg - GCAyanamsha::GetAyanamsa(jdate));
+	return floor(( d * 3.0) / 40.0 );
+}
+
 /*********************************************************************/
 /*                                                                   */
 /*   finds next time when starts next naksatra                       */

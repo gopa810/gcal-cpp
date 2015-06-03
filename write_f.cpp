@@ -2,7 +2,7 @@
 
 #include "LocationRef.h"
 #include "XmlFile.h"
-#include "level_4.h"
+#include "level_6.h"
 #include "strings.h"
 #include "vedic_ui.h"
 #include "level_5_days.h"
@@ -14,6 +14,7 @@
 #include "GCStrings.h"
 #include "GCTithi.h"
 #include "GCNaksatra.h"
+#include "GCSankranti.h"
 
 // PORTABLE
 
@@ -23,7 +24,7 @@ int WriteXML_FirstDay_Year(FILE * fout, CLocationRef & loc, VCTIME vcStart)
 
 	xml = fout;
 
-	vcStart = GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
+	vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
 	vcStart.InitWeekDay();
 
 	// write
@@ -68,7 +69,7 @@ int WriteXML_Sankrantis(FILE * fout, CLocationRef & loc, VCTIME vcStart, VCTIME 
 
 	while(d.IsBeforeThis(vcEnd))
 	{
-		d = GetNextSankranti(d, zodiac);
+		d = GCSankranti::GetNextSankranti(d, zodiac);
 		d.InitWeekDay();
 		xml << "\t\t<sank date=\"" << d << "\" ";
 		xml << "dayweekid=\"" << d.dayOfWeek << "\" dayweek=\"" << GCStrings::getString(d.dayOfWeek) << "\" ";
@@ -346,7 +347,7 @@ int WriteXML_Naksatra(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCount)
 		//m_list.SetItemText(n, 2, str);
 
 		// sunrise time get
-		SunCalc(d, earth, sun);
+		sun.SunCalc(d, earth);
 		//time_print(str, sun.rise);
 		//m_list.SetItemText(n, 3, str);
 		xml << "\t\t\t<sunrise time=\"" << sun.rise << "\" />\n";
@@ -392,7 +393,7 @@ int WriteXML_Tithi(FILE * fout, CLocationRef &loc, VCTIME vc)
 
 	DAYDATA day;
 
-	DayCalc(vc, earth, day);
+	day.DayCalc(vc, earth);
 
 	d.shour = day.sun.sunrise_deg/360.0 + loc.m_fTimezone/24.0;
 
@@ -476,7 +477,7 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 
 	for(; A <= B; A++)
 	{
-		vcs = CalcTithiEnd(A, gmasa, gpaksa, gtithi, earth, vce);
+		vcs = GCTithi::CalcTithiEnd(A, gmasa, gpaksa, gtithi, earth, vce);
 		if (gyearA > 1500)
 		{
 			if ((vcs.year < gyearA) || (vcs.year > gyearB))
@@ -494,12 +495,12 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 		// test ci je ksaya
 		today = vcs;
 		today.shour = 0.5;
-		SunCalc(today, earth, sun);
+		sun.SunCalc(today, earth);
 		sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 		if (sunrise < vcs.shour)
 		{
 			today = vce;
-			SunCalc(today, earth, sun);
+			sun.SunCalc(today, earth);
 			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 			if (sunrise < vce.shour)
 			{
@@ -511,10 +512,11 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 			{
 				// ksaya
 				vcs.NextDay();
-				DayCalc(vcs, earth, day);
+				day.DayCalc(vcs, earth);
 				oTithi = day.nTithi;
 				oPaksa = day.nPaksa;
-				oMasa = MasaCalc(vcs, day, earth, oYear);
+				oMasa = day.MasaCalc(vcs, earth);
+				oYear = day.nGaurabdaYear;
 				xml << "\t\ttype=\"ksaya\"\n";
 			}
 		}
@@ -522,7 +524,7 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 		{
 			// normal, alebo prvy den vriddhi
 			today = vce;
-			SunCalc(today, earth, sun);
+			sun.SunCalc(today, earth);
 			if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 			{
 				// first day of vriddhi type
@@ -597,7 +599,7 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 	vcStart -= 15;
 	for(A = 0; A <= 3; A++)
 	{
-		vcs = CalcTithiEndEx(vcStart, 0, gmasa, gpaksa, gtithi, earth, vce);
+		vcs = GCTithi::CalcTithiEndEx(vcStart, 0, gmasa, gpaksa, gtithi, earth, vce);
 		if (!vcs.IsBeforeThis(today))
 		{
 			oTithi = gpaksa*15 + gtithi;
@@ -612,12 +614,12 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 			// test ci je ksaya
 			today = vcs;
 			today.shour = 0.5;
-			SunCalc(today, earth, sun);
+			sun.SunCalc(today, earth);
 			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 			if (sunrise < vcs.shour)
 			{
 				today = vce;
-				SunCalc(today, earth, sun);
+				sun.SunCalc(today, earth);
 				sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 				if (sunrise < vce.shour)
 				{
@@ -629,10 +631,11 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 				{
 					// ksaya
 					vcs.NextDay();
-					DayCalc(vcs, earth, day);
+					day.DayCalc(vcs, earth);
 					oTithi = day.nTithi;
 					oPaksa = day.nPaksa;
-					oMasa = MasaCalc(vcs, day, earth, oYear);
+					oMasa = day.MasaCalc(vcs, earth);
+					oYear = day.nGaurabdaYear;
 					xml << "\t\ttype=\"ksaya\"\n";
 				}
 			}
@@ -640,7 +643,7 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 			{
 				// normal, alebo prvy den vriddhi
 				today = vce;
-				SunCalc(today, earth, sun);
+				sun.SunCalc(today, earth);
 				if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 				{
 					// first day of vriddhi type

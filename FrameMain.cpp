@@ -5,7 +5,6 @@
 #include "vcal5beta.h"
 #include "FrameMain.h"
 #include "level_0.h"
-#include "level_5.h"
 #include "level_5_days.h"
 #include "vedic_ui.h"
 #include "strings.h"
@@ -33,6 +32,7 @@
 #include "GCStrings.h"
 #include "GCTithi.h"
 #include "GCNaksatra.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,7 +40,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-int GetShowSetVal(int);
 int AvcGetNextLine(TString &, TString &, int &);
 int AvcGetTextLineCount(VAISNAVADAY * pvd);
 int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout);
@@ -797,7 +796,7 @@ void CFrameMain::OnSettingsMylocation()
 #include "DPageAstro.h"
 
 #include "DlgCalcProgress.h"
-int GetShowSetChangesCount();
+#include "GCDisplaySettings.h"
 
 void CFrameMain::OnSettingsCalendarlist() 
 {
@@ -817,7 +816,7 @@ void CFrameMain::OnSettingsCalendarlist()
 
 	TString text;
 
-	if (GetShowSetChangesCount() > 0)
+	if (GCDisplaySettings::getCountChanged() > 0)
 	{
 		RecalculateCurrentScreen();
 	}
@@ -1208,7 +1207,7 @@ void CFrameMain::AddNote1(TString &str)
 	str += "\r\nNotes:\r\n\r\n";
 	str += "DST - Time is in \'Daylight Saving Time\'\r\nLT  - Time is in \'Local Time\'\r\n";
 
-	if (GetShowSetVal(9) > 0 || GetShowSetVal(10) > 0 || GetShowSetVal(11) > 0 || GetShowSetVal(12) > 0)
+	if (GCDisplaySettings::getValue(9) > 0 || GCDisplaySettings::getValue(10) > 0 || GCDisplaySettings::getValue(11) > 0 || GCDisplaySettings::getValue(12) > 0)
 	{
 		str += "(*) - value at the moment of sunrise\r\n";
 	}
@@ -1562,13 +1561,13 @@ int CFrameMain::PrintNaksatras(CDC &dc, EARTHDATA earth, int m_masa, int m_year,
 	nColumn[4] = nColumn[3] + sz.cx + maxTithi + xSpace;
 */
 	midPoint = rcPrint.CenterPoint();
-	d = GetFirstDayOfMasa(earth, m_year, mas);
+	d = DAYDATA::GetFirstDayOfMasa(earth, m_year, mas);
 	d.InitWeekDay();
 	d.PreviousDay();
 	if (m_stop_masa == 0)
-		dstop = GetFirstDayOfMasa(earth, m_year + 1, mas);
+		dstop = DAYDATA::GetFirstDayOfMasa(earth, m_year + 1, mas);
 	else
-		dstop = GetFirstDayOfMasa(earth, m_year, (mas + 1) % 12);
+		dstop = DAYDATA::GetFirstDayOfMasa(earth, m_year, (mas + 1) % 12);
 	count = int (dstop.GetJulian() - d.GetJulian());
 
 	TString strTitle;
@@ -1651,15 +1650,16 @@ int CFrameMain::PrintNaksatras(CDC &dc, EARTHDATA earth, int m_masa, int m_year,
 		}
 
 		// sunrise time get
-		SunCalc(d, earth, sun);
+		sun.SunCalc(d, earth);
 		//sun.rise.hour += dst;
 		time_print(str[4], sun.rise);
 		S = str[4];
 		dc.TextOut(nColumn[1], yCurr, S);
 
-		DayCalc(d, earth, day);
+		day.DayCalc(d, earth);
 		d.InitWeekDay();
-		str[5] = GCStrings::GetMasaName(MasaCalc(d, day, earth, gy));
+		str[5] = GCStrings::GetMasaName(day.MasaCalc(d, earth));
+		gy = day.nGaurabdaYear;
 		S = str[5];
 		dc.TextOut(nColumn[2], yCurr, S);
 

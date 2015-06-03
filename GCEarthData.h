@@ -25,5 +25,6 @@ public:
 	static void calc_geocentric(double &longitude, double &latitude, double &rektaszension, double &declination, double date);
 	static char * GetTextLatitude(double d);
 	static char * GetTextLongitude(double d);
+	static double star_time(double date);
 };
 

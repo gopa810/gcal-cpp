@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TString.h"
+#include "enums.h"
 
 class GCStrings
 {
@@ -31,5 +32,10 @@ public:
 	static void setString(int i, const char * str);
 	static const char * GetVersionText(void);
 	static const char * GetEventClassText(int i);
+	static const char * GetKalaName(KalaType i);
+	static const char * GetDayOfWeek(int i);
+	static int readFile(const char * pszFile);
+	static int writeFile(const char * pszFile);
+
 };
 

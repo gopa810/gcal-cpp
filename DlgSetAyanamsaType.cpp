@@ -5,18 +5,14 @@
 #include "vcal5beta.h"
 #include "DlgSetAyanamsaType.h"
 #include "GCAyanamsha.h"
+#include "GCSankranti.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-const char * GetSankMethodName(int i);
-int GetSankrantiType();
-int SetSankrantiType(int);
-void SetShowSetVal(int, int);
-int GetShowSetVal(int);
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgSetAyanamsaType dialog
@@ -59,14 +55,14 @@ BOOL DlgSetAyanamsaType::OnInitDialog()
 
 	m_list.SetCurSel(GCAyanamsha::GetAyanamsaType());
 
-	m_san.AddString(GetSankMethodName(0));
-	m_san.AddString(GetSankMethodName(1));
-	m_san.AddString(GetSankMethodName(2));
-	m_san.AddString(GetSankMethodName(3));
+	m_san.AddString(GCSankranti::GetSankMethodName(0));
+	m_san.AddString(GCSankranti::GetSankMethodName(1));
+	m_san.AddString(GCSankranti::GetSankMethodName(2));
+	m_san.AddString(GCSankranti::GetSankMethodName(3));
 
-	m_san.SetCurSel(GetSankrantiType());
+	m_san.SetCurSel(GCSankranti::GetSankrantiType());
 
-	CheckDlgButton(IDC_CHECK1, GetShowSetVal(44));
+	CheckDlgButton(IDC_CHECK1, GCDisplaySettings::getValue(44));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -75,8 +71,8 @@ BOOL DlgSetAyanamsaType::OnInitDialog()
 void DlgSetAyanamsaType::OnOK() 
 {
 	GCAyanamsha::SetAyanamsaType(m_list.GetCurSel());
-	SetSankrantiType(m_san.GetCurSel());
-	SetShowSetVal(44, IsDlgButtonChecked(IDC_CHECK1));
+	GCSankranti::SetSankrantiType(m_san.GetCurSel());
+	GCDisplaySettings::setValue(44, IsDlgButtonChecked(IDC_CHECK1));
 
 	CDialog::OnOK();
 }

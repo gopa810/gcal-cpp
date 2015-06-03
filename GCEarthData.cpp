@@ -233,3 +233,17 @@ char * EARTHDATA::GetTextLongitude(double d)
 	return inter;
 }
 
+
+double EARTHDATA::star_time(double date)
+{
+	double jd, t;
+	double delta_phi, epsilon;
+
+	jd = date;
+	t =(jd-2451545.0)/36525.0;
+	EARTHDATA::calc_epsilon_phi(date,delta_phi,epsilon);
+	return put_in_360(280.46061837+360.98564736629*(jd-2451545.0)+
+                     t*t*(0.000387933-t/38710000)+
+                     delta_phi*cos_d(epsilon) );
+}
+

@@ -5,7 +5,6 @@
 
 #include "TString.h"
 
-extern TString gstr[];
 extern int gstr_Modified;
 
 void InitGlobalStrings(int);

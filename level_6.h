@@ -2,8 +2,7 @@
 #ifndef _gcal_level_6__
 #define _gcal_level_6__
 
-#include "level_4.h"
-#include "level_5.h"
+#include "level_6.h"
 #include "level_5_days.h"
 #include "locationref.h"
 #include "TResultEvent.h"
@@ -13,8 +12,14 @@
 #define CCE_NAK  0x0004
 #define CCE_SNK  0x0008
 #define CCE_CNJ  0x0010
-#define CCE_SORT 0x0100
-#define CCE_ALL  0x0fff
+#define CCE_RKK  0x0020
+#define CCE_YGK  0x0040
+#define CCE_GKK  0x0080
+#define CCE_MON  0x0100
+#define CCE_MRA  0x0200
+
+#define CCE_SORT 0x1000
+#define CCE_ALL  0x1fff
 
 #define CCTYPE_DATE 1
 #define CCTYPE_S_ARUN 10
@@ -25,6 +30,12 @@
 #define CCTYPE_NAKS   21
 #define CCTYPE_SANK   22
 #define CCTYPE_CONJ   23
+#define CCTYPE_KALA_START 30
+#define CCTYPE_KALA_END   31
+#define CCTYPE_M_RISE 41
+#define CCTYPE_M_SET  42
+#define CCTYPE_M_RASI 45
+
 
 void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME va, VCTIME ve, UInt32 fOptions);
 void FormatTodayInfoRtf(VCTIME gTodayAct, CLocationRef & gMyLocation, TString &str);

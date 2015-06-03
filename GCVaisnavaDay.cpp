@@ -4,8 +4,8 @@
 #include "GCRasi.h"
 #include "GCTithi.h"
 #include "GCNaksatra.h"
+#include "GCDisplaySettings.h"
 
-int GetShowSetVal(int i);
 
 VAISNAVADAY::~VAISNAVADAY()
 {
@@ -197,7 +197,7 @@ void VAISNAVADAY::GetTextEP(TString &str)
 	if (eparana_time2 >= 0.0)
 	{
 		m2 = modf(eparana_time2, &h2);
-		if (GetShowSetVal(50))
+		if (GCDisplaySettings::getValue(50))
 			str.Format("                 %s %02d:%02d (%s) - %02d:%02d (%s) %s", GCStrings::getString(60).c_str(),
 				int(h1), int(m1*60), GCStrings::GetParanaReasonText(eparana_type1), 
 				int(h2), int(m2*60), GCStrings::GetParanaReasonText(eparana_type2),
@@ -208,7 +208,7 @@ void VAISNAVADAY::GetTextEP(TString &str)
 	}
 	else if (eparana_time1 >= 0.0)
 	{
-		if (GetShowSetVal(50))
+		if (GCDisplaySettings::getValue(50))
 			str.Format("                 %s %02d:%02d (%s) %s", GCStrings::getString(61).c_str(),
 				int(h1), int(m1*60), GCStrings::GetParanaReasonText(eparana_type1), GCStrings::GetDSTSignature(nDST) );
 		else

@@ -76,24 +76,6 @@
     <ClCompile Include="level_0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="level_1_moon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_1_sun.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_2_conj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_2_tithi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_4_vcin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="level_5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -143,12 +125,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TFileRichList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TipDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TithiCalc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TResultEvents.cpp">
@@ -298,6 +274,24 @@
     <ClCompile Include="GCAyanamsha.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GCSankranti.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCConjunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCCalendar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCDisplaySettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TipDlg.cpp">
+      <Filter>Source Dialog Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="TithiCalc.cpp">
+      <Filter>Source Dialog Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VCal5beta.rc">
@@ -435,21 +429,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="level_0.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="level_5_days.h">
@@ -591,6 +570,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GCAyanamsha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCSankranti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCConjunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCCalendar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCDisplaySettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
