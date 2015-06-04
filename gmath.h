@@ -1,6 +1,8 @@
 #ifndef _VCAL_G_MATH_FUNCTUIONS
 #define _VCAL_G_MATH_FUNCTUIONS
 
+#include "math.h"
+
 // PORTABLE
 
 // pi

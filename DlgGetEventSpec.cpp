@@ -5,6 +5,7 @@
 #include "vcal5beta.h"
 #include "DlgGetEventSpec.h"
 #include "level_6.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +30,8 @@ DlgGetEventSpec::DlgGetEventSpec(CWnd* pParent /*=NULL*/)
 	m_yama_ghanti = FALSE;
 	m_guli_kalam = FALSE;
 	//}}AFX_DATA_INIT
+	//  m_off = _T("");
+	//  m_off = 0.0;
 }
 
 
@@ -47,6 +50,11 @@ void DlgGetEventSpec::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK8, m_guli_kalam);
 	DDX_Check(pDX, IDC_CHECK9, m_moon_rasi);
 	DDX_Check(pDX, IDC_CHECK10, m_moon_times);
+	DDX_Check(pDX, IDC_CHECK11, m_ascendent);
+	//  DDX_Text(pDX, IDC_EDIT1, m_off);
+	//  D//  DV_MaxChars(p//  DX, m_off, 3);
+	//  DDX_Text(pDX, IDC_EDIT1, m_off);
+	//  DDV_MinMaxDouble(pDX, m_off, -200, 200);
 }
 
 
@@ -74,22 +82,24 @@ void DlgGetEventSpec::OnCancel()
 	CDialog::OnCancel();
 }
 
+
 void DlgGetEventSpec::OnOK() 
 {
 	UpdateData();
 	m_fOptions = 0;
-	if (m_sun) m_fOptions |= CCE_SUN;
-	if (m_naks) m_fOptions |= CCE_NAK;
-	if (m_sank) m_fOptions |= CCE_SNK;
-	if (m_tithi) m_fOptions |= CCE_TIT;
-	if (m_conj) m_fOptions |= CCE_CNJ;
-	if (m_rahu_kalam) m_fOptions |= CCE_RKK;
-	if (m_yama_ghanti) m_fOptions |= CCE_YGK;
-	if (m_guli_kalam) m_fOptions |= CCE_GKK;
-	if (m_moon_rasi) m_fOptions |= CCE_MRA;
-	if (m_moon_times) m_fOptions |= CCE_MON;
+	GCDisplaySettings::setValue(COREEVENTS_SUN, m_sun);
+	GCDisplaySettings::setValue(COREEVENTS_NAKSATRA, m_naks);
+	GCDisplaySettings::setValue(COREEVENTS_SANKRANTI, m_sank);
+	GCDisplaySettings::setValue(COREEVENTS_TITHI, m_tithi);
+	GCDisplaySettings::setValue(COREEVENTS_CONJUNCTION, m_conj);
+	GCDisplaySettings::setValue(COREEVENTS_RAHUKALAM, m_rahu_kalam);
+	GCDisplaySettings::setValue(COREEVENTS_YAMAGHANTI, m_yama_ghanti);
+	GCDisplaySettings::setValue(COREEVENTS_GULIKALAM, m_guli_kalam);
+	GCDisplaySettings::setValue(COREEVENTS_MOONRASI, m_moon_rasi);
+	GCDisplaySettings::setValue(COREEVENTS_MOON, m_moon_times);
+	GCDisplaySettings::setValue(COREEVENTS_ASCENDENT, m_ascendent);
 
-	m_fOptions |= m_fSort;
+	GCDisplaySettings::setValue(COREEVENTS_SORT, m_fSort);
 
 	m_nNextStep = 1;
 	CDialog::OnOK();
@@ -98,7 +108,7 @@ void DlgGetEventSpec::OnOK()
 void DlgGetEventSpec::OnRadio1() 
 {
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO1);
-	m_fSort = CCE_SORT;
+	m_fSort = 1;
 }
 
 void DlgGetEventSpec::OnRadio2() 
@@ -107,22 +117,24 @@ void DlgGetEventSpec::OnRadio2()
 	m_fSort = 0;
 }
 
+
 BOOL DlgGetEventSpec::OnInitDialog() 
 {
-	m_conj = (m_fOptions & CCE_CNJ) ? TRUE : FALSE;
-	m_naks = (m_fOptions & CCE_NAK) ? TRUE : FALSE;
-	m_sank = (m_fOptions & CCE_SNK) ? TRUE : FALSE;
-	m_sun  = (m_fOptions & CCE_SUN) ? TRUE : FALSE;
-	m_tithi = (m_fOptions & CCE_TIT) ? TRUE : FALSE;
-	m_rahu_kalam = (m_fOptions & CCE_RKK) ? TRUE : FALSE;
-	m_yama_ghanti = (m_fOptions & CCE_YGK) ? TRUE : FALSE;
-	m_guli_kalam = (m_fOptions & CCE_GKK) ? TRUE : FALSE;
-	m_moon_rasi = (m_fOptions & CCE_MRA) ? true : false;
-	m_moon_times = (m_fOptions & CCE_MON) ? true : false;
+	m_conj = GCDisplaySettings::getValue(COREEVENTS_CONJUNCTION) ? TRUE : FALSE;
+	m_naks = GCDisplaySettings::getValue(COREEVENTS_NAKSATRA) ? TRUE : FALSE;
+	m_sank = GCDisplaySettings::getValue(COREEVENTS_SANKRANTI) ? TRUE : FALSE;
+	m_sun  = GCDisplaySettings::getValue(COREEVENTS_SUN) ? TRUE : FALSE;
+	m_tithi = GCDisplaySettings::getValue(COREEVENTS_TITHI) ? TRUE : FALSE;
+	m_rahu_kalam = (GCDisplaySettings::getValue(COREEVENTS_RAHUKALAM)) ? TRUE : FALSE;
+	m_yama_ghanti = GCDisplaySettings::getValue(COREEVENTS_YAMAGHANTI) ? TRUE : FALSE;
+	m_guli_kalam = GCDisplaySettings::getValue(COREEVENTS_GULIKALAM) ? TRUE : FALSE;
+	m_moon_rasi = GCDisplaySettings::getValue(COREEVENTS_MOONRASI) ? true : false;
+	m_moon_times = GCDisplaySettings::getValue(COREEVENTS_MOON) ? true : false;
+	m_ascendent = GCDisplaySettings::getValue(COREEVENTS_ASCENDENT) ? true : false;
 
 	CDialog::OnInitDialog();
 
-	m_fSort = m_fOptions & CCE_SORT;
+	m_fSort = GCDisplaySettings::getValue(COREEVENTS_SORT);
 
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, (m_fSort ? IDC_RADIO1 : IDC_RADIO2));
 	

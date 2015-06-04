@@ -147,5 +147,18 @@ CShowSetting GCDisplaySettings::gss[] =
 	{0, 0, "MNFO", "Masa Name Format"}, // 49 format of masa name
 	{0, 0, "EPDR", "Ekadasi Parana details"}, // 50 ekadasi parana details
 	{0, 0, "ANIV", "Aniversary show format"}, // 51 format of aniversary info
+	{1, 1, "CE01", "Sun events"}, // 52
+	{1, 1, "CE02", "Tithi events"}, //53
+	{1, 1, "CE03", "Naksatra Events"}, //54
+	{1, 1, "CE04", "Sankranti Events"},//55
+	{1, 1, "CE05", "Conjunction EVents"},//56
+	{0, 0, "CE06", "Rahu kalam"}, //57
+	{0, 0, "CE07", "Yama ghanti"}, //58
+	{0, 0, "CE08", "Guli kalam"}, //59
+	{0, 0, "CE09", "Moon events"}, //60
+	{0, 0, "CE10", "Moon rasi"}, //61
+	{0, 0, "CE11", "Ascendent"}, //62
+	{0, 0, "CE12", "Sort results core events"},//63
 	{0, 0, NULL, NULL}
 };
+

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GCSunData.h"
 #include "gmath.h"
+#include "math.h"
 
 SUNDATA::SUNDATA(void)
 {

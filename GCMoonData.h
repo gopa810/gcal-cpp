@@ -31,6 +31,7 @@ public:
 	static double MoonCalcElevation(EARTHDATA e, VCTIME vc);
 	static double MoonDistance(double jdate);
 	static VCTIME GetNextRise(EARTHDATA e, VCTIME vc, bool bRise);
+	static int GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate);
 	
 	void calc_horizontal(double date, double longitude, double latitude);
 	void correct_position(double jdate, double latitude, double longitude, double height);

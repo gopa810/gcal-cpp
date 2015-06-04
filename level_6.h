@@ -7,20 +7,6 @@
 #include "locationref.h"
 #include "TResultEvent.h"
 
-#define CCE_SUN  0x0001
-#define CCE_TIT  0x0002
-#define CCE_NAK  0x0004
-#define CCE_SNK  0x0008
-#define CCE_CNJ  0x0010
-#define CCE_RKK  0x0020
-#define CCE_YGK  0x0040
-#define CCE_GKK  0x0080
-#define CCE_MON  0x0100
-#define CCE_MRA  0x0200
-
-#define CCE_SORT 0x1000
-#define CCE_ALL  0x1fff
-
 #define CCTYPE_DATE 1
 #define CCTYPE_S_ARUN 10
 #define CCTYPE_S_RISE 11
@@ -35,6 +21,7 @@
 #define CCTYPE_M_RISE 41
 #define CCTYPE_M_SET  42
 #define CCTYPE_M_RASI 45
+#define CCTYPE_ASCENDENT 50
 
 
 void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME va, VCTIME ve, UInt32 fOptions);

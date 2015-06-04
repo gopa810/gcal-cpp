@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GCGregorianTime.h"
 #include "GCStrings.h"
+#include "math.h"
 
 VCTIME::VCTIME() { 
 	year = 0;

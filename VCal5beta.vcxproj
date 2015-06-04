@@ -79,10 +79,11 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">.\VCal5beta___Win32_Release_Beta\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">.\VCal5beta___Win32_Release_Beta\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../gcal-debug/</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../gcal-debug/</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">gcal</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gcal</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>

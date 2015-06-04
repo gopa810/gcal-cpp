@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GCMoonData.h"
 #include "gmath.h"
+#include "GCAyanamsha.h"
 
 MOONDATA::MOONDATA(void)
 {
@@ -494,6 +495,59 @@ void MOONDATA::CalcMoonTimes(EARTHDATA e, VCTIME vc, double nDaylightSavingShift
 
 }
 
+int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
+{
+	double phi = 30.0;
+	double l1, l2;
+	double jday = startDate.GetJulianComplete();
+	MOONDATA moon;
+	VCTIME d = startDate;
+	double ayanamsa = GCAyanamsha::GetAyanamsa(jday);
+	double scan_step = 0.5;
+	int prev_naks = 0;
+	int new_naks = -1;
+
+	double xj;
+	VCTIME xd;
+
+	moon.Calculate(jday, ed);
+	l1 = put_in_360(moon.longitude_deg - ayanamsa);
+	prev_naks = int(floor(l1 / phi));
+
+	int counter = 0;
+	while(counter < 20)
+	{
+		xj = jday;
+		xd = d;
+
+		jday += scan_step;
+		d.shour += scan_step;
+		if (d.shour > 1.0)
+		{
+			d.shour -= 1.0;
+			d.NextDay();
+		}
+
+		moon.Calculate(jday, ed);
+		l2 = put_in_360(moon.longitude_deg - ayanamsa);
+		new_naks = int(floor(l2/phi));
+		if (prev_naks != new_naks)
+		{
+			jday = xj;
+			d = xd;
+			scan_step *= 0.5;
+			counter++;
+			continue;
+		}
+		else
+		{
+			l1 = l2;
+		}
+	}
+	nextDate = d;
+	return new_naks;
+}
+
 //==================================================================================
 //
 //==================================================================================
@@ -504,18 +558,16 @@ VCTIME MOONDATA::GetNextRise(EARTHDATA e, VCTIME vc, bool bRise)
 	int i;
 	double prev_elev;
 	int nType, nFound = 0;
-	double a, ae, b, be, c, ce, elev;
+	double a, b;
 
 	double h[3];
 	double hour = 1/24.0;
 	double startHour = vc.shour;
 
 	VCTIME track = vc;
-	track.shour += 2*hour;
 	track.NormalizeValues();
 
 	// inicializacia prvej hodnoty ELEVATION
-	track.shour = startHour - hour;
 	h[0] = MoonCalcElevation(e, track);
 	track.shour += hour;
 	h[1] = MoonCalcElevation(e, track);

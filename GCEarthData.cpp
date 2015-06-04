@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GCEarthData.h"
 #include "gmath.h"
+#include "GCAyanamsha.h"
 
 EARTHDATA::EARTHDATA()
 {
@@ -246,4 +247,62 @@ double EARTHDATA::star_time(double date)
                      t*t*(0.000387933-t/38710000)+
                      delta_phi*cos_d(epsilon) );
 }
+
+double EARTHDATA::GetHorizontDegrees(double jday)
+{
+	return put_in_360(EARTHDATA::star_time(jday) - longitude_deg - GCAyanamsha::GetAyanamsa(jday) + 155);
+}
+
+int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)
+{
+	double phi = 30.0;
+	double l1, l2;
+	double jday = startDate.GetJulianComplete();
+	double xj;
+	VCTIME d = startDate;
+	VCTIME xd;
+	double scan_step = 0.05;
+	int prev_tit = 0;
+	int new_tit = -1;
+
+	l1 = GetHorizontDegrees(jday);
+
+	prev_tit = int(floor(l1/phi));
+
+	int counter = 0;
+	while(counter < 20)
+	{
+		xj = jday;
+		xd = d;
+
+		jday += scan_step;
+		d.shour += scan_step;
+		if (d.shour > 1.0)
+		{
+			d.shour -= 1.0;
+			d.NextDay();
+		}
+
+		l2 = GetHorizontDegrees(jday);
+		new_tit = int(floor(l2/phi));
+
+		if (prev_tit != new_tit)
+		{
+			jday = xj;
+			d = xd;
+			scan_step *= 0.5;
+			counter++;
+			continue;
+		}
+		else
+		{
+			l1 = l2;
+		}
+	}
+	nextDate = d;
+
+	return new_tit;
+}
+
+
 

@@ -106,10 +106,14 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 
 	double sunRise, sunSet;
 	double r1, r2;
+	double previousSunriseHour, todaySunriseHour;
+	double previousLongitude = -100;
+	double todayLongitude = 0;
+	double fromTimeLimit = 0;
 
 	while(vcAdd.IsBeforeThis(vcEnd))
 	{
-		if (fOptions & CCE_SUN)
+		if (GCDisplaySettings::getValue(COREEVENTS_SUN))
 		{
 			ndst = is_daylight_time2(vcAdd, loc.m_nDST);
 			sun.SunCalc(vcAdd, earth);
@@ -134,7 +138,57 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			sunSet = sun.set.GetDayTime();
 		}
 
-		if (fOptions & CCE_RKK)
+		if (GCDisplaySettings::getValue(COREEVENTS_ASCENDENT))
+		{
+			todayLongitude = sun.longitude_deg;
+			vcAdd.shour = sunRise;
+			todaySunriseHour = sunRise;
+			if (previousLongitude < -10)
+			{
+				VCTIME prevSunrise = vcAdd;
+				prevSunrise.PreviousDay();
+				sun.SunCalc(prevSunrise, earth);
+				previousSunriseHour = sun.rise.GetDayTime() - 1;
+				previousLongitude = sun.longitude_deg;
+				fromTimeLimit = 0;
+			}
+
+			double a, b;
+			double jd = vcAdd.GetJulianComplete();
+			double ayan = GCAyanamsha::GetAyanamsa(jd);
+			r1 = put_in_360(previousLongitude - ayan) / 30;
+			r2 = put_in_360(todayLongitude - ayan) / 30;
+
+			while(r2 > r1 + 13)
+			{
+				r2 -= 12.0;
+			}
+			while(r2 < r1 + 11)
+			{
+				r2 += 12.0;
+			}
+
+			a = (r2 - r1) / (todaySunriseHour - previousSunriseHour);
+			b = r2 - a * todaySunriseHour;
+
+			for(double tr = ceil(r1); tr < r2; tr += 1.0)
+			{
+				double tm = ( tr - b ) / a;
+				if (tm > fromTimeLimit)
+				{
+					vcNext = vcAdd;
+					vcNext.shour = tm;
+					vcNext.NormalizeValues();
+					inEvents.AddEvent(vcNext, CCTYPE_ASCENDENT, (int)tr, ndst);
+				}
+			}
+
+			previousLongitude = todayLongitude;
+			previousSunriseHour = todaySunriseHour - 1;
+			fromTimeLimit = previousSunriseHour;
+		}
+
+		if (GCDisplaySettings::getValue(COREEVENTS_RAHUKALAM))
 		{
 			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_RAHU_KALAM);
 
@@ -145,7 +199,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_RAHU_KALAM, ndst);
 		}
 
-		if (fOptions & CCE_YGK)
+		if (GCDisplaySettings::getValue(COREEVENTS_YAMAGHANTI))
 		{
 			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_YAMA_GHANTI);
 
@@ -156,7 +210,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_YAMA_GHANTI, ndst);
 		}
 
-		if (fOptions & CCE_GKK)
+		if (GCDisplaySettings::getValue(COREEVENTS_GULIKALAM))
 		{
 			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_GULI_KALAM);
 
@@ -170,7 +224,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		vcAdd.NextDay();
 	}
 
-	if (fOptions & CCE_TIT)
+	if (GCDisplaySettings::getValue(COREEVENTS_TITHI))
 	{
 		vcAdd = vc;
 		vcAdd.shour = 0.0;
@@ -197,7 +251,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		}
 	}
 
-	if (fOptions & CCE_NAK)
+	if (GCDisplaySettings::getValue(COREEVENTS_NAKSATRA))
 	{
 		vcAdd = vc;
 		vcAdd.shour = 0.0;
@@ -224,7 +278,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		}
 	}
 
-	if (fOptions & CCE_SNK)
+	if (GCDisplaySettings::getValue(COREEVENTS_SANKRANTI))
 	{
 		vcAdd = vc;
 		vcAdd.shour = 0.0;
@@ -246,7 +300,30 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		}
 	}
 
-	if (fOptions & CCE_CNJ)
+	if (GCDisplaySettings::getValue(COREEVENTS_MOONRASI))
+	{
+		vcAdd = vc;
+		vcAdd.shour = 0.0;
+		while(vcAdd.IsBeforeThis(vcEnd))
+		{
+			nData = MOONDATA::GetNextMoonRasi(earth, vcAdd, vcNext);
+			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
+			{
+				vcNext.InitWeekDay();
+				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				inEvents.AddEvent(vcNext, CCTYPE_M_RASI, nData, ndst);
+			}
+			else
+			{
+				break;
+			}
+			vcAdd = vcNext;
+			vcAdd.shour += 0.5;
+			vcAdd.NormalizeValues();
+		}
+
+	}
+	if (GCDisplaySettings::getValue(COREEVENTS_CONJUNCTION))
 	{
 		double dlong;
 		vcAdd = vc;
@@ -269,7 +346,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		}
 	}
 
-	if (fOptions & CCE_MON)
+	if (GCDisplaySettings::getValue(COREEVENTS_MOON))
 	{
 		vcAdd = vc;
 		vcAdd.shour = 0.0;
@@ -281,11 +358,43 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			vcNext = MOONDATA::GetNextRise(earth, vcNext, false);
 			inEvents.AddEvent(vcNext, CCTYPE_M_SET, 0, ndst);
 
+			vcNext.shour += 0.05;
+			vcNext.NormalizeValues();
 			vcAdd = vcNext;
 		}
 	}
 
-	if (fOptions & CCE_SORT)
+	if (GCDisplaySettings::getValue(COREEVENTS_ASCENDENT))
+	{/*
+		vcAdd = vc;
+		vcAdd.shour = 0.0;
+		while(vcAdd.IsBeforeThis(vcEnd))
+		{
+			nData = earth.GetNextAscendentStart(vcAdd, vcNext);
+			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
+			{
+				vcNext.InitWeekDay();
+				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				inEvents.AddEvent(vcNext, CCTYPE_ASCENDENT, nData, ndst);
+			}
+			else
+			{
+				break;
+			}
+			vcAdd = vcNext;
+			vcAdd.shour += 1/24.0;
+			if (vcAdd.shour >= 1.0)
+			{
+				vcAdd.shour -= 1.0;
+				vcAdd.NextDay();
+			}
+		}
+
+		*/
+
+	}
+
+	if (GCDisplaySettings::getValue(COREEVENTS_SORT))
 		inEvents.Sort(true);
 	else
 		inEvents.b_sorted = false;
@@ -359,6 +468,9 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 				case CCTYPE_SANK:
 					res += "\r\n ========== SANKRANTIS ===============================================\r\n\r\n";
 					break;
+				case CCTYPE_ASCENDENT:
+					res += "\r\n ========== ASCENDENTS ===============================================\r\n\r\n";
+					break;
 				case CCTYPE_CONJ:
 					res += "\r\n ========== SUN-MOON CONJUNCTIONS ====================================\r\n\r\n";
 					break;
@@ -426,9 +538,9 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
-			res += "   ";
+			res += "   Sun enters ";
 			res += GCStrings::GetSankrantiName(dnr.nData);
-			res += " Sankranti";
+			res += " ";
 			res += "\r\n";
 			break;
 		case 23:
@@ -474,6 +586,26 @@ int FormatEventsText(TResultEvents &inEvents, TString &res)
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   moonset\r\n";
+			break;
+		case CCTYPE_ASCENDENT:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetSankrantiName(dnr.nData);
+			res += " ascendent";
+			res += "\r\n";
+			break;
+		case CCTYPE_M_RASI:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   Moon enters ";
+			res += GCStrings::GetSankrantiName(dnr.nData);
+			res += " ";
+			res += "\r\n";
 			break;
 		default:
 			break;
@@ -691,9 +823,9 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
-			res += "   ";
+			res += "   Sun enters ";
 			res += GCStrings::GetSankrantiName(dnr.nData);
-			res += " Sankranti";
+			res += " ";
 			res += "\\par\r\n";
 			break;
 		case 23:
@@ -740,6 +872,26 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   moonset\r\n";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_ASCENDENT:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetSankrantiName(dnr.nData);
+			res += " ascendent";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_M_RASI:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   Moon enters ";
+			res += GCStrings::GetSankrantiName(dnr.nData);
+			res += " ";
 			res += "\\par\r\n";
 			break;
 		default:
@@ -3373,7 +3525,7 @@ void FormatTodayInfoRtf(VCTIME vc, CLocationRef & loc, TString &str)
 		jd = vct.GetJulianComplete();
 		md.Calculate(vct.GetJulianComplete(), ed);
 		str2.Format("Hour %.1f      rektas: %.3f  long: %.3f  st:%.3f\n horz: %.3f\\par ", i/2.0, md.rektaszension, md.longitude_deg,
-			EARTHDATA::star_time(jd), put_in_360(EARTHDATA::star_time(jd) - ed.longitude_deg));
+			EARTHDATA::star_time(jd), put_in_360(EARTHDATA::star_time(jd) - ed.longitude_deg - 90)/30);
 		str += str2;
 	}
 	str += "\n\n \\par";

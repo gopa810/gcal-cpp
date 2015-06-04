@@ -58,6 +58,9 @@ public:
 	BOOL m_guli_kalam;
 	BOOL m_moon_rasi;
 	BOOL m_moon_times;
+	BOOL m_ascendent;
+//	CString m_off;
+//	double m_off;
 };
 
 //{{AFX_INSERT_LOCATION}}

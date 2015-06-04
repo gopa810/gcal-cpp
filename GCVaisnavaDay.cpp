@@ -5,7 +5,7 @@
 #include "GCTithi.h"
 #include "GCNaksatra.h"
 #include "GCDisplaySettings.h"
-
+#include "math.h"
 
 VAISNAVADAY::~VAISNAVADAY()
 {
