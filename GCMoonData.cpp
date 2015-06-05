@@ -554,10 +554,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 
 VCTIME MOONDATA::GetNextRise(EARTHDATA e, VCTIME vc, bool bRise)
 {
-	double UT;
-	int i;
-	double prev_elev;
-	int nType, nFound = 0;
+	int nFound = 0;
 	double a, b;
 
 	double h[3];

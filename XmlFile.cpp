@@ -27,29 +27,26 @@ TFileXml::~TFileXml()
 
 }
 
-TFileXml & TFileXml::operator<<(TCHAR *p)
+void TFileXml::write(TCHAR *p)
 {
 	fputs(p, fout);
-	return * this;
 }
 
-TFileXml & TFileXml::operator<<(double d)
+void TFileXml::write(double d)
 {
 	TString s;
 	s.Format("%+.5f", d);
 	fputs(s, fout);
-	return * this;
 }
 
-TFileXml & TFileXml::operator<<(int n)
+void TFileXml::write(int n)
 {
 	TString s;
 	s.Format("%d", n);
 	fputs(s, fout);
-	return * this;
 }
 
-TFileXml & TFileXml::operator<<(DAYTIME dt)
+void TFileXml::write(DAYTIME dt)
 {
 	TString s;
 	if (dt.hour >= 0)
@@ -57,25 +54,21 @@ TFileXml & TFileXml::operator<<(DAYTIME dt)
 	else
 		s = "N/A";
 	fputs(s, fout);
-	return * this;	
 }
 
-TFileXml & TFileXml::operator<<(TString &s)
+void TFileXml::write(TString &s)
 {
 	fputs(s, fout);
-	return * this;
 }
 
-TFileXml & TFileXml::operator<<(const char * s)
+void TFileXml::write(const char * s)
 {
 	fputs(s, fout);
-	return * this;
 }
 
-TFileXml & TFileXml::operator<<(VCTIME vc)
+void TFileXml::write(VCTIME vc)
 {
 	TString s;
 	s.Format("%d %s %d", vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year);
 	fputs(s, fout);
-	return * this;
 }

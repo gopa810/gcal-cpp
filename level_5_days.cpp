@@ -16,6 +16,7 @@
 #include "GCSankranti.h"
 #include "GCMoonData.h"
 #include "GCDisplaySettings.h"
+#include "TTimeZone.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -36,9 +37,6 @@ Main func is TResultCalendar::CalculateCalendar
 
 
 extern int gp_Fasting[];
-
-//int g_set_oldstylefast = 0;
-int is_daylight_time(VCTIME vc, int nIndex);
 
 
 //////////////////////////////////////////////////////////////////////
@@ -227,7 +225,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	// calculating moon times
 	for(i = 0; i < nTotalCount; i++)
 	{
-		m_pData[i].nDST = is_daylight_time(m_pData[i].date, loc.m_nDST);
+		m_pData[i].nDST = TTimeZone::determineDaylightStatus(m_pData[i].date, loc.m_nDST);
 //		TRACE("DST %d.%d.%d = %d\n", m_pData[i].date.day, m_pData[i].date.month, m_pData[i].date.year, m_pData[i].nDST);
 	}
 
@@ -369,7 +367,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	do
 	{
 		date = GCSankranti::GetNextSankranti(date, zodiac);
-		date.shour += is_daylight_time(date, loc.m_nDST)/24.0;
+		date.shour += TTimeZone::determineDaylightStatus(date, loc.m_nDST)/24.0;
 		date.NormalizeValues();
 
 		bFoundSan = false;

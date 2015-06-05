@@ -22,23 +22,36 @@ int WriteXML_FirstDay_Year(FILE * fout, CLocationRef & loc, VCTIME vcStart)
 {
 	TFileXml xml;
 
-	xml = fout;
+	xml.initWithFile(fout);
 
 	vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
 	vcStart.InitWeekDay();
 
 	// write
-	xml << "<xml>\n";
-	xml << "\t<request name=\"FirstDay\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"year\" val=\""<< vcStart.year << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"FirstDay_of_GaurabdaYear\">\n";
-	xml << "\t\t<firstday date=\"" << vcStart 
-		<< "\" dayweekid = \"" << vcStart.dayOfWeek << "\" dayweek=\"" << GCStrings::getString(vcStart.dayOfWeek) << "\" />\n";
-	xml << "\t</result>\n";
-	xml << "</xml>\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"FirstDay\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"year\" val=\"");
+	xml.write(vcStart.year);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"FirstDay_of_GaurabdaYear\">\n");
+	xml.write("\t\t<firstday date=\"");
+	xml.write(vcStart);
+	xml.write("\" dayweekid = \"");
+	xml.write(vcStart.dayOfWeek);
+	xml.write("\" dayweek=\"");
+	xml.write(GCStrings::getString(vcStart.dayOfWeek));
+	xml.write("\" />\n");
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
 
 	return 0;
 }
@@ -52,41 +65,68 @@ int WriteXML_Sankrantis(FILE * fout, CLocationRef & loc, VCTIME vcStart, VCTIME 
 	TFileXml xml;
 
 	// open file
-	xml = fout;
+	xml.initWithFile(fout);
 
 	d = vcStart;
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Sankranti\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << loc.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"location\" val=\"" << loc.m_strName << "\" />\n";
-	xml << "\t\t<arg name=\"startdate\" val=\""<< vcStart << "\" />\n";
-	xml << "\t\t<arg name=\"enddate\" val=\""<< vcEnd << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"SankrantiList\">\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Sankranti\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"location\" val=\"");
+	xml.write(loc.m_strName);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+				xml.write(vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"enddate\" val=\"");
+				xml.write(vcEnd);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"SankrantiList\">\n");
 
 	while(d.IsBeforeThis(vcEnd))
 	{
 		d = GCSankranti::GetNextSankranti(d, zodiac);
 		d.InitWeekDay();
-		xml << "\t\t<sank date=\"" << d << "\" ";
-		xml << "dayweekid=\"" << d.dayOfWeek << "\" dayweek=\"" << GCStrings::getString(d.dayOfWeek) << "\" ";
+		xml.write("\t\t<sank date=\"");
+		xml.write(d);
+		xml.write("\" ");
+		xml.write("dayweekid=\"");
+		xml.write(d.dayOfWeek);
+		xml.write("\" dayweek=\"");
+		xml.write(GCStrings::getString(d.dayOfWeek));
+		xml.write("\" ");
 
 		dt.SetDegTime( 360 * d.shour );
 
-		xml << " time=\"" << dt << "\" >\n";
-		xml << "\t\t<zodiac sans=\"" << GCStrings::GetSankrantiName(zodiac);
-		xml << "\" eng=\"" << GCStrings::GetSankrantiNameEn(zodiac) << "\" id=\"" << zodiac << "\" />\n";
-		xml << "\t\t</sank>\n\n";
+		xml.write(" time=\"");
+		xml.write(dt);
+		xml.write("\" >\n");
+		xml.write("\t\t<zodiac sans=\"");
+		xml.write(GCStrings::GetSankrantiName(zodiac));
+		xml.write("\" eng=\"");
+		xml.write(GCStrings::GetSankrantiNameEn(zodiac));
+		xml.write("\" id=\"");
+		xml.write(zodiac);
+		xml.write("\" />\n");
+		xml.write("\t\t</sank>\n\n");
 
 		d.NextDay();
 		d.NextDay();
 	}
 
-	xml << "\t</result>\n";
-	xml << "</xml>";
+	xml.write("\t</result>\n");
+	xml.write("</xml>");
 
 	return 1;
 }
@@ -101,20 +141,36 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 	int nPrevMasa = -1;
 	int nPrevPaksa = -1;
 
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Calendar\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << daybuff.m_Location.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << daybuff.m_Location.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << daybuff.m_Location.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"startdate\" val=\"" << daybuff.m_vcStart << "\" />\n";
-	xml << "\t\t<arg name=\"daycount\" val=\"" << daybuff.m_vcCount << "\" />\n";
-	xml << "\t\t<arg name=\"dst\" val=\"" << daybuff.m_Location.m_nDST << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Calendar\">\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Calendar\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(daybuff.m_Location.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(daybuff.m_vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"daycount\" val=\"");
+	xml.write(daybuff.m_vcCount);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"dst\" val=\"");
+	xml.write(daybuff.m_Location.m_nDST);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Calendar\">\n");
 	if (daybuff.m_Location.m_nDST > 0)
-		xml << "\t<dstsystem name=\"" << TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST) << "\" />\n";
+		xml.write("\t<dstsystem name=\"");
+	xml.write(TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST));
+	xml.write("\" />\n");
 
 	for (k = 0; k < daybuff.m_vcCount; k++)
 	{
@@ -124,28 +180,39 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 			if (nPrevMasa != pvd->astrodata.nMasa)
 			{
 				if (nPrevMasa != -1)
-					xml << "\t</masa>\n";
-				xml << "\t<masa name=\"" << GCStrings::GetMasaName(pvd->astrodata.nMasa) << " Masa";
+					xml.write("\t</masa>\n");
+				xml.write("\t<masa name=\"");
+				xml.write(GCStrings::GetMasaName(pvd->astrodata.nMasa));
+				xml.write(" Masa");
 				if (nPrevMasa == ADHIKA_MASA)
-					xml << " " << GCStrings::getString(109);
-				xml << "\"";
-				xml << " gyear=\"Gaurabda " << pvd->astrodata.nGaurabdaYear << "\"";
-				xml << ">\n";
+					xml.write(" ");
+				xml.write(GCStrings::getString(109));
+				xml.write("\"");
+				xml.write(" gyear=\"Gaurabda ");
+				xml.write(pvd->astrodata.nGaurabdaYear);
+				xml.write("\"");
+				xml.write(">\n");
 			}
 
 			nPrevMasa = pvd->astrodata.nMasa;
 
 			// date data
-			xml << "\t<day date=\"" << pvd->date << "\" dayweekid=\"" << pvd->date.dayOfWeek;
-			xml << "\" dayweek=\"";
+			xml.write("\t<day date=\"");
+			xml.write(pvd->date);
+			xml.write("\" dayweekid=\"");
+			xml.write(pvd->date.dayOfWeek);
+			xml.write("\" dayweek=\"");
 			GCStrings::getString(pvd->date.dayOfWeek).Left(2, st);
-			xml << st.c_str() << "\">\n";
+			xml.write(st.c_str());
+			xml.write("\">\n");
 
 			// sunrise data
-			xml << "\t\t<sunrise time=\"" << pvd->astrodata.sun.rise << "\">\n";
+			xml.write("\t\t<sunrise time=\"");
+			xml.write(pvd->astrodata.sun.rise);
+			xml.write("\">\n");
 
-			xml << "\t\t\t<tithi name=\"";
-			xml << GCStrings::GetTithiName(pvd->astrodata.nTithi);
+			xml.write("\t\t\t<tithi name=\"");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithi));
 			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) 
 				|| (pvd->astrodata.nTithi == 11) || (pvd->astrodata.nTithi == 26))
 			{
@@ -153,44 +220,60 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				{
 					if (pvd->nMhdType == EV_NULL)
 					{
-						xml << " " << GCStrings::getString(58);
+						xml.write(" ");
+						xml.write(GCStrings::getString(58));
 					}
 					else
 					{
-						xml << " " << GCStrings::getString(59);
+						xml.write(" ");
+						xml.write(GCStrings::getString(59));
 					}
 				}
 			}
 			str.Format("\" elapse=\"%.1f\" index=\"%d\"/>\n"
 				,pvd->astrodata.nTithiElapse, pvd->astrodata.nTithi % 30 + 1 );
-			xml << str;
+			xml.write(str);
 
 			str.Format("\t\t\t<naksatra name=\"%s\" elapse=\"%.1f\" />\n"
 				,GCStrings::GetNaksatraName(pvd->astrodata.nNaksatra), pvd->astrodata.nNaksatraElapse );
-			xml << str;
+			xml.write(str);
 
 			str.Format("\t\t\t<yoga name=\"%s\" />\n", GCStrings::GetYogaName(pvd->astrodata.nYoga) );
-			xml << str;
+			xml.write(str);
 
 			str.Format("\t\t\t<paksa id=\"%c\" name=\"%s\"/>\n", GCStrings::GetPaksaChar(pvd->astrodata.nPaksa), GCStrings::GetPaksaName(pvd->astrodata.nPaksa) );
-			xml << str;
+			xml.write(str);
 
-			xml << "\t\t</sunrise>\n";
+			xml.write("\t\t</sunrise>\n");
 
-			xml << "\t\t<dst offset=\"" << pvd->nDST << "\" />\n";
+			xml.write("\t\t<dst offset=\"");
+			xml.write(pvd->nDST);
+			xml.write("\" />\n");
 			// arunodaya data
-			xml << "\t\t<arunodaya time=\"" << pvd->astrodata.sun.arunodaya << "\">\n";
-			xml << "\t\t\t<tithi name=\"" << GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya) << "\" />\n";
-			xml << "\t\t</arunodaya>\n";
+			xml.write("\t\t<arunodaya time=\"");
+			xml.write(pvd->astrodata.sun.arunodaya);
+			xml.write("\">\n");
+			xml.write("\t\t\t<tithi name=\"");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
+			xml.write("\" />\n");
+			xml.write("\t\t</arunodaya>\n");
 
 			str.Empty();
 
-			xml << "\t\t<noon time=\"" << pvd->astrodata.sun.noon << "\" />\n";
+			xml.write("\t\t<noon time=\"");
+			xml.write(pvd->astrodata.sun.noon);
+			xml.write("\" />\n");
 
-			xml << "\t\t<sunset time=\"" << pvd->astrodata.sun.set << "\" />\n";
+			xml.write("\t\t<sunset time=\"");
+			xml.write(pvd->astrodata.sun.set);
+			xml.write("\" />\n");
 
 			// moon data
-			xml << "\t\t<moon rise=\"" << pvd->moonrise << "\" set=\"" << pvd->moonset << "\" />\n";
+			xml.write("\t\t<moon rise=\"");
+			xml.write(pvd->moonrise);
+			xml.write("\" set=\"");
+			xml.write(pvd->moonset);
+			xml.write("\" />\n");
 
 			if (pvd->ekadasi_parana)
 			{
@@ -205,7 +288,7 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				{
 					str.Format("\t\t<parana after=\"%02d:%02d\" />\n", int(h1), int(m1*60) );
 				}
-				xml << str;
+				xml.write(str);
 			}
 			str.Empty();
 
@@ -220,7 +303,7 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 					{
 						nFestClass = pvd->GetFestivalClass(str2);
 						str.Format("\t\t<festival name=\"%s\" class=\"%d\"/>\n", str2.c_str(), nFestClass);
-						xml << str;
+						xml.write(str);
 					}
 				}
 			}
@@ -229,11 +312,11 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 			{
 				if (pvd->nFastType == FAST_EKADASI)
 				{
-					xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 				}
 				else
 				{
-					xml << "\t\t<fast type=\"\" mark=\"\" />\n";
+					xml.write("\t\t<fast type=\"\" mark=\"\" />\n");
 				}
 			}
 
@@ -245,7 +328,7 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				str.Format("\t\t<sankranti rasi=\"%s\" time=\"%02d:%02d:%02d\" />\n"
 					, GCStrings::GetSankrantiName(pvd->sankranti_zodiac), pvd->sankranti_day.GetHour()
 					, pvd->sankranti_day.GetMinute(), pvd->sankranti_day.GetSecond());
-				xml << str;
+				xml.write(str);
 			}
 
 			if (pvd->was_ksaya)
@@ -254,34 +337,34 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				m1 = modf(pvd->ksaya_time1*24, &h1);
 				m2 = modf(pvd->ksaya_time2*24, &h2);
 				str.Format("\t\t<ksaya from=\"%02d:%02d\" to=\"%02d:%02d\" />\n", int(h1), abs(int(m1*60)), int(h2), abs(int(m2*60)));
-				xml << str;
+				xml.write(str);
 			}
 
 			if (pvd->is_vriddhi)
 			{
-				xml << "\t\t<vriddhi sd=\"yes\" />\n";
+				xml.write("\t\t<vriddhi sd=\"yes\" />\n");
 			}
 			else
 			{
-				xml << "\t\t<vriddhi sd=\"no\" />\n";
+				xml.write("\t\t<vriddhi sd=\"no\" />\n");
 			}
 
 			if (pvd->nCaturmasya & CMASYA_PURN_MASK)
 			{
-				xml << "\t\t<caturmasya day=\"" 
-					<< (((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)) > 1 ? "last" : "first")
-					<< "\" month=\"" 
-					<< int((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 4) 
-					<< "\" system=\"PURNIMA\" />\n";
+				xml.write("\t\t<caturmasya day=\"" );
+				xml.write((((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)) > 1 ? "last" : "first"));
+				xml.write("\" month=\"");
+				xml.write(int((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 4));
+				xml.write("\" system=\"PURNIMA\" />\n");
 			}
 
 			if (pvd->nCaturmasya & CMASYA_PRAT_MASK)
 			{
-				xml << "\t\t<caturmasya day=\"" 
-					<< (((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8) > 1 ? "last" : "first")
-					<< "\" month=\"" 
-					<< int((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 12)
-					<< "\" system=\"PRATIPAT\" />\n";
+				xml.write("\t\t<caturmasya day=\"" );
+				xml.write((((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8) > 1 ? "last" : "first"));
+				xml.write("\" month=\"" );
+				xml.write(int((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 12));
+				xml.write("\" system=\"PRATIPAT\" />\n");
 			}
 
 			if (pvd->nCaturmasya & CMASYA_EKAD_MASK)
@@ -289,19 +372,20 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				str.Format("\t<caturmasya day=\"%s\" month=\"%d\" system=\"EKADASI\" />\n"
 					, ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16) > 1 ? "last" : "first"
 					, int((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 20));
-				xml << str;
+				xml.write(str);
 			}
 
-			xml << "\t</day>\n\n";
+			xml.write("\t</day>\n\n");
 
 		}
 		date.shour = 0;
 		date.NextDay();
 	}
-	xml << "\t</masa>\n";
+	xml.write("\t</masa>\n");
 
 	
-	xml << "</result>\n" << "</xml>\n";
+	xml.write("</result>\n");
+	xml.write("</xml>\n");
 
 	return 1;
 }
@@ -312,17 +396,29 @@ int WriteXML_Naksatra(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCount)
 	VCTIME date;
 
 	TFileXml xml;
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Naksatra\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << loc.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"startdate\" val=\"" << vc << "\" />\n";
-	xml << "\t\t<arg name=\"daycount\" val=\"" << nDaysCount << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Naksatra\">\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Naksatra\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(vc);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"daycount\" val=\"");
+	xml.write(nDaysCount);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Naksatra\">\n");
 
 	VCTIME d = vc;
 	d.tzone = loc.m_fTimezone;
@@ -336,31 +432,41 @@ int WriteXML_Naksatra(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCount)
 	{
 		nak = GCNaksatra::GetNextNaksatra(earth, d, dn);
 		d = dn;
-		xml << "\t\t<day date=\"" << d << "\">\n";
+		xml.write("\t\t<day date=\"");
+	xml.write(d);
+	xml.write("\">\n");
 		//str.Format("%d.%d.%d", d.day, d.month, d.year);
 		//n = m_list.InsertItem(50, GetNaksatraName(nak));
 		//m_list.SetItemText(n, 1, str);
-		xml << "\t\t\t<naksatra id=\"" << nak << "\" name=\"" << GCStrings::GetNaksatraName(nak) << "\"\n";
+		xml.write("\t\t\t<naksatra id=\"");
+	xml.write(nak);
+	xml.write("\" name=\"");
+	xml.write(GCStrings::GetNaksatraName(nak));
+	xml.write("\"\n");
 		dt.SetDegTime( d.shour * 360);
 		//time_print(str, dt);
-		xml << "\t\t\t\tstarttime=\"" << dt << "\" />\n";
+		xml.write("\t\t\t\tstarttime=\"");
+	xml.write(dt);
+	xml.write("\" />\n");
 		//m_list.SetItemText(n, 2, str);
 
 		// sunrise time get
 		sun.SunCalc(d, earth);
 		//time_print(str, sun.rise);
 		//m_list.SetItemText(n, 3, str);
-		xml << "\t\t\t<sunrise time=\"" << sun.rise << "\" />\n";
+		xml.write("\t\t\t<sunrise time=\"");
+	xml.write(sun.rise);
+	xml.write("\" />\n");
 
-		xml << "\t\t</day>\n";
+		xml.write("\t\t</day>\n");
 		// increment for non-duplication of naksatra
 		d = dn;
 		d.shour += 1.0/8.0;
 	}
 
 
-	xml << "\t</result>\n";
-	xml << "</xml>\n";
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
 
 
 	return 1;
@@ -372,16 +478,26 @@ int WriteXML_Tithi(FILE * fout, CLocationRef &loc, VCTIME vc)
 	VCTIME date;
 
 	TFileXml xml;
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Tithi\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << loc.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"startdate\" val=\"" << vc << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Tithi\">\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(vc);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
 
 	VCTIME d = vc;
 	VCTIME d1, d2;
@@ -403,18 +519,30 @@ int WriteXML_Tithi(FILE * fout, CLocationRef &loc, VCTIME vc)
 	{
 		dt.SetDegTime( d1.shour * 360 );
 		// start tithi at t[0]
-		xml << "\t\t<tithi\n\t\t\tid=\"" << day.nTithi << "\"\n";
-		xml << "\t\t\tname=\"" << GCStrings::GetTithiName(day.nTithi) << "\"\n";
-		xml << "\t\t\tstartdate=\"" << d1 << "\"\n";
-		xml << "\t\t\tstarttime=\"" << dt << "\"\n";
+		xml.write("\t\t<tithi\n\t\t\tid=\"");
+	xml.write(day.nTithi);
+	xml.write("\"\n");
+		xml.write("\t\t\tname=\"");
+	xml.write(GCStrings::GetTithiName(day.nTithi));
+	xml.write("\"\n");
+		xml.write("\t\t\tstartdate=\"");
+	xml.write(d1);
+	xml.write("\"\n");
+		xml.write("\t\t\tstarttime=\"");
+	xml.write(dt);
+	xml.write("\"\n");
 	
 		dt.SetDegTime( d2.shour * 360 );
-		xml << "\t\t\tenddate=\"" << d2 << "\"\n";
-		xml << "\t\t\tendtime=\"" << dt << "\"\n />";
+		xml.write("\t\t\tenddate=\"");
+	xml.write(d2);
+	xml.write("\"\n");
+		xml.write("\t\t\tendtime=\"");
+	xml.write(dt);
+	xml.write("\"\n />");
 	}
 
-	xml << "\t</result>\n";
-	xml << "</xml>\n";
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
 
 	return 1;
 }
@@ -432,28 +560,50 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 
 	TFileXml xml;
 
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Tithi\" version=\"" << GCStrings::getString(130) << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << loc.m_fTimezone << "\" />\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
 	if (gyearA > 1500)
 	{
-		xml << "\t\t<arg name=\"year-start\" val=\"" << gyearA << "\" />\n";
-		xml << "\t\t<arg name=\"year-end\" val=\"" << gyearB << "\" />\n";
+		xml.write("\t\t<arg name=\"year-start\" val=\"");
+	xml.write(gyearA);
+	xml.write("\" />\n");
+		xml.write("\t\t<arg name=\"year-end\" val=\"");
+	xml.write(gyearB);
+	xml.write("\" />\n");
 	}
 	else
 	{
-		xml << "\t\t<arg name=\"gaurabdayear-start\" val=\"" << gyearA << "\" />\n";
-		xml << "\t\t<arg name=\"gaurabdayear-end\" val=\"" << gyearB << "\" />\n";
+		xml.write("\t\t<arg name=\"gaurabdayear-start\" val=\"");
+	xml.write(gyearA);
+	xml.write("\" />\n");
+		xml.write("\t\t<arg name=\"gaurabdayear-end\" val=\"");
+	xml.write(gyearB);
+	xml.write("\" />\n");
 	}
-	xml << "\t\t<arg name=\"masa\" val=\"" << gmasa << "\" />\n";
-	xml << "\t\t<arg name=\"paksa\" val=\"" << gpaksa << "\" />\n";
-	xml << "\t\t<arg name=\"tithi\" val=\"" << gtithi << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Tithi\">\n";
+	xml.write("\t\t<arg name=\"masa\" val=\"");
+	xml.write(gmasa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"paksa\" val=\"");
+	xml.write(gpaksa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"tithi\" val=\"");
+	xml.write(gtithi);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
 
 
 	EARTHDATA earth = (EARTHDATA)loc;
@@ -487,11 +637,17 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 		oMasa = gmasa;
 		oPaksa = gpaksa;
 		oYear = 0;
-		xml << "\t<celebration\n";
-//		xml << "\t\t<tithi\n";
-		xml << "\t\trtithi=\"" << GCStrings::GetTithiName(oTithi) << "\"\n";
-		xml << "\t\trmasa=\"" << GCStrings::GetMasaName(oMasa) << "\"\n";
-		xml << "\t\trpaksa=\"" << (oPaksa ? _T("Gaura") : _T("Krsna")) << "\"\n";
+		xml.write("\t<celebration\n");
+//		xml.write("\t\t<tithi\n";
+		xml.write("\t\trtithi=\"");
+	xml.write(GCStrings::GetTithiName(oTithi));
+	xml.write("\"\n");
+		xml.write("\t\trmasa=\"");
+	xml.write(GCStrings::GetMasaName(oMasa));
+	xml.write("\"\n");
+		xml.write("\t\trpaksa=\"");
+	xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+	xml.write("\"\n");
 		// test ci je ksaya
 		today = vcs;
 		today.shour = 0.5;
@@ -506,7 +662,7 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 			{
 				// normal type
 				vcs.NextDay();
-				xml << "\t\ttype=\"normal\"\n";
+				xml.write("\t\ttype=\"normal\"\n");
 			}
 			else
 			{
@@ -517,7 +673,7 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 				oPaksa = day.nPaksa;
 				oMasa = day.MasaCalc(vcs, earth);
 				oYear = day.nGaurabdaYear;
-				xml << "\t\ttype=\"ksaya\"\n";
+				xml.write("\t\ttype=\"ksaya\"\n");
 			}
 		}
 		else
@@ -528,37 +684,61 @@ int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIM
 			if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 			{
 				// first day of vriddhi type
-				xml << "\t\ttype=\"vriddhi\"\n";
+				xml.write("\t\ttype=\"vriddhi\"\n");
 			}
 			else
 			{
 				// normal
-				xml << "\t\ttype=\"normal\"\n";
+				xml.write("\t\ttype=\"normal\"\n");
 			}
 		}
-		xml << "\t\tdate=\"" << vcs << "\"\n";
-		xml << "\t\totithi=\"" << GCStrings::GetTithiName(oTithi) << "\"\n";
-		xml << "\t\tomasa=\"" << GCStrings::GetMasaName(oMasa) << "\"\n";
-		xml << "\t\topaksa=\"" << (oPaksa ? _T("Gaura") : _T("Krsna")) << "\"\n";
-		xml << "\t/>\n";
-//		xml << "\t\t</celebration>\n";
+		xml.write("\t\tdate=\"");
+	xml.write(vcs);
+	xml.write("\"\n");
+		xml.write("\t\totithi=\"");
+	xml.write(GCStrings::GetTithiName(oTithi));
+	xml.write("\"\n");
+		xml.write("\t\tomasa=\"");
+	xml.write(GCStrings::GetMasaName(oMasa));
+	xml.write("\"\n");
+		xml.write("\t\topaksa=\"");
+	xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+	xml.write("\"\n");
+		xml.write("\t/>\n");
+//		xml.write("\t\t</celebration>\n";
 
 	}
 
-/*	xml << "\t\t<tithi\n\t\t\tid=\"" << int(gpaksa*15 + gtithi) << "\"\n";
-	xml << "\t\t\tname=\"" << GetTithiName(gpaksa*15 + gtithi) << "\"\n";
-	xml << "\t\t\tstartdate=\"" << vcs << "\"\n";
+/*	xml.write("\t\t<tithi\n\t\t\tid=\"");
+	xml.write(int(gpaksa*15 + gtithi));
+	xml.write("\"\n");
+	xml.write("\t\t\tname=\"");
+	xml.write(GetTithiName(gpaksa*15 + gtithi));
+	xml.write("\"\n");
+	xml.write("\t\t\tstartdate=\"");
+	xml.write(vcs);
+	xml.write("\"\n");
 	dt.SetDegTime(360.0 * vcs.shour);
-	xml << "\t\t\tstarttime=\"" << dt << "\"\n";
-	xml << "\t\t\tenddate=\"" << vce << "\"\n";
+	xml.write("\t\t\tstarttime=\"");
+	xml.write(dt);
+	xml.write("\"\n");
+	xml.write("\t\t\tenddate=\"");
+	xml.write(vce);
+	xml.write("\"\n");
 	dt.SetDegTime(360.0 * vce.shour);
-	xml << "\t\t\tendtime=\"" << dt << "\"\n";
-	xml << "\t\t\tmasa=\"" << GetMasaName(gmasa) << "\"\n";
-	xml << "\t\t\tpaksa=\"" << (gpaksa ? _T("Gaura") : _T("Krsna")) << "\"\n";
-	xml << "\t\t/>\n";
+	xml.write("\t\t\tendtime=\"");
+	xml.write(dt);
+	xml.write("\"\n");
+	xml.write("\t\t\tmasa=\"");
+	xml.write(GetMasaName(gmasa));
+	xml.write("\"\n");
+	xml.write("\t\t\tpaksa=\"");
+	xml.write((gpaksa ? _T("Gaura") : _T("Krsna")));
+	xml.write("\"\n");
+	xml.write("\t\t/>\n";
 */
-	xml << "\t</result>\n";
-	xml << "</xml>\n";
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
 
 	return 1;
 }
@@ -572,19 +752,35 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 	gpaksa = vaStart.tithi / 15;
 	gtithi = vaStart.tithi % 15;
 
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<xml>\n";
-	xml << "\t<request name=\"Tithi\" version=\"" << GCStrings::getString(130).c_str() << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << loc.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << loc.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << loc.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"start date\" val=\"" << vcStart << "\" />\n";
-	xml << "\t\t<arg name=\"masa\" val=\"" << gmasa << "\" />\n";
-	xml << "\t\t<arg name=\"paksa\" val=\"" << gpaksa << "\" />\n";
-	xml << "\t\t<arg name=\"tithi\" val=\"" << gtithi << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Tithi\">\n";
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130).c_str());
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"start date\" val=\"");
+	xml.write(vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"masa\" val=\"");
+	xml.write(gmasa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"paksa\" val=\"");
+	xml.write(gpaksa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"tithi\" val=\"");
+	xml.write(gtithi);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
 
 	EARTHDATA earth = (EARTHDATA)loc;
 	VCTIME vcs, vce, today;
@@ -606,11 +802,17 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 			oMasa = gmasa;
 			oPaksa = gpaksa;
 			oYear = 0;
-			xml << "\t<celebration\n";
-	//		xml << "\t\t<tithi\n";
-			xml << "\t\trtithi=\"" << GCStrings::GetTithiName(oTithi) << "\"\n";
-			xml << "\t\trmasa=\"" << GCStrings::GetMasaName(oMasa) << "\"\n";
-			xml << "\t\trpaksa=\"" << (oPaksa ? _T("Gaura") : _T("Krsna")) << "\"\n";
+			xml.write("\t<celebration\n");
+	//		xml.write("\t\t<tithi\n";
+			xml.write("\t\trtithi=\"");
+	xml.write(GCStrings::GetTithiName(oTithi));
+	xml.write("\"\n");
+			xml.write("\t\trmasa=\"");
+	xml.write(GCStrings::GetMasaName(oMasa));
+	xml.write("\"\n");
+			xml.write("\t\trpaksa=\"");
+	xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+	xml.write("\"\n");
 			// test ci je ksaya
 			today = vcs;
 			today.shour = 0.5;
@@ -625,7 +827,7 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 				{
 					// normal type
 					vcs.NextDay();
-					xml << "\t\ttype=\"normal\"\n";
+					xml.write("\t\ttype=\"normal\"\n");
 				}
 				else
 				{
@@ -636,7 +838,7 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 					oPaksa = day.nPaksa;
 					oMasa = day.MasaCalc(vcs, earth);
 					oYear = day.nGaurabdaYear;
-					xml << "\t\ttype=\"ksaya\"\n";
+					xml.write("\t\ttype=\"ksaya\"\n");
 				}
 			}
 			else
@@ -647,19 +849,27 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 				if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 				{
 					// first day of vriddhi type
-					xml << "\t\ttype=\"vriddhi\"\n";
+					xml.write("\t\ttype=\"vriddhi\"\n");
 				}
 				else
 				{
 					// normal
-					xml << "\t\ttype=\"normal\"\n";
+					xml.write("\t\ttype=\"normal\"\n");
 				}
 			}
-			xml << "\t\tdate=\"" << vcs << "\"\n";
-			xml << "\t\totithi=\"" << GCStrings::GetTithiName(oTithi) << "\"\n";
-			xml << "\t\tomasa=\"" << GCStrings::GetMasaName(oMasa) << "\"\n";
-			xml << "\t\topaksa=\"" << (oPaksa ? _T("Gaura") : _T("Krsna")) << "\"\n";
-			xml << "\t/>\n";
+			xml.write("\t\tdate=\"");
+	xml.write(vcs);
+	xml.write("\"\n");
+			xml.write("\t\totithi=\"");
+	xml.write(GCStrings::GetTithiName(oTithi));
+	xml.write("\"\n");
+			xml.write("\t\tomasa=\"");
+	xml.write(GCStrings::GetMasaName(oMasa));
+	xml.write("\"\n");
+			xml.write("\t\topaksa=\"");
+	xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+	xml.write("\"\n");
+			xml.write("\t/>\n");
 			break;
 		}
 		else
@@ -669,8 +879,8 @@ int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, V
 		}
 	}
 
-	xml << "\t</result>\n";
-	xml << "</xml>\n";
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
 
 
 	return 1;

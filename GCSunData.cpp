@@ -13,8 +13,8 @@ SUNDATA::SUNDATA(void)
 double SUNDATA::GetSunLongitude(VCTIME vct)
 {
 //	double mel = 0.0;
-	double DG = pi / 180;
-	double RAD = 180 / pi;
+	double DG = MATH_PI / 180;
+	double RAD = 180 / MATH_PI;
 
 	// mean ecliptic longitude of the sun 
 	double mel = SUNDATA::SunGetMeanLong(vct.year, vct.month, vct.day) + (360/365.25)*(vct.shour - 0.5 - vct.tzone/24.0);
@@ -334,8 +334,8 @@ double SUNDATA::SunGetPerigee(int year, int month, int day)
 
 void SUNDATA::SunPosition(VCTIME vct, EARTHDATA ed, double dayHours)
 {
-	double DG = pi / 180;
-	double RAD = 180 / pi;
+	double DG = MATH_PI / 180;
+	double RAD = 180 / MATH_PI;
 
 	double x;
 

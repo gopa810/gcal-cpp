@@ -15,11 +15,7 @@
 /*                                                                                        */
 /*                                                                                        */
 /******************************************************************************************/
-
-#include <stdafx.h>
-
-
-
+#include "stdafx.h"
 #include "LocationRef.h"
 #include "XmlFile.h"
 #include "level_6.h"
@@ -362,36 +358,54 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 	int nPrevMasa = -1;
 	int nPrevPaksa = -1;
 
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<html><head><title>\n";
-//	xml << "\t<request name=\"Calendar\" version=\"" << GCStrings::getString(130] << "\">\n";
-//	xml << "\t\t<arg name=\"longitude\" val=\"" << daybuff.m_Location.m_fLongitude << "\" />\n";
-//	xml << "\t\t<arg name=\"latitude\" val=\"" << daybuff.m_Location.m_fLatitude << "\" />\n";
-//	xml << "\t\t<arg name=\"timezone\" val=\"" << daybuff.m_Location.m_fTimezone << "\" />\n";
-//	xml << "\t\t<arg name=\"startdate\" val=\"" << daybuff.m_vcStart << "\" />\n";
-//	xml << "\t\t<arg name=\"daycount\" val=\"" << daybuff.m_vcCount << "\" />\n";
-//	xml << "\t\t<arg name=\"dst\" val=\"" << daybuff.m_Location.m_nDST << "\" />\n";
-//	xml << "\t</request>\n";
-//	xml << "\t<result name=\"Calendar\">\n";
+	xml.write("<html><head><title>\n");
+//	xml.write("\t<request name=\"Calendar\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+//	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLongitude);
+	xml.write("\" />\n");
+//	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLatitude);
+	xml.write("\" />\n");
+//	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(daybuff.m_Location.m_fTimezone);
+	xml.write("\" />\n");
+//	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(daybuff.m_vcStart);
+	xml.write("\" />\n");
+//	xml.write("\t\t<arg name=\"daycount\" val=\"");
+	xml.write(daybuff.m_vcCount);
+	xml.write("\" />\n");
+//	xml.write("\t\t<arg name=\"dst\" val=\"");
+	xml.write(daybuff.m_Location.m_nDST);
+	xml.write("\" />\n");
+//	xml.write("\t</request>\n";
+//	xml.write("\t<result name=\"Calendar\">\n";
 //	if (daybuff.m_Location.m_nDST > 0)
-//		xml << "\t<dstsystem name=\"" << TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST) << "\" />\n";
+//		xml.write("\t<dstsystem name=\"");
+	xml.write(TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST));
+	xml.write("\" />\n");
 
-	xml << "Calendar " << daybuff.m_vcStart.year << "</title>";
-	xml << "<style>\n";
-	xml << "<!--\nbody {\n";
-	xml << "  font-family:Verdana;\n";
-	xml << "  font-size:11pt;\n}\n\n";
-	xml << "td.hed {\n";
-	xml << "  font-family:Verdana;\n";
-	xml << "  font-size:9pt;\n";
-	xml << "  font-weight:bold;\n";
-	xml << "  background:#aaaaaa;\n";
-	xml << "  color:white;\n";
-	xml << "  text-align:center;\n";
-	xml << "  vertical-align:center;\n  padding-left:15pt;\n  padding-right:15pt;\n";
-	xml << "  padding-top:5pt;\n  padding-bottom:5pt;\n}\n-->\n</style>\n";
-	xml << "</head>\n<body>";
+	xml.write("Calendar ");
+	xml.write(daybuff.m_vcStart.year);
+	xml.write("</title>");
+	xml.write("<style>\n");
+	xml.write("<!--\nbody {\n");
+	xml.write("  font-family:Verdana;\n");
+	xml.write("  font-size:11pt;\n}\n\n");
+	xml.write("td.hed {\n");
+	xml.write("  font-family:Verdana;\n");
+	xml.write("  font-size:9pt;\n");
+	xml.write("  font-weight:bold;\n");
+	xml.write("  background:#aaaaaa;\n");
+	xml.write("  color:white;\n");
+	xml.write("  text-align:center;\n");
+	xml.write("  vertical-align:center;\n  padding-left:15pt;\n  padding-right:15pt;\n");
+	xml.write("  padding-top:5pt;\n  padding-bottom:5pt;\n}\n-->\n</style>\n");
+	xml.write("</head>\n<body>");
 
 	for (k = 0; k < daybuff.m_vcCount; k++)
 	{
@@ -401,16 +415,22 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 			if (nPrevMasa != pvd->astrodata.nMasa)
 			{
 				if (nPrevMasa != -1)
-					xml << "\t</table>\n";
-				xml << "<p style=\'text-align:center;font-weight:bold\'><span style =\'font-size:14pt\'>" << GCStrings::GetMasaName(pvd->astrodata.nMasa) << " Masa";
+					xml.write("\t</table>\n");
+				xml.write("<p style=\'text-align:center;font-weight:bold\'><span style =\'font-size:14pt\'>");
+	xml.write(GCStrings::GetMasaName(pvd->astrodata.nMasa));
+	xml.write(" Masa");
 				if (nPrevMasa == ADHIKA_MASA)
-					xml << " " << GCStrings::getString(109);
-				xml << "</span>";
-				xml << "<br><span style=\'font-size:10pt;\'>Gaurabda " << pvd->astrodata.nGaurabdaYear;
-				xml << "<br>" << daybuff.m_Location.m_strFullName << "</font>";
-				xml << "</span></p>\n<table align=center>";
-				xml << "<tr><td  class=\"hed\"colspan=2>";
-				xml << "DATE</td><td class=\"hed\">TITHI</td><td class=\"hed\">P</td><td class=\"hed\">NAKSATRA</td><td class=\"hed\">YOGA</td><td class=\"hed\">FAST</td></tr>";
+					xml.write(" ");
+	xml.write(GCStrings::getString(109));
+				xml.write("</span>");
+				xml.write("<br><span style=\'font-size:10pt;\'>Gaurabda ");
+	xml.write(pvd->astrodata.nGaurabdaYear);
+				xml.write("<br>");
+	xml.write(daybuff.m_Location.m_strFullName);
+	xml.write("</font>");
+				xml.write("</span></p>\n<table align=center>");
+				xml.write("<tr><td  class=\"hed\"colspan=2>");
+				xml.write("DATE</td><td class=\"hed\">TITHI</td><td class=\"hed\">P</td><td class=\"hed\">NAKSATRA</td><td class=\"hed\">YOGA</td><td class=\"hed\">FAST</td></tr>");
 			}
 
 			nPrevMasa = pvd->astrodata.nMasa;
@@ -425,17 +445,22 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 					 continue;
 
 			// date data
-			xml << "<tr>";
-			xml << "<td>" << pvd->date << "</td><td>";
+			xml.write("<tr>");
+			xml.write("<td>");
+	xml.write(pvd->date);
+	xml.write("</td><td>");
 			GCStrings::getString(pvd->date.dayOfWeek).Left(2, st);
-			xml << st.c_str() << "</td>\n";
+			xml.write(st.c_str());
+	xml.write("</td>\n");
 
 			// sunrise data
-			//xml << "\t\t<sunrise time=\"" << pvd->astrodata.sun.rise << "\">\n";
+			//xml.write("\t\t<sunrise time=\"");
+	xml.write(pvd->astrodata.sun.rise);
+	xml.write("\">\n");
 
-			//xml << "\t\t\t<tithi name=\"";
-			xml << "<td>\n";
-			xml << GCStrings::GetTithiName(pvd->astrodata.nTithi);
+			//xml.write("\t\t\t<tithi name=\"");
+			xml.write("<td>\n");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithi));
 			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) 
 				|| (pvd->astrodata.nTithi == 11) || (pvd->astrodata.nTithi == 26))
 			{
@@ -443,49 +468,66 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				{
 					if (pvd->nMhdType == EV_NULL)
 					{
-						xml << " " << GCStrings::getString(58);
+						xml.write(" ");
+						xml.write(GCStrings::getString(58));
 					}
 					else
 					{
-						xml << " " << GCStrings::getString(59);
+						xml.write(" ");
+						xml.write(GCStrings::getString(59));
 					}
 				}
 			}
-			xml << "</td>\n";
+			xml.write("</td>\n");
 
 			//str.Format("\" elapse=\"%.1f\" index=\"%d\"/>\n"
 			//	,pvd->astrodata.nTithiElapse, pvd->astrodata.nTithi % 30 + 1 );
-			//xml << str;
+			//xml.write(str;
 
 			str.Format("<td>%c</td>\n", GCStrings::GetPaksaChar(pvd->astrodata.nPaksa) );
-			xml << str;
+			xml.write(str);
 
 			str.Format("<td>%s</td>\n", GCStrings::GetNaksatraName(pvd->astrodata.nNaksatra));
-			xml << str;
+			xml.write(str);
 
 			str.Format("<td>%s</td>\n", GCStrings::GetYogaName(pvd->astrodata.nYoga) );
-			xml << str;
+			xml.write(str);
 
 
-			xml << "<td>" << ((pvd->nFastType!=FAST_NULL)?"FAST</td>":"</td>");
-			//xml << "\t\t</sunrise>\n";
+			xml.write("<td>");
+			xml.write(((pvd->nFastType!=FAST_NULL)?"FAST</td>":"</td>"));
+			//xml.write("\t\t</sunrise>\n");
 
-			//xml << "\t\t<dst offset=\"" << pvd->nDST << "\" />\n";
+			//xml.write("\t\t<dst offset=\"");
+			xml.write(pvd->nDST);
+			xml.write("\" />\n");
 			// arunodaya data
-			//xml << "\t\t<arunodaya time=\"" << pvd->astrodata.sun.arunodaya << "\">\n";
-			//xml << "\t\t\t<tithi name=\"" << GetTithiName(pvd->astrodata.nTithiArunodaya) << "\" />\n";
-			//xml << "\t\t</arunodaya>\n";
+			//xml.write("\t\t<arunodaya time=\"");
+			xml.write(pvd->astrodata.sun.arunodaya);
+			xml.write("\">\n");
+			//xml.write("\t\t\t<tithi name=\"");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
+			xml.write("\" />\n");
+			//xml.write("\t\t</arunodaya>\n");
 
 			str.Empty();
 
-			//xml << "\t\t<noon time=\"" << pvd->astrodata.sun.noon << "\" />\n";
+			//xml.write("\t\t<noon time=\"");
+			xml.write(pvd->astrodata.sun.noon);
+			xml.write("\" />\n");
 
-			//xml << "\t\t<sunset time=\"" << pvd->astrodata.sun.set << "\" />\n";
+			//xml.write("\t\t<sunset time=\"");
+			xml.write(pvd->astrodata.sun.set);
+			xml.write("\" />\n");
 
 			// moon data
-			//xml << "\t\t<moon rise=\"" << pvd->moonrise << "\" set=\"" << pvd->moonset << "\" />\n";
+			//xml.write("\t\t<moon rise=\"");
+			xml.write(pvd->moonrise);
+			xml.write("\" set=\"");
+			xml.write(pvd->moonset);
+			xml.write("\" />\n");
 
-			xml << "</tr>\n\n<tr>\n<td></td><td></td><td colspan=4>";
+			xml.write("</tr>\n\n<tr>\n<td></td><td></td><td colspan=4>");
 			if (pvd->ekadasi_parana)
 			{
 				double h1, m1, h2, m2;
@@ -500,7 +542,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				{
 					str.Format("Break fast after %02d:%02d<br>\n", int(h1), int(m1*60) );
 				}
-				xml << str;
+				xml.write(str);
 			}
 			str.Empty();
 
@@ -515,7 +557,7 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 					{
 						nFestClass = pvd->GetFestivalClass(str2);
 						str.Format("%s<br>\n", str2.c_str());
-						xml << str;
+						xml.write(str);
 					}
 				}
 			}
@@ -525,32 +567,32 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				switch (pvd->nFastType)
 				{
 				case FAST_EKADASI:
-					//xml << "\t\t<fast type=\"Fasting for ";
-					//xml << pvd->ekadasi_vrata_name;
-					//xml << "\" mark=\"*\"/>\n";
+					//xml.write("\t\t<fast type=\"Fasting for ");
+					//xml.write(pvd->ekadasi_vrata_name;
+					//xml.write("\" mark=\"*\"/>\n");
 					//break;
 				case FAST_NOON:
-					//xml << "\t\t<fast type=\"(Fast till noon)\"  mark=\"*\"/>\n";
-					//xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					//xml.write("\t\t<fast type=\"(Fast till noon)\"  mark=\"*\"/>\n");
+					//xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 					//break;
 				case FAST_SUNSET:
-					//xml << "\t\t<fast type=\"(Fast till sunset)\" mark=\"*\" />\n";
-					//xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					//xml.write("\t\t<fast type=\"(Fast till sunset)\" mark=\"*\" />\n");
+					//xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 					//break;
 				case FAST_MOONRISE:
-					//xml << "\t\t<fast type=\"(Fast till moonrise)\" mark=\"*\" />\n";
-					//xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					//xml.write("\t\t<fast type=\"(Fast till moonrise)\" mark=\"*\" />\n");
+					//xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 					//break;
 				case FAST_DUSK:
-					//xml << "\t\t<fast type=\"(Fast till dusk)\" mark=\"*\" />\n";
-					//xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					//xml.write("\t\t<fast type=\"(Fast till dusk)\" mark=\"*\" />\n");
+					//xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 					//break;
 				case FAST_MIDNIGHT:
-					//xml << "\t\t<fast type=\"(Fast till midnight)\" mark=\"*\" />\n";
-					//xml << "\t\t<fast type=\"\" mark=\"*\" />\n";
+					//xml.write("\t\t<fast type=\"(Fast till midnight)\" mark=\"*\" />\n");
+					//xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
 					break;
 				default:
-					//xml << "\t\t<fast type=\"\" mark=\"\" />\n";
+					//xml.write("\t\t<fast type=\"\" mark=\"\" />\n");
 					break;
 				}
 			}
@@ -565,75 +607,77 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 					GCStrings::GetMonthAbreviation(pvd->sankranti_day.month), pvd->sankranti_day.year,
 					pvd->sankranti_day.GetHour()
 					, pvd->sankranti_day.GetMinute(), pvd->sankranti_day.GetSecond());
-				xml << str;
+				xml.write(str);
 			}
 
 			if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)
 			{
 				double h1, m1, h2, m2;
 				VCTIME ksayaDate;
-				xml << "Previous tithi is ksaya from ";
+				xml.write("Previous tithi is ksaya from ");
 				m1 = modf(pvd->ksaya_time1*24, &h1);
 				ksayaDate = pvd->date;
 				if (pvd->ksaya_day1 < 0.0)
 					ksayaDate.PreviousDay();
 				str.Format("%d %s, %02d:%02d", ksayaDate.day, GCStrings::GetMonthAbreviation(ksayaDate.month), int(h1), int(m1*60));
-				xml << str;
+				xml.write(str);
 
 				m2 = modf(pvd->ksaya_time2*24, &h2);
 				str.Format("to %d %s, %02d:%02d<br>\n", ksayaDate.day, GCStrings::GetMonthAbreviation(ksayaDate.month), int(h2), abs(int(m2*60)));
-				xml << str;
+				xml.write(str);
 			}
 
 			if (GCDisplaySettings::getValue(8) == 1 && pvd->is_vriddhi)
 			{
-				xml << "Second day of vriddhi tithi<br>\n";
+				xml.write("Second day of vriddhi tithi<br>\n");
 			}
 
 			if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
 			{
-				xml << GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
-							   + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str();
-				xml << "[PRATIPAT SYSTEM]<br>\n";
+				xml.write(GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8)
+							   + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str());
+				xml.write("[PRATIPAT SYSTEM]<br>\n");
 				if ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) == 0x100)
 				{
-					xml << GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str();
+					xml.write(GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 10)).c_str());
 				}
 			}
 
 			if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
 			{
-				xml << GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
-							   + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str();
-				xml << "[PURNIMA SYSTEM]<br>";
+				xml.write(GCStrings::getString(107 + (pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)
+							   + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str());
+				xml.write("[PURNIMA SYSTEM]<br>");
 				if ((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY) == 0x1)
 				{
-					xml << GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str();
+					xml.write(GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 2)).c_str());
 				}
 			}
 
 			if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
 			{
-				xml << GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
-							   + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str();
-				xml << "[EKADASI SYSTEM]<br>";
+				xml.write(GCStrings::getString(107 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16)
+							   + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str());
+				xml.write("[EKADASI SYSTEM]<br>");
 				if ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) == 0x10000)
 				{
-					xml << GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str();
+					xml.write(GCStrings::getString(110 + ((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 18)).c_str());
 				}
 			}
-			xml << "\t</tr>\n\n";
+			xml.write("\t</tr>\n\n");
 
 		}
 		date.shour = 0;
 		date.NextDay();
 	}
-	xml << "\t</table>\n\n";
+	xml.write("\t</table>\n\n");
 
-	xml<< "<hr align=center width=\"65%%\">\n";
-	xml << "<p align=center>Generated by " << GCStrings::getString(130) << "</p>\n";
+	xml.write("<hr align=center width=\"65%%\">\n");
+	xml.write("<p align=center>Generated by ");
+	xml.write(GCStrings::getString(130));
+	xml.write("</p>\n");
 	
-	xml << "</body>\n</html>\n";
+	xml.write("</body>\n</html>\n");
 
 	return 1;
 }
@@ -671,34 +715,52 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 	// first = 1
 	//int i_end[7] = {0, 6, 5, 4, 3, 2, 1}; //(6-(i-first))%7
 	//int i_beg[7] = {6, 0, 1, 2, 3, 4, 5}; //(i-first)%7
-	xml = fout;
+	xml.initWithFile(fout);
 
-	xml << "<html>\n<head>\n<title>Calendar " << daybuff.m_vcStart << "</title>\n";
+	xml.write("<html>\n<head>\n<title>Calendar ");
+	xml.write(daybuff.m_vcStart);
+	xml.write("</title>\n");
 
-	xml << "<style>\n<!--\np.MsoNormal, li.MsoNormal, div.MsoNormal\n	{mso-style-parent:\"\";";
-	xml << "margin:0in;margin-bottom:.0001pt;mso-pagination:widow-orphan;font-size:8.0pt;font-family:Arial;";
-	xml << "mso-fareast-font-family:Arial;}";
-	xml << "p.month\n{mso-style-name:month;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\nmso-pagination:widow-orphan;\nfont-size:17.0pt;font-family:Arial;mso-fareast-font-family:Arial;}\n";
-	xml << ".text\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:6.0pt;\nmso-bidi-font-size:6.0pt;\nfont-family:Arial;	mso-fareast-font-family:\"Arial\";mso-bidi-font-family:\"Arial\";}\n";
-	xml << ".tnote\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:7.0pt;\nmso-bidi-font-size:7.0pt;\nfont-family:Arial;	mso-fareast-font-family:Arial;mso-bidi-font-family:Arial;}\n";
-	xml << ".tithiname\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:8.0pt;\nmso-bidi-font-size:8.0pt;\nfont-family:Arial;	mso-fareast-font-family:\"Arial\";mso-bidi-font-family:\"Arial\";}\n";
-	xml << ".dayt\n	{mso-style-name:dayt;\nfont-size:12.0pt;\nmso-ansi-font-size:12.0pt;\nfont-family:Arial;\nmso-ascii-font-family:Arial;\nmso-hansi-font-family:Arial;\nfont-weight:bold;\nmso-bidi-font-weight:normal;}\n";
-	xml << "span.SpellE\n{mso-style-name:\"\";\nmso-spl-e:yes;}\n";
-	xml << "span.GramE\n{mso-style-name:\"\";\nmso-gram-e:yes;}\n";
-	xml << "-->\n</style>\n";
+	xml.write("<style>\n<!--\np.MsoNormal, li.MsoNormal, div.MsoNormal\n	{mso-style-parent:\"\";");
+	xml.write("margin:0in;margin-bottom:.0001pt;mso-pagination:widow-orphan;font-size:8.0pt;font-family:Arial;");
+	xml.write("mso-fareast-font-family:Arial;}");
+	xml.write("p.month\n{mso-style-name:month;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\nmso-pagination:widow-orphan;\nfont-size:17.0pt;font-family:Arial;mso-fareast-font-family:Arial;}\n");
+	xml.write(".text\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:6.0pt;\nmso-bidi-font-size:6.0pt;\nfont-family:Arial;	mso-fareast-font-family:\"Arial\";mso-bidi-font-family:\"Arial\";}\n");
+	xml.write(".tnote\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:7.0pt;\nmso-bidi-font-size:7.0pt;\nfont-family:Arial;	mso-fareast-font-family:Arial;mso-bidi-font-family:Arial;}\n");
+	xml.write(".tithiname\n{mso-style-name:text;\nmso-margin-top-alt:auto;\nmargin-right:0in;\nmso-margin-bottom-alt:auto;\nmargin-left:0in;\n	mso-pagination:widow-orphan;\nfont-size:8.0pt;\nmso-bidi-font-size:8.0pt;\nfont-family:Arial;	mso-fareast-font-family:\"Arial\";mso-bidi-font-family:\"Arial\";}\n");
+	xml.write(".dayt\n	{mso-style-name:dayt;\nfont-size:12.0pt;\nmso-ansi-font-size:12.0pt;\nfont-family:Arial;\nmso-ascii-font-family:Arial;\nmso-hansi-font-family:Arial;\nfont-weight:bold;\nmso-bidi-font-weight:normal;}\n");
+	xml.write("span.SpellE\n{mso-style-name:\"\";\nmso-spl-e:yes;}\n");
+	xml.write("span.GramE\n{mso-style-name:\"\";\nmso-gram-e:yes;}\n");
+	xml.write("-->\n</style>\n");
 
-	xml << "</head>\n\n<body>\n\n";
-/*	xml << "\t<request name=\"Calendar\" version=\"" << GCStrings::getString(130] << "\">\n";
-	xml << "\t\t<arg name=\"longitude\" val=\"" << daybuff.m_Location.m_fLongitude << "\" />\n";
-	xml << "\t\t<arg name=\"latitude\" val=\"" << daybuff.m_Location.m_fLatitude << "\" />\n";
-	xml << "\t\t<arg name=\"timezone\" val=\"" << daybuff.m_Location.m_fTimezone << "\" />\n";
-	xml << "\t\t<arg name=\"startdate\" val=\"" << daybuff.m_vcStart << "\" />\n";
-	xml << "\t\t<arg name=\"daycount\" val=\"" << daybuff.m_vcCount << "\" />\n";
-	xml << "\t\t<arg name=\"dst\" val=\"" << daybuff.m_Location.m_nDST << "\" />\n";
-	xml << "\t</request>\n";
-	xml << "\t<result name=\"Calendar\">\n";
+	xml.write("</head>\n\n<body>\n\n");
+/*	xml.write("\t<request name=\"Calendar\" version=\"");
+	xml.write(GCStrings::getString(130]);
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(daybuff.m_Location.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(daybuff.m_Location.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(daybuff.m_vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"daycount\" val=\"");
+	xml.write(daybuff.m_vcCount);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"dst\" val=\"");
+	xml.write(daybuff.m_Location.m_nDST);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n";
+	xml.write("\t<result name=\"Calendar\">\n";
 	if (daybuff.m_Location.m_nDST > 0)
-		xml << "\t<dstsystem name=\"" << TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST) << "\" />\n";
+		xml.write("\t<dstsystem name=\"");
+	xml.write(TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST));
+	xml.write("\" />\n");
 */
 	for (k = 0; k < daybuff.m_vcCount; k++)
 	{
@@ -715,39 +777,44 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 				{
 					for(y = 0; y < DAYS_TO_ENDWEEK(lwd); y++)
 					{
-						xml << "<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>";
+						xml.write("<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>");
 					}
-					xml << "</tr></table>\n<p>&nbsp;</p>";
+					xml.write("</tr></table>\n<p>&nbsp;</p>");
 				}
-				xml << "\n<table width=\"100%\" border=0 frame=bottom cellspacing=0 cellpadding=0><tr><td width=\"60%\"><p class=month>" << GCStrings::getString(pvd->date.month + 759).c_str() << " "<< pvd->date.year;
-				xml << "</p></td><td><p class=tnote align=right>";
-				xml << daybuff.m_Location.m_strName;
-				xml << "<br>Timezone: ";
-				xml << TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST);
-				xml << "</p>";
-				xml << "</td></tr></table><hr>";
+				xml.write("\n<table width=\"100%\" border=0 frame=bottom cellspacing=0 cellpadding=0><tr><td width=\"60%\"><p class=month>");
+				xml.write(GCStrings::getString(pvd->date.month + 759).c_str());
+				xml.write(" ");
+				xml.write(pvd->date.year);
+				xml.write("</p></td><td><p class=tnote align=right>");
+				xml.write(daybuff.m_Location.m_strName);
+				xml.write("<br>Timezone: ");
+				xml.write(TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST));
+				xml.write("</p>");
+				xml.write("</td></tr></table><hr>");
 				nPrevMasa = pvd->date.month;
-				xml << "\n<table width=\"100%\" bordercolor=black cellpadding=0 cellspacing=0>\n<tr>\n";
+				xml.write("\n<table width=\"100%\" bordercolor=black cellpadding=0 cellspacing=0>\n<tr>\n");
 				for(y = 0; y < 7; y++)
 				{
-					xml << "<td width=\"14%\" align=center style=\'font-size:10.0pt;border:none\'>" << GCStrings::getString(DAY_INDEX(y)).c_str() << "</td>\n";
+					xml.write("<td width=\"14%\" align=center style=\'font-size:10.0pt;border:none\'>");
+					xml.write(GCStrings::getString(DAY_INDEX(y)).c_str());
+					xml.write("</td>\n");
 				}
-				xml << "<tr>\n";
+				xml.write("<tr>\n");
 				for(y=0; y < DAYS_FROM_BEGINWEEK(pvd->date.dayOfWeek); y++)
-					xml << "<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>";
+					xml.write("<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>");
 			}
 			else
 			{
 				if (pvd->date.dayOfWeek == g_firstday_in_week)
-					xml << "<tr>\n";
+					xml.write("<tr>\n");
 			}
 
 			// date data
-			xml << "\n<td valign=top style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\' bgcolor=\"";
+			xml.write("\n<td valign=top style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\' bgcolor=\"");
 			switch (pvd->nFastType)
 			{
 			case FAST_EKADASI:
-				xml << "#ffffbb";
+				xml.write("#ffffbb");
 				break;
 			case FAST_NOON:
 			case FAST_SUNSET:
@@ -755,20 +822,24 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 			case FAST_DUSK:
 			case FAST_MIDNIGHT:
 			case FAST_DAY:
-				xml << "#bbffbb";
+				xml.write("#bbffbb");
 				break;
 			default:
-				xml << "white";
+				xml.write("white");
 				break;
 			}
-			xml << "\"><table width=\"100%\" border=0><tr><td><p class=text><span class=dayt>" << pvd->date.day << "</span></td><td>";
+			xml.write("\"><table width=\"100%\" border=0><tr><td><p class=text><span class=dayt>");
+			xml.write(pvd->date.day);
+			xml.write("</span></td><td>");
 
 			// sunrise data
-//			xml << "\t\t<sunrise time=\"" << pvd->astrodata.sun.rise << "\">\n";
+//			xml.write("\t\t<sunrise time=\"");
+			xml.write(pvd->astrodata.sun.rise);
+			xml.write("\">\n");
 
-//			xml << "hi name=\"";
-			xml << "<span class=\"tithiname\">";
-			xml << GCStrings::GetTithiName(pvd->astrodata.nTithi);
+//			xml.write("hi name=\"";
+			xml.write("<span class=\"tithiname\">");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithi));
 			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) 
 				|| (pvd->astrodata.nTithi == 11) || (pvd->astrodata.nTithi == 26))
 			{
@@ -776,48 +847,64 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 				{
 					if (pvd->nMhdType == EV_NULL)
 					{
-						xml << " " << GCStrings::getString(58);
+						xml.write(" ");
+						xml.write(GCStrings::getString(58));
 					}
 					else
 					{
-						xml << " " << GCStrings::getString(59);
+						xml.write(" ");
+						xml.write(GCStrings::getString(59));
 					}
 				}
 			}
-			xml << "</span>";
-			xml << "</td></tr></table>\n";
+			xml.write("</span>");
+			xml.write("</td></tr></table>\n");
 			brw = 0;
-			xml << "<span class=\"text\">\n";
+			xml.write("<span class=\"text\">\n");
 //			str.Format("\" elapse=\"%.1f\" index=\"%d\"/>\n"
 //				,pvd->astrodata.nTithiElapse, pvd->astrodata.nTithi % 30 + 1 );
-//			xml << str;
+//			xml.write(str;
 
 //			str.Format("\t\t\t<naksatra name=\"%s\" elapse=\"%.1f\" />\n"
 //				,GetNaksatraName(pvd->astrodata.nNaksatra), pvd->astrodata.nNaksatraElapse );
-//			xml << str;
+//			xml.write(str;
 
 //			str.Format("\t\t\t<yoga name=\"%s\" />\n", GetYogaName(pvd->astrodata.nYoga) );
-//			xml << str;
+//			xml.write(str;
 
 //			str.Format("\t\t\t<paksa id=\"%c\" name=\"%s\"/>\n", GetPaksaChar(pvd->astrodata.nPaksa), GetPaksaName(pvd->astrodata.nPaksa) );
-//			xml << str;
+//			xml.write(str;
 
-//			xml << "\t\t</sunrise>\n";
+//			xml.write("\t\t</sunrise>\n";
 
-//			xml << "\t\t<dst offset=\"" << pvd->nDST << "\" />\n";
+//			xml.write("\t\t<dst offset=\"");
+			xml.write(pvd->nDST);
+			xml.write("\" />\n");
 			// arunodaya data
-//			xml << "\t\t<arunodaya time=\"" << pvd->astrodata.sun.arunodaya << "\">\n";
-//			xml << "\t\t\t<tithi name=\"" << GetTithiName(pvd->astrodata.nTithiArunodaya) << "\" />\n";
-//			xml << "\t\t</arunodaya>\n";
+//			xml.write("\t\t<arunodaya time=\"");
+			xml.write(pvd->astrodata.sun.arunodaya);
+			xml.write("\">\n");
+//			xml.write("\t\t\t<tithi name=\"");
+			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
+			xml.write("\" />\n");
+//			xml.write("\t\t</arunodaya>\n";
 
 			str.Empty();
 
-//			xml << "\t\t<noon time=\"" << pvd->astrodata.sun.noon << "\" />\n";
+//			xml.write("\t\t<noon time=\"");
+	xml.write(pvd->astrodata.sun.noon);
+	xml.write("\" />\n");
 
-//			xml << "\t\t<sunset time=\"" << pvd->astrodata.sun.set << "\" />\n";
+//			xml.write("\t\t<sunset time=\"");
+	xml.write(pvd->astrodata.sun.set);
+	xml.write("\" />\n");
 
 			// moon data
-//			xml << "\t\t<moon rise=\"" << pvd->moonrise << "\" set=\"" << pvd->moonset << "\" />\n";
+//			xml.write("\t\t<moon rise=\"");
+	xml.write(pvd->moonrise);
+	xml.write("\" set=\"");
+	xml.write(pvd->moonset);
+	xml.write("\" />\n");
 
 			if (pvd->ekadasi_parana)
 			{
@@ -833,9 +920,9 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 					str.Format("Break fast after %02d:%02d", int(h1), int(m1*60) );
 				}
 				if (brw)
-					xml << "<br>\n";
+					xml.write("<br>\n");
 				brw = 1;
-				xml << str;
+				xml.write(str);
 				bBr = true;
 				bSemicolon = true;
 			}
@@ -847,7 +934,7 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 				int nFestClass;
 				TString str2;
 				if (brw)
-					xml << "<br>\n";
+					xml.write("<br>\n");
 				brw = 1;
 				while(pvd->GetNextFestival(i, str2))
 				{
@@ -856,8 +943,8 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 						nFestClass = pvd->GetFestivalClass(str2);
 //						str.Format("", str2.c_str(), nFestClass);
 						if (bSemicolon)
-							xml << "; ";
-						xml << str2.c_str();
+							xml.write("; ");
+						xml.write(str2.c_str());
 						bSemicolon=true;
 						bBr=false;
 					}
@@ -868,9 +955,9 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 			{
 				str.Format("<i>%s Sankranti</i>\n", GCStrings::GetSankrantiName(pvd->sankranti_zodiac));
 				if (brw)
-					xml << "<br>\n";
+					xml.write("<br>\n");
 				brw = 1;
-				xml << str;
+				xml.write(str);
 				bBr = true;
 			}
 
@@ -880,21 +967,21 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 				m1 = modf(pvd->ksaya_time1*24, &h1);
 				m2 = modf(pvd->ksaya_time2*24, &h2);
 				str.Format("\t\t<ksaya from=\"%02d:%02d\" to=\"%02d:%02d\" />\n", int(h1), abs(int(m1*60)), int(h2), abs(int(m2*60)));
-				xml << str;
+				xml.write(str;
 			}
 
 			if (pvd->is_vriddhi)
 			{
-				xml << "\t\t<vriddhi sd=\"yes\" />\n";
+				xml.write("\t\t<vriddhi sd=\"yes\" />\n";
 			}
 			else
 			{
-				xml << "\t\t<vriddhi sd=\"no\" />\n";
+				xml.write("\t\t<vriddhi sd=\"no\" />\n";
 			}
 */
 /*			if (pvd->nCaturmasya & CMASYA_PURN_MASK)
 			{
-				xml << "\t\t<caturmasya day=\"" 
+				xml.write("\t\t<caturmasya day=\"" 
 					<< (((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)) > 1 ? "last" : "first")
 					<< " day of \" month=\"" 
 					<< int((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 4) 
@@ -903,7 +990,7 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 
 			if (pvd->nCaturmasya & CMASYA_PRAT_MASK)
 			{
-				xml << "\t\t<caturmasya day=\"" 
+				xml.write("\t\t<caturmasya day=\"" 
 					<< (((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8) > 1 ? "last" : "first")
 					<< "\" month=\"" 
 					<< int((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 12)
@@ -915,19 +1002,21 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 				str.Format("\t<caturmasya day=\"%s\" month=\"%d\" system=\"EKADASI\" />\n"
 					, ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16) > 1 ? "last" : "first"
 					, int((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 20));
-				xml << str;
+				xml.write(str;
 			}
 */
 			if (prevMas != pvd->astrodata.nMasa)
 			{
 				if (brw)
-					xml<<"<br>\n";
+					xml.write("<br>\n");
 				brw = 1;
-				xml << "<b>[" << GCStrings::GetMasaName(pvd->astrodata.nMasa) << " Masa]</b>";
+				xml.write("<b>[");
+				xml.write(GCStrings::GetMasaName(pvd->astrodata.nMasa));
+				xml.write(" Masa]</b>");
 				prevMas = pvd->astrodata.nMasa;
 			}
-			xml << "</span>";
-			xml << "</td>\n\n";
+			xml.write("</span>");
+			xml.write("</td>\n\n");
 
 		}
 		date.shour = 0;
@@ -935,17 +1024,17 @@ int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout)
 	}
 /*	for(y = (pvd->date.dayOfWeek + 6)%7; y < 7; y++)
 	{
-		xml << "<td></td>";
+		xml.write("<td></td>");
 	}
 */
 	for(y = 1; y < DAYS_TO_ENDWEEK(lwd); y++)
 	{
-		xml << "<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>";
+		xml.write("<td style=\'border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:3.0pt 3.0pt 3.0pt 3.0pt\'>&nbsp;</td>");
 	}
-	xml << "</tr>\n</table>\n";
+	xml.write("</tr>\n</table>\n");
 
 	
-	xml << "</body>\n</html>\n";
+	xml.write("</body>\n</html>\n");
 
 	return 1;
 }

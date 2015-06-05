@@ -679,3 +679,137 @@ char * TTimeZone::GetTimeZoneOffsetTextArg(double d)
 	return inter;
 }
 
+
+// return values
+// 0 - DST is off, yesterday was off
+// 1 - DST is on, yesterday was off
+// 2 - DST is on, yesterday was on
+// 3 - DST is off, yesterday was on
+int TTimeZone::determineDaylightChange(VCTIME vc2, int nIndex)
+{
+	int t2 = TTimeZone::determineDaylightStatus(vc2, nIndex);
+	VCTIME vc3 = vc2;
+	vc3.PreviousDay();
+	int t1 = TTimeZone::determineDaylightStatus(vc3, nIndex);
+	if (t1)
+	{
+		if (t2)
+			return 2;
+		else
+			return 3;
+	}
+	else if (t2)
+	{
+		TTimeZone::determineDaylightStatus(vc2, nIndex);
+		TTimeZone::determineDaylightStatus(vc3, nIndex);
+		return 1;
+	}
+	else
+		return 0;
+}
+
+// n - is order number of given day
+// x - is number of day in week (0-sunday, 1-monday, ..6-saturday)
+// if x >= 5, then is calculated whether day is after last x-day
+
+int TTimeZone::is_n_xday(VCTIME vc, int n, int x)
+{
+	int xx[7] = {1, 7, 6, 5, 4, 3, 2};
+
+	int fdm, fxdm, nxdm, max;
+
+	// prvy den mesiaca
+	fdm = xx[ (7 + vc.day - vc.dayOfWeek) % 7 ];
+
+	// 1. x-day v mesiaci ma datum
+	fxdm = xx[ (fdm - x + 7) % 7 ];
+
+	// n-ty x-day ma datum
+	if ((n < 0) || (n >= 5))
+	{
+		nxdm = fxdm + 28;
+		max = VCTIME::GetMonthMaxDays(vc.year, vc.month);
+		while(nxdm > max)
+		{
+			nxdm -= 7;
+		}
+	}
+	else
+	{
+		nxdm = fxdm + (n - 1)* 7;
+	}
+
+	return (vc.day >= nxdm) ? 1 : 0;
+}
+
+// This table has 8 items for each line:
+//  [0]: starting month
+//  [4]: ending month
+// 
+//  [1]: type of day, 0-day is given as n-th x-day of month, 1- day is given as DATE
+//  [2]: for [1]==1 this means day of month
+//     : for [1]==0 this order number of occurance of the given day (1,2,3,4 is acceptable, 5 means *last*)
+//  [3]: used only for [1]==0, and this means day of week (0=sunday,1=monday,2=tuesday,3=wednesday,...)
+//     : [1] to [3] are used for starting month
+//  [5] to [7] is used for ending month in the same way as [1] to [3] for starting month
+//
+// EXAMPLE: (first line)   3 0 5 0 10 0 5 0
+// [0] == 3, that means starting month is March
+// [1] == 0, that means starting system is (day of week)
+// [2] == 5, that would mean that we are looking for 5th occurance of given day in the month, but 5 here means,
+//           that we are looking for *LAST* occurance of given day
+// [3] == 0, this is *GIVEN DAY*, and it is SUNDAY
+//
+//         so, DST is starting on last sunday of March
+//
+// similarly analysed, DST is ending on last sunday of October
+//
+
+int TTimeZone::GetDaylightBias(VCTIME vc, DWORD val)
+{
+	int DSTtable[8];
+	int bias = 1;
+
+	TTimeZone::ExpandVal(val, DSTtable);
+
+	if (vc.month == DSTtable[0])
+	{
+		if (DSTtable[1] == 0)
+			return is_n_xday(vc, DSTtable[2], DSTtable[3]) * bias;
+		else
+			return (vc.day >= DSTtable[2]) ? bias : 0;
+	}
+	else if (vc.month == DSTtable[4])
+	{
+		if (DSTtable[5] == 0)
+			return (1 - is_n_xday(vc, DSTtable[6], DSTtable[7]))*bias;
+		else
+			return (vc.day >= DSTtable[6]) ? 0 : bias;
+	}
+	else 
+	{
+		if (DSTtable[0] > DSTtable[4])
+		{
+			// zaciatocny mesiac ma vyssie cislo nez koncovy
+			// napr. pre australiu
+			if ((vc.month > DSTtable[0]) || (vc.month < DSTtable[4]))
+				return bias;
+		}
+		else
+		{
+			// zaciatocny mesiac ma nizsie cislo nez koncovy
+			// usa, europa, asia
+			if ((vc.month > DSTtable[0]) && (vc.month < DSTtable[4]))
+				return bias;
+		}
+
+		return 0;
+	}
+}
+
+
+int TTimeZone::determineDaylightStatus(VCTIME vc, int nIndex)
+{
+	return GetDaylightBias(vc, TTimeZone::gzone[TTimeZone::ID2INDEX(nIndex)].val);
+}
+

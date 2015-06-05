@@ -25,7 +25,6 @@
 extern TString gAyaName;
 extern const char * gpszSeparator;
 void time_print(TString &str, DAYTIME dt);
-int is_daylight_time(VCTIME, int);
 void AddTextLine(TString &, const char *);
 void AddTextLineRtf(TString &str, const char * pt);
 void AppendColorTable(TString &str);
@@ -55,33 +54,6 @@ void AddNoteText(TString &str)
 	str += GCStrings::getString(131);
 }
 
-// return values
-// 0 - DST is off, yesterday was off
-// 1 - DST is on, yesterday was off
-// 2 - DST is on, yesterday was on
-// 3 - DST is off, yesterday was on
-int is_daylight_time2(VCTIME vc2, int nIndex)
-{
-	int t2 = is_daylight_time(vc2, nIndex);
-	VCTIME vc3 = vc2;
-	vc3.PreviousDay();
-	int t1 = is_daylight_time(vc3, nIndex);
-	if (t1)
-	{
-		if (t2)
-			return 2;
-		else
-			return 3;
-	}
-	else if (t2)
-	{
-		is_daylight_time(vc2, nIndex);
-		is_daylight_time(vc3, nIndex);
-		return 1;
-	}
-	else
-		return 0;
-}
 
 void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTIME vcEnd, UInt32 fOptions)
 {
@@ -115,7 +87,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 	{
 		if (GCDisplaySettings::getValue(COREEVENTS_SUN))
 		{
-			ndst = is_daylight_time2(vcAdd, loc.m_nDST);
+			ndst = TTimeZone::determineDaylightChange(vcAdd, loc.m_nDST);
 			sun.SunCalc(vcAdd, earth);
 
 			vcAdd.shour = sun.arunodaya.GetDayTime();
@@ -132,7 +104,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 		}
 		else
 		{
-			ndst = is_daylight_time2(vcAdd, loc.m_nDST);
+			ndst = TTimeZone::determineDaylightChange(vcAdd, loc.m_nDST);
 			sun.SunCalc(vcAdd, earth);
 			sunRise = sun.rise.GetDayTime();
 			sunSet = sun.set.GetDayTime();
@@ -234,7 +206,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_TITHI, nData, ndst);
 			}
 			else
@@ -261,7 +233,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_NAKS, nData, ndst);
 			}
 			else
@@ -288,7 +260,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_SANK, nData, ndst);
 			}
 			else
@@ -310,7 +282,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_M_RASI, nData, ndst);
 			}
 			else
@@ -334,7 +306,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_CONJ, GCRasi::GetRasi(dlong, GCAyanamsha::GetAyanamsa(vcNext.GetJulianComplete())), ndst);
 			}
 			else
@@ -374,7 +346,7 @@ void CalcEvents(TResultEvents &inEvents, CLocationRef &loc, VCTIME vcStart, VCTI
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
-				ndst = is_daylight_time2(vcNext, loc.m_nDST);
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_ASCENDENT, nData, ndst);
 			}
 			else
@@ -770,35 +742,35 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 
 		switch(dnr.nType)
 		{
-		case 10:
+		case CCTYPE_S_ARUN:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   arunodaya\\par\r\n";
 			break;
-		case 11:
+		case CCTYPE_S_RISE:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   sunrise\\par\r\n";
 			break;
-		case 12:
+		case CCTYPE_S_NOON:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   noon\\par\r\n";
 			break;
-		case 13:
+		case CCTYPE_S_SET:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   sunset\\par\r\n";
 			break;
-		case 20:
+		case CCTYPE_TITHI:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -808,7 +780,7 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += " Tithi starts";
 			res += "\\par\r\n";
 			break;
-		case 21:
+		case CCTYPE_NAKS:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -818,7 +790,7 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += " Naksatra starts";
 			res += "\\par\r\n";
 			break;
-		case 22:
+		case CCTYPE_SANK:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -828,7 +800,7 @@ int FormatEventsRtf(TResultEvents &inEvents, TString &res)
 			res += " ";
 			res += "\\par\r\n";
 			break;
-		case 23:
+		case CCTYPE_CONJ:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";

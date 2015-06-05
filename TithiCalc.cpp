@@ -17,8 +17,6 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 int WriteXML_GaurabdaTithi(const char * foutName, EARTHDATA earth, int, int, int, int, int);
-int AvcComboMasaToMasa(int);
-int AvcMasaToComboMasa(int);
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetStartDate dialog
@@ -75,7 +73,7 @@ void DlgGetStartDate::OnCalc()
 	CString str;
 
 	m_resultA.tithi = w_tithi.GetCurSel();
-	m_resultA.masa  = AvcComboMasaToMasa(w_masa.GetCurSel());
+	m_resultA.masa  = GCCalendar::ComboMasaToMasa(w_masa.GetCurSel());
 	m_resultA.gyear = GetDlgItemInt(IDC_EDIT1, NULL, FALSE);
 
 	if (m_resultA.gyear < 1 || m_resultA.gyear > 2500)
@@ -162,7 +160,7 @@ BOOL DlgGetStartDate::OnInitDialog()
 	SetDlgItemInt(IDC_EDIT2, m_resultC.year, FALSE);
 
 	w_tithi.SetCurSel(m_resultA.tithi);
-	w_masa.SetCurSel(AvcMasaToComboMasa(m_resultA.masa));
+	w_masa.SetCurSel(GCCalendar::MasaToComboMasa(m_resultA.masa));
 	SetDlgItemInt(IDC_EDIT1, m_resultA.gyear, FALSE);
 
 	f_update = TRUE;
@@ -228,7 +226,7 @@ void DlgGetStartDate::SynchroGregorianToGaurabda()
 	GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
 
 	w_tithi.SetCurSel(m_resultA.tithi);
-	w_masa.SetCurSel(AvcMasaToComboMasa(m_resultA.masa));
+	w_masa.SetCurSel(GCCalendar::MasaToComboMasa(m_resultA.masa));
 	SetDlgItemInt(IDC_EDIT1, m_resultA.gyear, FALSE);
 	f_update = upd_old;
 }
@@ -265,7 +263,7 @@ void DlgGetStartDate::SynchroGaurabdaToGregorian()
 	f_update = FALSE;
 
 	m_resultA.tithi = w_tithi.GetCurSel();
-	m_resultA.masa  = AvcComboMasaToMasa(w_masa.GetCurSel());
+	m_resultA.masa  = GCCalendar::ComboMasaToMasa(w_masa.GetCurSel());
 	m_resultA.gyear = GetDlgItemInt(IDC_EDIT1, NULL, FALSE);
 
 	if (m_resultA.gyear < 0 || m_resultA.gyear > 2500)
@@ -312,7 +310,7 @@ BOOL DlgGetStartDate::OnCommand(WPARAM wParam, LPARAM lParam)
 		SetDlgItemInt(IDC_EDIT2, m_resultC.year, FALSE);
 		GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
 		w_tithi.SetCurSel(m_resultA.tithi);
-		w_masa.SetCurSel(AvcMasaToComboMasa(m_resultA.masa));
+		w_masa.SetCurSel(GCCalendar::MasaToComboMasa(m_resultA.masa));
 		SetDlgItemInt(IDC_EDIT1, m_resultA.gyear, FALSE);
 		f_update = TRUE;
 		break;
@@ -344,7 +342,7 @@ BOOL DlgGetStartDate::OnCommand(WPARAM wParam, LPARAM lParam)
 		w_tithi.SetCurSel(0);
 		w_masa.SetCurSel(0);
 		m_resultA.tithi = 0;
-		m_resultA.masa = AvcComboMasaToMasa(0);
+		m_resultA.masa = GCCalendar::ComboMasaToMasa(0);
 		SynchroGaurabdaToGregorian();
 		f_update = TRUE;
 		break;

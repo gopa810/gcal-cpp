@@ -8,6 +8,7 @@
 #include "strings.h"
 #include "GCStrings.h"
 #include "GCSankranti.h"
+#include "TTimeZone.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -17,8 +18,6 @@ static char THIS_FILE[]=__FILE__;
 
 
 extern int gp_Fasting[];
-
-int is_daylight_time(VCTIME vc, int nIndex);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -88,7 +87,7 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 	// 3
 	for(i = 0; i < nTotalCount; i++)
 	{
-		m_pData[i].nDST = is_daylight_time(m_pData[i].date, nDST);
+		m_pData[i].nDST = TTimeZone::determineDaylightStatus(m_pData[i].date, nDST);
 	}
 
 	// 4
@@ -154,7 +153,7 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 	do
 	{
 		date = GCSankranti::GetNextSankranti(date, zodiac);
-		date.shour += is_daylight_time(date, nDST);
+		date.shour += TTimeZone::determineDaylightStatus(date, nDST);
 		date.NormalizeValues();
 
 		bFoundSan = false;

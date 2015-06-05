@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgGetEndDate.h"
+#include "GCCalendar.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,7 +14,6 @@ static char THIS_FILE[] = __FILE__;
 
 
 const char * FormatDate(VCTIME vc, VATIME va);
-int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd, VATIME &vaEnd, int nType, int nCount);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -224,7 +224,7 @@ void DlgGetEndDate::Recalc()
 	default:
 		break;
 	}
-	CalcEndDate(m_earth, vc_start, va_start, vc_end, va_end, m_type, m_count);
+	GCCalendar::CalcEndDate(m_earth, vc_start, va_start, vc_end, va_end, m_type, m_count);
 	SetDlgItemText(IDC_EDIT3, FormatDate(vc_end, va_end));
 }
 

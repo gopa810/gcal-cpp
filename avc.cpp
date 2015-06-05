@@ -19,9 +19,6 @@ extern VCTIME gToday;
 extern VCTIME gTomorrow;
 extern VCTIME gYesterday;
 
-//void SunPosition(VCTIME vct, EARTHDATA ed, SUNDATA &sun, double double);
-int is_daylight_time(VCTIME vc, int nIndex);
-
 
 const char * AvcGetEarthPosFromString(const char * str, bool bNorth, double &Longitude)
 {
@@ -328,15 +325,7 @@ const char * GCalApp_GetFileName(int n)
 	return g_appstr[n].c_str();
 }
 
-int AvcComboMasaToMasa(int nComboMasa)
-{
-	return (nComboMasa == 12) ? 12 : ((nComboMasa + 11) % 12);
-}
 
-int AvcMasaToComboMasa(int nMasa)
-{
-	return (nMasa == 12) ? 12 : ((nMasa + 1) % 12);
-}
 
 int AvcGetLocationAsText(TString &str, EARTHDATA earth)
 {
@@ -640,94 +629,5 @@ const char * FormatDate(VCTIME vc, VATIME va)
 		GCStrings::GetTithiName(va.tithi%15), GCStrings::GetPaksaName(va.tithi/15), GCStrings::GetMasaName(va.masa), va.gyear);
 
 	return sz;
-}
-
-int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd, VATIME &vaEnd, int nType, int nCount)
-{
-	switch(nType)
-	{
-	case 1:
-		vcEnd = vcStart;
-		if (nCount > 30240) nCount = 30240;
-		vcEnd += nCount;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
-		break;
-	case 2:
-		vcEnd = vcStart;
-		if (nCount > 4320) nCount = 4320;
-		vcEnd += nCount*7;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
-		break;
-	case 3:
-		vcEnd = vcStart;
-		if (nCount > 1080) nCount = 1080;
-		vcEnd.month += nCount;
-		while(vcEnd.month > 12)
-		{
-			vcEnd.year++;
-			vcEnd.month -= 12;
-		}
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
-		break;
-	case 4:
-		vcEnd = vcStart;
-		if (nCount > 90) nCount = 90;
-		vcEnd.year += nCount;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
-		break;
-	case 5:
-		vaEnd = vaStart;
-		if (nCount > 30240) nCount = 30240;
-		vaEnd.tithi += nCount;
-		while(vaEnd.tithi >= 30)
-		{
-			vaEnd.tithi-=30;
-			vaEnd.masa++;
-		}
-		while(vaEnd.masa >= 12)
-		{
-			vaEnd.masa -= 12;
-			vaEnd.gyear++;
-		}
-		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
-		break;
-	case 6:
-		vaEnd = vaStart;
-		if (nCount > 1080) nCount = 1080;
-		vaEnd.masa = AvcMasaToComboMasa(vaEnd.masa);
-		if (vaEnd.masa == ADHIKA_MASA)
-		{
-			vcEnd = vcStart;
-			vcEnd.month += nCount;
-			while(vcEnd.month > 12)
-			{
-				vcEnd.year++;
-				vcEnd.month -= 12;
-			}
-			GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
-			vaEnd.tithi = vaStart.tithi;
-			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
-		}
-		else
-		{
-			vaEnd.masa += nCount;
-			while(vaEnd.masa >= 12)
-			{
-				vaEnd.masa -= 12;
-				vaEnd.gyear++;
-			}
-			vaEnd.masa = AvcComboMasaToMasa(vaEnd.masa);
-			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
-		}
-		break;
-	case 7:
-		vaEnd = vaStart;
-		if (nCount > 90) nCount = 90;
-		vaEnd.gyear += nCount;
-		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
-		break;
-	}
-
-	return 1;
 }
 

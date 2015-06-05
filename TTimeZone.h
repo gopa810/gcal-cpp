@@ -31,6 +31,10 @@ public:
 	static TTimeZone gzone[];
 	static char * GetTimeZoneOffsetTextArg(double d);
 	static char * GetTimeZoneOffsetText(double d);
+	static int determineDaylightChange(VCTIME vc2, int nIndex);
+	static int determineDaylightStatus(VCTIME vc, int nIndex);
+	static int GetDaylightBias(VCTIME vc, DWORD val);
+	static int is_n_xday(VCTIME vc, int n, int x);
 
 	const char * name;
 	int offset;

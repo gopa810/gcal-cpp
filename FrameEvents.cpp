@@ -11,6 +11,7 @@
 #include "DlgEditCustomEvent.h"
 #include "GCStrings.h"
 #include "GCDisplaySettings.h"
+#include "GCCalendar.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -19,8 +20,6 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 extern GCalApp theApp;
-
-int AvcComboMasaToMasa(int);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -96,7 +95,7 @@ BOOL CFrameEvents::OnCommand(WPARAM wParam, LPARAM lParam)
 			else
 			{
 				for(i=0;i<12;i++) b_masa[i] = 0;
-				if (currSel <= 12) b_masa[AvcComboMasaToMasa(currSel-1)] = 1;
+				if (currSel <= 12) b_masa[GCCalendar::ComboMasaToMasa(currSel-1)] = 1;
 			}
 			FillListView();
 		}
@@ -250,7 +249,7 @@ int CFrameEvents::OnCreate(LPCREATESTRUCT lpCreateStruct)
 */
 	m_wndMasa.AddString("<all masa>");
 	for(i = 0; i < 12; i++)
-		m_wndMasa.AddString(GCStrings::GetMasaName(AvcComboMasaToMasa(i)));
+		m_wndMasa.AddString(GCStrings::GetMasaName(GCCalendar::ComboMasaToMasa(i)));
 
 	m_wndClass.SetCurSel(0);
 	m_wndMasa.SetCurSel(0);

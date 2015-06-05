@@ -16,14 +16,14 @@ class TFileXml
 {
 	FILE * fout;
 public:
-	void operator=(FILE * file) { fout = file; }
-	TFileXml & operator<<(VCTIME vc);
-	TFileXml & operator<<(TString &s);
-	TFileXml & operator<<(const char * s);
-	TFileXml & operator<<(DAYTIME dt);
-	TFileXml & operator<<(int n);
-	TFileXml & operator<<(double d);
-	TFileXml & operator<<(TCHAR * p);
+	void initWithFile(FILE * file) { fout = file; }
+	void write(VCTIME vc);
+	void write(TString &s);
+	void write(const char * s);
+	void write(DAYTIME dt);
+	void write(int n);
+	void write(double d);
+	void write(TCHAR * p);
 	TFileXml();
 	virtual ~TFileXml();
 
