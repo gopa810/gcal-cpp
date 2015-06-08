@@ -622,10 +622,12 @@
     <ClCompile Include="GCDisplaySettings.cpp" />
     <ClCompile Include="GCEarthData.cpp" />
     <ClCompile Include="GCGregorianTime.cpp" />
+    <ClCompile Include="GCLayoutData.cpp" />
     <ClCompile Include="GCMoonData.cpp" />
     <ClCompile Include="GCNaksatra.cpp" />
     <ClCompile Include="GCRasi.cpp" />
     <ClCompile Include="GCSankranti.cpp" />
+    <ClCompile Include="GCStringBuilder.cpp" />
     <ClCompile Include="GCStrings.cpp" />
     <ClCompile Include="GCSunData.cpp" />
     <ClCompile Include="GCTithi.cpp" />
@@ -819,6 +821,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="TResultApp.cpp" />
     <ClCompile Include="TResultEvents.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -951,10 +954,12 @@
     <ClInclude Include="GCDisplaySettings.h" />
     <ClInclude Include="GCEarthData.h" />
     <ClInclude Include="GCGregorianTime.h" />
+    <ClInclude Include="GCLayoutData.h" />
     <ClInclude Include="GCMoonData.h" />
     <ClInclude Include="GCNaksatra.h" />
     <ClInclude Include="GCRasi.h" />
     <ClInclude Include="GCSankranti.h" />
+    <ClInclude Include="GCStringBuilder.h" />
     <ClInclude Include="GCStrings.h" />
     <ClInclude Include="GCSunData.h" />
     <ClInclude Include="GCTithi.h" />

@@ -169,6 +169,8 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	VCTIME date;
 	EARTHDATA earth;
 	int prev_paksa = 0;
+	int lastMasa = 0;
+	int lastGYear = 0;
 	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 	Boolean bCalcMasa[] = 
 		{ TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, 
@@ -293,7 +295,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		if (calc_masa)
 		{
 			m_pData[i].astrodata.MasaCalc(m_pData[i].date, earth);
+			lastMasa = m_pData[i].astrodata.nMasa;
+			lastGYear = m_pData[i].astrodata.nGaurabdaYear;
 		}
+		m_pData[i].astrodata.nMasa = lastMasa;
+		m_pData[i].astrodata.nGaurabdaYear = lastGYear;
 		m_pData[i].fAstroValid = true;
 	}
 

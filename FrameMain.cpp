@@ -33,6 +33,8 @@
 #include "GCTithi.h"
 #include "GCNaksatra.h"
 #include "GCDisplaySettings.h"
+#include "GCStringBuilder.h"
+#include "GCLayoutData.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -43,7 +45,6 @@ static char THIS_FILE[] = __FILE__;
 int AvcGetNextLine(TString &, TString &, int &);
 int AvcGetTextLineCount(VAISNAVADAY * pvd);
 int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout);
-void WriteAppDayHTML(TResultApp &app, FILE *F);
 int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout);
 int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout);
 int WriteEventsHTML(TResultEvents &inEvents, FILE * f);
@@ -52,12 +53,8 @@ int CalcCalendar(TResultCalendar &calendar, EARTHDATA earth, VCTIME date, int nD
 int FormatCalendarOld(TResultCalendar &, TString &);
 int FormatCalendarICAL(TResultCalendar &calendar, TString &str);
 int FormatCalendarVCAL(TResultCalendar &calendar, TString &str);
-void FormatAppDayXML(TResultApp &, TString &);
-int FormatMasaListText(TResultMasaList &mlist, TString &str);
-int FormatMasaListRtf(TResultMasaList &mlist, TString &str);
 void time_print(TString &, DAYTIME);
 int AvcGetTextLineCount(VAISNAVADAY * pvd);
-void AppendRtfHeader(TString &);
 void AddNoteText(TString &str);
 
 extern GCalApp theApp;
@@ -69,10 +66,7 @@ extern VCTIME gTomorrow;
 extern VCTIME gYesterday;
 extern const char * gpszSeparator;
 extern int g_ShowMode;
-extern int g_NoteSize;
-extern int g_TextSize;
-extern int g_HeaderSize;
-extern int g_Header2Size;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -209,9 +203,6 @@ END_MESSAGE_MAP()
 
 
 ////////////////////////////////////////////////////////
-void CalcAppDay(CLocationRef &location, VCTIME event, TResultApp &);
-void FormatAppDayText(TResultApp & app, TString &strResult);
-void FormatAppDayRtf(TResultApp & app, TString &strResult);
 
 #define MW_MODE_CAL      1
 #define MW_MODE_EVENTS   2
@@ -366,20 +357,20 @@ _step_final:
 	event.shour = double(d2.m_nHour * 60 + d2.m_nMin) / 1440.0;
 	event.tzone = earth.m_fTimezone;
 
-	CalcAppDay(earth, event, m_appday);
+	m_appday.calculateAppDay(earth, event);
 	
-	FormatAppDayXML(m_appday, m_strXml);
+	m_appday.formatXml(m_strXml);
 
 	if (g_ShowMode == 0)
 	{
-		FormatAppDayText(m_appday, str);
+		m_appday.formatPlainText(str);
 		AddNote1(str);
 		m_textTXT.SetWindowText( str );
 		m_strTxt = str;
 	}
 	else
 	{
-		FormatAppDayRtf(m_appday, str);
+		m_appday.formatRtf(str);
 		m_textRTF.SetWindowText( str );
 	}
 
@@ -437,29 +428,29 @@ _step_final:
 	else
 	{
 		str = "";
-		AppendRtfHeader(str);
+		GCStringBuilder::AppendRtfHeader(&str);
 		str += "\\par\\par\\qc\\fs30\\cf30\\b Calculation in progress....";
 		m_textRTF.SetTextRtf(&str);
 		m_textRTF.UpdateWindow();
 	}
 
-	CalcEvents(m_events, naks.m_loc, naks.vc_start, naks.vc_end, naks.fOptions);
+	m_events.CalculateEvents(naks.m_loc, naks.vc_start, naks.vc_end);
 
 	if (g_ShowMode == 0)
 	{
-		FormatEventsText(m_events, str);
+		m_events.formatText(str);
 		AddNote1(str);
 		m_textTXT.SetWindowText( str );
 		m_strTxt = str;
 	}
 	else
 	{
-		FormatEventsRtf(m_events, str);
+		m_events.formatRtf(str);
 		m_textRTF.LimitText(384000);
 		m_textRTF.SetWindowText( str );
 	}
 
-	FormatEventsXML(m_events, m_strXml);
+	m_events.formatXml(m_strXml);
 
 	SetInfoText(GCStrings::getString(46), MW_MODE_EVENTS);
 }
@@ -1122,7 +1113,7 @@ void CFrameMain::OnFileSave()
 				case 6:
 					if (std.Open(fd.GetPathName(), "w") == TRUE)
 					{
-						WriteAppDayHTML(m_appday, std.m_fHandle);
+						m_appday.writeHtml(std.m_fHandle);
 						std.Close();
 					}
 					break;
@@ -1258,42 +1249,42 @@ void CFrameMain::RecalculateCurrentScreen()
 	case MW_MODE_EVENTS:
 			if (g_ShowMode == 0)
 			{
-				FormatEventsText(m_events, text);
+				m_events.formatText(text);
 				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
 			else if (g_ShowMode == 1)
 			{
-				FormatEventsRtf(m_events, text);
+				m_events.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 		break;
 	case MW_MODE_MASALIST:
 			if (g_ShowMode == 0)
 			{
-				FormatMasaListText(m_masalist, text);
+				m_masalist.formatText(text);
 				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
 			else if (g_ShowMode == 1)
 			{
-				FormatMasaListRtf(m_masalist, text);
+				m_masalist.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 		break;
 	case MW_MODE_APPDAY:
 			if (g_ShowMode == 0)
 			{
-				FormatAppDayText(m_appday, text);
+				m_appday.formatPlainText(text);
 				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
 			else if (g_ShowMode == 1)
 			{
-				FormatAppDayRtf(m_appday, text);
+				m_appday.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 		break;
@@ -1833,10 +1824,10 @@ void CFrameMain::OnUpdateSettingsRichtextview(CCmdUI* pCmdUI)
 void CFrameMain::OnSettingsTextsize10() 
 {
 	// TODO: Add your command handler code here
-	g_NoteSize = 14;
-	g_TextSize=20;
-	g_HeaderSize = 30;
-	g_Header2Size = 25;
+	GCLayoutData::textSizeNote = 14;
+	GCLayoutData::textSizeText=20;
+	GCLayoutData::textSizeH1 = 30;
+	GCLayoutData::textSizeH2 = 25;
 	RecalculateCurrentScreen();
 }
 
@@ -1844,16 +1835,16 @@ void CFrameMain::OnUpdateSettingsTextsize10(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 	pCmdUI->Enable(g_ShowMode == 1);
-	pCmdUI->SetRadio(g_TextSize==20);
+	pCmdUI->SetRadio(GCLayoutData::textSizeText==20);
 }
 
 void CFrameMain::OnSettingsTextsize11() 
 {
 	// TODO: Add your command handler code here
-	g_NoteSize = 15;
-	g_TextSize=22;
-	g_HeaderSize = 33;
-	g_Header2Size = 28;
+	GCLayoutData::textSizeNote = 15;
+	GCLayoutData::textSizeText=22;
+	GCLayoutData::textSizeH1 = 33;
+	GCLayoutData::textSizeH2 = 28;
 	RecalculateCurrentScreen();
 	
 }
@@ -1862,17 +1853,17 @@ void CFrameMain::OnUpdateSettingsTextsize11(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 	pCmdUI->Enable(g_ShowMode == 1);
-	pCmdUI->SetRadio(g_TextSize==22);
+	pCmdUI->SetRadio(GCLayoutData::textSizeText==22);
 	
 }
 
 void CFrameMain::OnSettingsTextsize12() 
 {
 	// TODO: Add your command handler code here
-	g_NoteSize = 16;
-	g_TextSize=24;
-	g_HeaderSize = 36;
-	g_Header2Size = 32;
+	GCLayoutData::textSizeNote = 16;
+	GCLayoutData::textSizeText=24;
+	GCLayoutData::textSizeH1 = 36;
+	GCLayoutData::textSizeH2 = 32;
 	RecalculateCurrentScreen();
 	
 }
@@ -1881,17 +1872,17 @@ void CFrameMain::OnUpdateSettingsTextsize12(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 	pCmdUI->Enable(g_ShowMode == 1);
-	pCmdUI->SetRadio(g_TextSize==24);
+	pCmdUI->SetRadio(GCLayoutData::textSizeText==24);
 	
 }
 
 void CFrameMain::OnSettingsTextsize13() 
 {
 	// TODO: Add your command handler code here
-	g_NoteSize = 17;
-	g_TextSize=26;
-	g_HeaderSize = 39;
-	g_Header2Size = 35;
+	GCLayoutData::textSizeNote = 17;
+	GCLayoutData::textSizeText=26;
+	GCLayoutData::textSizeH1 = 39;
+	GCLayoutData::textSizeH2 = 35;
 	RecalculateCurrentScreen();
 	
 }
@@ -1900,17 +1891,17 @@ void CFrameMain::OnUpdateSettingsTextsize13(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 	pCmdUI->Enable(g_ShowMode == 1);
-	pCmdUI->SetRadio(g_TextSize==26);
+	pCmdUI->SetRadio(GCLayoutData::textSizeText==26);
 	
 }
 
 void CFrameMain::OnSettingsTextsize14() 
 {
 	// TODO: Add your command handler code here
-	g_NoteSize = 18;
-	g_TextSize=28;
-	g_HeaderSize = 42;
-	g_Header2Size = 37;
+	GCLayoutData::textSizeNote = 18;
+	GCLayoutData::textSizeText=28;
+	GCLayoutData::textSizeH1 = 42;
+	GCLayoutData::textSizeH2 = 37;
 	RecalculateCurrentScreen();
 	
 }
@@ -1919,7 +1910,7 @@ void CFrameMain::OnUpdateSettingsTextsize14(CCmdUI* pCmdUI)
 {
 	// TODO: Add your command update UI handler code here
 	pCmdUI->Enable(g_ShowMode == 1);
-	pCmdUI->SetRadio(g_TextSize==28);
+	pCmdUI->SetRadio(GCLayoutData::textSizeText==28);
 	
 }
 
@@ -1939,17 +1930,17 @@ void CFrameMain::RetrieveCurrentScreenInText(TString &text)
 		m_strTxt = text;
 		break;
 	case MW_MODE_EVENTS:
-		FormatEventsText(m_events, text);
+		m_events.formatText(text);
 		AddNoteText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_MASALIST:
-		FormatMasaListText(m_masalist, text);
+		m_masalist.formatText(text);
 		AddNoteText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_APPDAY:
-		FormatAppDayText(m_appday, text);
+		m_appday.formatPlainText(text);
 		AddNoteText(text);
 		m_strTxt = text;
 		break;
@@ -1971,13 +1962,13 @@ void CFrameMain::RetrieveCurrentScreenInRtf(TString &text)
 		FormatCalendarRtf(m_calendar, text);
 		break;
 	case MW_MODE_EVENTS:
-		FormatEventsRtf(m_events, text);
+		m_events.formatRtf(text);
 		break;
 	case MW_MODE_MASALIST:
-		FormatMasaListRtf(m_masalist, text);
+		m_masalist.formatRtf(text);
 		break;
 	case MW_MODE_APPDAY:
-		FormatAppDayRtf(m_appday, text);
+		m_appday.formatRtf(text);
 		break;
 	case MW_MODE_TODAY:
 		FormatTodayInfoRtf(gTodayAct, gMyLocation, text);

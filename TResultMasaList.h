@@ -2,22 +2,17 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_TRESULTMASALIST_H__E9122038_3961_4E97_BD85_1428DAA643C4__INCLUDED_)
-#define AFX_TRESULTMASALIST_H__E9122038_3961_4E97_BD85_1428DAA643C4__INCLUDED_
-
 #include "LocationRef.h"	// Added by ClassView
 #include "level_0.h"	// Added by ClassView
 #include "platform.h"	// Added by ClassView
-#if _MSC_VER > 1000
+
 #pragma once
-#endif // _MSC_VER > 1000
 // PORTABLE
 
 class TResultMasaList  
 {
 public:
 	int n_allocated;
-	Boolean alloc(int nCountYears);
 	class TResultMasa
 	{
 	public:
@@ -33,9 +28,14 @@ public:
 	int n_countMasa;
 	int n_startYear;
 	CLocationRef m_location;
+
 	TResultMasaList();
 	virtual ~TResultMasaList();
+	
+	int CalculateMasaList(CLocationRef &loc, int nYear, int nCount);
+	Boolean alloc(int nCountYears);
+	int formatText(TString &str);
+	int formatRtf(TString &str);
 
 };
 
-#endif // !defined(AFX_TRESULTMASALIST_H__E9122038_3961_4E97_BD85_1428DAA643C4__INCLUDED_)

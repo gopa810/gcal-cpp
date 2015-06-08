@@ -21,6 +21,7 @@
 #include "GCStrings.h"
 #include "GCCalendar.h"
 #include "GCDisplaySettings.h"
+#include "GCLayoutData.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,10 +33,6 @@ void AvcShowSetWriteFile(const char *);
 void InitTips(FILE * hFile);
 
 extern int g_ShowMode;
-extern int g_NoteSize;
-extern int g_TextSize;
-extern int g_HeaderSize;
-extern int g_Header2Size;
 
 int WriteCalendarXml(TResultCalendar &, FILE * f);
 
@@ -158,10 +155,10 @@ BOOL GCalApp::InitInstance()
 	SetRegistryKey(_T("GCAL"));
 	
 	g_ShowMode = GetProfileInt("ui", "show_mode", 1);
-	g_NoteSize = GetProfileInt("ui", "note_size", 16);
-	g_TextSize = GetProfileInt("ui", "text_size", 24);
-	g_HeaderSize = GetProfileInt("ui", "hdr_size", 36);
-	g_Header2Size = GetProfileInt("ui", "hdr2_size", 32);
+	GCLayoutData::textSizeNote = GetProfileInt("ui", "note_size", 16);
+	GCLayoutData::textSizeText = GetProfileInt("ui", "text_size", 24);
+	GCLayoutData::textSizeH1 = GetProfileInt("ui", "hdr_size", 36);
+	GCLayoutData::textSizeH2 = GetProfileInt("ui", "hdr2_size", 32);
 
 #ifdef _AFXDLL
 	Enable3dControls();			// Call this when using MFC in a shared DLL
@@ -428,10 +425,10 @@ int GCalApp::ExitInstance()
 //	TLangFileInfo * p;
 
 	WriteProfileInt("ui", "show_mode", g_ShowMode);
-	WriteProfileInt("ui", "note_size", g_NoteSize);
-	WriteProfileInt("ui", "text_size", g_TextSize);
-	WriteProfileInt("ui", "hdr_size", g_HeaderSize);
-	WriteProfileInt("ui", "hdr2_size", g_Header2Size);
+	WriteProfileInt("ui", "note_size", GCLayoutData::textSizeNote);
+	WriteProfileInt("ui", "text_size", GCLayoutData::textSizeText);
+	WriteProfileInt("ui", "hdr_size", GCLayoutData::textSizeH1);
+	WriteProfileInt("ui", "hdr2_size", GCLayoutData::textSizeH2);
 
 	if (m_bWindowless == FALSE)
 	{
@@ -642,8 +639,6 @@ int WriteXML_Naksatra(FILE *, CLocationRef &loc, VCTIME, int);
 int WriteXML_Tithi(FILE *, CLocationRef &loc, VCTIME);
 int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIME vaEnd);
 int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, VATIME vaStart);
-void FormatAppDayXML(TResultApp &, TString &strResult);
-void CalcAppDay(CLocationRef &, VCTIME, TResultApp &);
 
 
 int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
@@ -920,8 +915,8 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 		break;
 	case 11:
 		// -R -O -LAT -LON -SG -ST [-NAME]
-		CalcAppDay(loc, vcStart, appday);
-		FormatAppDayXML(appday, str);
+		appday.calculateAppDay(loc, vcStart);
+		appday.formatXml(str);
 		fputs(str, fout);
 		break;
 	case 12:

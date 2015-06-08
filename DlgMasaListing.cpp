@@ -17,10 +17,6 @@ static char THIS_FILE[] = __FILE__;
 
 extern int g_ShowMode;
 
-int CalcMasaList(TResultMasaList &, CLocationRef &, int, int);
-int FormatMasaListText(TResultMasaList &, TString &);
-int FormatMasaListRtf(TResultMasaList &, TString &);
-
 /////////////////////////////////////////////////////////////////////////////
 // DlgMasaListing dialog
 
@@ -90,15 +86,15 @@ void DlgMasaListing::OnOK()
 		m_Count = 4000 - m_Year;
 	}
 
-	CalcMasaList(*m_pMasaList, m_loc, m_Year, m_Count);
+	m_pMasaList->CalculateMasaList(m_loc, m_Year, m_Count);
 
 	if (g_ShowMode == 0)
 	{
-		FormatMasaListText(*m_pMasaList, m_strResult);
+		m_pMasaList->formatText(m_strResult);
 	}
 	else if (g_ShowMode == 1)
 	{
-		FormatMasaListRtf(*m_pMasaList, m_strResult);
+		m_pMasaList->formatRtf(m_strResult);
 	}
 
 	m_nNextStep = 1;

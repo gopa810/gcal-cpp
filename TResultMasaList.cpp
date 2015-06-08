@@ -5,14 +5,9 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "TResultMasaList.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-// PORTABLE
+#include "GCStrings.h"
+#include "GCStringBuilder.h"
+#include "GCLayoutData.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -49,3 +44,133 @@ Boolean TResultMasaList::alloc(int nCountYears)
 	n_allocated = nCountYears;
 	return arr ? true : false;
 }
+
+int TResultMasaList::CalculateMasaList(CLocationRef &loc, int nYear, int nCount)
+{
+	DAYDATA day;
+	VCTIME d, de, t;
+	int lm = -1;
+	TResultMasaList &mlist = *this;
+
+	mlist.n_startYear = nYear;
+	mlist.n_countYears = nCount;
+	mlist.vc_start = d  = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear);
+	mlist.vc_end   = de = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear + nCount);
+	mlist.m_location = loc;
+
+	if (mlist.alloc(nCount) == false)
+		return 0;
+
+	int i = 0;
+	int prev_paksa = -1;
+	int prev_gyear = -1;
+	int current = 0;
+
+
+	EARTHDATA earth = (EARTHDATA)loc;
+	while(d.IsBeforeThis(de))
+	{
+		day.DayCalc(d, earth);
+		if (prev_paksa != day.nPaksa)
+		{
+			day.nMasa = day.MasaCalc(d, earth);
+			
+			if (lm != day.nMasa)
+			{
+				if (lm >= 0)
+				{
+					t = d;
+					t.PreviousDay();
+					mlist.arr[current].vc_end = t;
+					current++;
+				}
+				lm = day.nMasa;
+				mlist.arr[current].masa = day.nMasa;
+				mlist.arr[current].year = day.nGaurabdaYear;
+				mlist.arr[current].vc_start = d;
+			}
+		}
+		prev_paksa = day.nPaksa;
+		d.NextDay();
+		i ++;
+	}
+
+	t = d;
+	mlist.arr[current].vc_end = t;
+	current++;
+	mlist.n_countMasa = current;
+
+	return 1;
+}
+
+int TResultMasaList::formatText(TString &str)
+{
+	TString stt;
+	TString stt2;
+	TResultMasaList &mlist = *this;
+
+	str.Format(" %s\r\n\r\n%s: %s\r\n", GCStrings::getString(39).c_str(), GCStrings::getString(40).c_str(), mlist.m_location.m_strFullName.c_str());
+	stt.Format("%s %d %s %d %s %d %s %d\r\n", GCStrings::getString(41).c_str(), mlist.vc_start.day, GCStrings::GetMonthAbreviation(mlist.vc_start.month), mlist.vc_start.year
+		, GCStrings::getString(42).c_str(), mlist.vc_end.day, GCStrings::GetMonthAbreviation(mlist.vc_end.month), mlist.vc_end.year);
+	str += stt;
+	str += "==================================================================\r\n\r\n";
+
+	int i;
+
+	for(i = 0; i < mlist.n_countMasa; i++)
+	{
+		stt.Format("%s %d                               ", GCStrings::GetMasaName(mlist.arr[i].masa), mlist.arr[i].year);
+		stt.Left(30, stt2);
+		str += stt2;
+		stt.Format("   %d %s %d - ", mlist.arr[i].vc_start.day, GCStrings::GetMonthAbreviation(mlist.arr[i].vc_start.month), mlist.arr[i].vc_start.year);
+		stt.Right(16, stt2);
+		str += stt2;
+		stt.Format("   %d %s %d\r\n", mlist.arr[i].vc_end.day, GCStrings::GetMonthAbreviation(mlist.arr[i].vc_end.month), mlist.arr[i].vc_end.year);
+		stt.Right(13, stt2);
+		str += stt2;
+	}
+
+	return 1;
+}
+
+int TResultMasaList::formatRtf(TString &str)
+{
+	TString stt;
+	TString stt2;
+	TResultMasaList &mlist = *this;
+
+	str = "";
+	GCStringBuilder sb;
+	sb.Target = &str;
+	sb.Format = SBTF_RTF;
+
+	sb.AppendDocumentHeader();
+
+	stt.Format("{\\fs%d\\f2 %s}\\par\\tx%d\\tx%d\\f2\\fs%d\r\n\\par\r\n%s: %s\\par\r\n"
+		, GCLayoutData::textSizeH1
+		, GCStrings::getString(39).c_str(), 1000*GCLayoutData::textSizeText/24, 4000*GCLayoutData::textSizeText/24
+		, GCLayoutData::textSizeText, GCStrings::getString(40).c_str(), mlist.m_location.m_strFullName.c_str());
+	str += stt;
+	stt.Format("%s %d %s %d %s %d %s %d\\par\r\n", GCStrings::getString(41).c_str(), mlist.vc_start.day, GCStrings::GetMonthAbreviation(mlist.vc_start.month), mlist.vc_start.year
+		, GCStrings::getString(42).c_str(), mlist.vc_end.day, GCStrings::GetMonthAbreviation(mlist.vc_end.month), mlist.vc_end.year);
+	str += stt;
+	str += "==================================================================\\par\r\n\\par\r\n";
+
+	int i;
+
+	for(i = 0; i < mlist.n_countMasa; i++)
+	{
+		stt2.Format("\\tab %s %d\\tab ", GCStrings::GetMasaName(mlist.arr[i].masa), mlist.arr[i].year);
+		str += stt2;
+		stt2.Format("%d %s %d - ", mlist.arr[i].vc_start.day, GCStrings::GetMonthAbreviation(mlist.arr[i].vc_start.month), mlist.arr[i].vc_start.year);
+		str += stt2;
+		stt2.Format("%d %s %d\\par\r\n", mlist.arr[i].vc_end.day, GCStrings::GetMonthAbreviation(mlist.arr[i].vc_end.month), mlist.arr[i].vc_end.year);
+		str += stt2;
+	}
+
+	sb.AppendNote();
+	sb.AppendDocumentTail();
+
+	return 1;
+}
+

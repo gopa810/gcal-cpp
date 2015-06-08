@@ -36,83 +36,8 @@
 #define DAYS_FROM_BEGINWEEK(i) (i-g_firstday_in_week+14)%7
 #define DAY_INDEX(i) (i+g_firstday_in_week)%7
 
-void CalcAppDay(CLocationRef &, VCTIME, TResultApp &);
 int CalcCalendar(TResultCalendar &, CLocationRef &, VCTIME, int);
-int CalcMasaList(TResultMasaList &, CLocationRef &, int, int);
-void CalcEvents(TResultEvents &, CLocationRef &, VCTIME, VCTIME, UInt32);
 
-/******************************************************************************************/
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/*                                                                                        */
-/******************************************************************************************/
-
-void WriteAppDayHTML(TResultApp &app, FILE *F)
-{
-	DAYDATA &d = app.details;
-	TString str;
-	VCTIME vc = app.event;
-	EARTHDATA m_earth = (EARTHDATA)app.location;
-
-	fprintf(F, "<html><head><title>Appearance day</title>");
-	fprintf(F, "<style>\n<!--\nbody {\n  font-family:Verdana;\n  font-size:11pt;\n}\n\ntd.hed {\n  font-size:11pt;\n  font-weight:bold;\n");
-	fprintf(F, "  background:#aaaaaa;\n  color:white;\n  text-align:center;\n  vertical-align:center;\n  padding-left:15pt;\n  padding-right:15pt;\n");
-	fprintf(F, "  padding-top:5pt;\n  padding-bottom:5pt;\n}\n-->\n</style>\n");
-	fprintf(F, "</head>\n\n<body>\n");
-	fprintf(F, "<h2 align=center>Appearance day Calculation</h2>");
-	fprintf(F, "<table align=center><tr><td valign=top>\n\n");
-	fprintf(F, "<table align=center>");
-	fprintf(F, "<tr><td colspan=3 class=hed>Details</td></tr>\n");
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %d %s %d</td></tr>\n", GCStrings::getString(7).c_str(), vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year);
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %d:%02d</td></tr>\n\n", GCStrings::getString(8).c_str(), vc.GetHour(), vc.GetMinuteRound());
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(9).c_str(), app.location.m_strName.c_str());
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(10).c_str(), EARTHDATA::GetTextLatitude(app.location.m_fLatitude));
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(11).c_str(), EARTHDATA::GetTextLongitude(app.location.m_fLongitude));
-	fprintf(F, "<tr><td colspan=2>%s</td><td> ", GCStrings::getString(12).c_str());
-	fprintf(F, TTimeZone::GetTimeZoneOffsetText(app.location.m_fTimezone));
-	fprintf(F, "</td></tr>\n");
-	fprintf(F, "<tr><td colspan=2>DST</td><td>N/A</td></tr>\n");
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(13).c_str(), GCStrings::GetTithiName(d.nTithi));
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %.2f %%</td></tr>\n", GCStrings::getString(14).c_str(), d.nTithiElapse);
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(15).c_str(), GCStrings::GetNaksatraName(d.nNaksatra));
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %.2f %%</td></tr>\n", GCStrings::getString(16).c_str(), d.nNaksatraElapse);
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(20).c_str(), GCStrings::GetPaksaName(d.nPaksa));
-	if (app.b_adhika == true)
-	{
-		fprintf(F, "<tr><td colspan=2>%s</td><td> %s %s</td></tr>\n", GCStrings::getString(22).c_str(), GCStrings::GetMasaName(d.nMasa), GCStrings::getString(21).c_str());
-	}
-	else
-		fprintf(F, "<tr><td colspan=2>%s</td><td> %s</td></tr>\n", GCStrings::getString(22).c_str(), GCStrings::GetMasaName(d.nMasa));
-	fprintf(F, "<tr><td colspan=2>%s</td><td> %d</td></tr>\n\n", GCStrings::getString(23).c_str(), d.nGaurabdaYear);
-
-	fprintf(F, "</table></td><td valign=top><table>");
-	fprintf(F, "<tr><td colspan=3 class=hed>%s</td></tr>\n", GCStrings::getString(24).c_str());
-
-	//fprintf(F, "<table align=center>");
-	for(int o = 0; o < TRESULT_APP_CELEBS; o++)
-	{
-		fprintf(F, "<tr><td>Gaurabda %3d</td><td>&nbsp;&nbsp;:&nbsp;&nbsp;</td><td><b>%d %s %d</b></td></tr>", app.celeb_gy[o] , app.celeb_date[o].day,
-			GCStrings::GetMonthAbreviation(app.celeb_date[o].month), 
-			app.celeb_date[o].year);
-	}
-	fprintf(F, "</table>");
-	fprintf(F, "</td></tr></table>\n\n");
-	fprintf(F, "<hr align=center width=\"50%%\">\n<p style=\'text-align:center;font-size:8pt\'>Generated by %s</p>", GCStrings::getString(130).c_str());
-	fprintf(F, "</body></html>");
-
-}
 
 /******************************************************************************************/
 /*                                                                                        */
@@ -361,34 +286,6 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 	xml.initWithFile(fout);
 
 	xml.write("<html><head><title>\n");
-//	xml.write("\t<request name=\"Calendar\" version=\"");
-	xml.write(GCStrings::getString(130));
-	xml.write("\">\n");
-//	xml.write("\t\t<arg name=\"longitude\" val=\"");
-	xml.write(daybuff.m_Location.m_fLongitude);
-	xml.write("\" />\n");
-//	xml.write("\t\t<arg name=\"latitude\" val=\"");
-	xml.write(daybuff.m_Location.m_fLatitude);
-	xml.write("\" />\n");
-//	xml.write("\t\t<arg name=\"timezone\" val=\"");
-	xml.write(daybuff.m_Location.m_fTimezone);
-	xml.write("\" />\n");
-//	xml.write("\t\t<arg name=\"startdate\" val=\"");
-	xml.write(daybuff.m_vcStart);
-	xml.write("\" />\n");
-//	xml.write("\t\t<arg name=\"daycount\" val=\"");
-	xml.write(daybuff.m_vcCount);
-	xml.write("\" />\n");
-//	xml.write("\t\t<arg name=\"dst\" val=\"");
-	xml.write(daybuff.m_Location.m_nDST);
-	xml.write("\" />\n");
-//	xml.write("\t</request>\n";
-//	xml.write("\t<result name=\"Calendar\">\n";
-//	if (daybuff.m_Location.m_nDST > 0)
-//		xml.write("\t<dstsystem name=\"");
-	xml.write(TTimeZone::GetTimeZoneName(daybuff.m_Location.m_nDST));
-	xml.write("\" />\n");
-
 	xml.write("Calendar ");
 	xml.write(daybuff.m_vcStart.year);
 	xml.write("</title>");
@@ -417,17 +314,17 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 				if (nPrevMasa != -1)
 					xml.write("\t</table>\n");
 				xml.write("<p style=\'text-align:center;font-weight:bold\'><span style =\'font-size:14pt\'>");
-	xml.write(GCStrings::GetMasaName(pvd->astrodata.nMasa));
-	xml.write(" Masa");
+				xml.write(GCStrings::GetMasaName(pvd->astrodata.nMasa));
+				xml.write(" Masa");
 				if (nPrevMasa == ADHIKA_MASA)
 					xml.write(" ");
-	xml.write(GCStrings::getString(109));
+				xml.write(GCStrings::getString(109));
 				xml.write("</span>");
 				xml.write("<br><span style=\'font-size:10pt;\'>Gaurabda ");
-	xml.write(pvd->astrodata.nGaurabdaYear);
+				xml.write(pvd->astrodata.nGaurabdaYear);
 				xml.write("<br>");
-	xml.write(daybuff.m_Location.m_strFullName);
-	xml.write("</font>");
+				xml.write(daybuff.m_Location.m_strFullName);
+				xml.write("</font>");
 				xml.write("</span></p>\n<table align=center>");
 				xml.write("<tr><td  class=\"hed\"colspan=2>");
 				xml.write("DATE</td><td class=\"hed\">TITHI</td><td class=\"hed\">P</td><td class=\"hed\">NAKSATRA</td><td class=\"hed\">YOGA</td><td class=\"hed\">FAST</td></tr>");
@@ -447,18 +344,14 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 			// date data
 			xml.write("<tr>");
 			xml.write("<td>");
-	xml.write(pvd->date);
-	xml.write("</td><td>");
+			xml.write(pvd->date);
+			xml.write("</td><td>");
 			GCStrings::getString(pvd->date.dayOfWeek).Left(2, st);
 			xml.write(st.c_str());
-	xml.write("</td>\n");
+			xml.write("</td>\n");
 
 			// sunrise data
-			//xml.write("\t\t<sunrise time=\"");
-	xml.write(pvd->astrodata.sun.rise);
-	xml.write("\">\n");
 
-			//xml.write("\t\t\t<tithi name=\"");
 			xml.write("<td>\n");
 			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithi));
 			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) 
@@ -480,10 +373,6 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 			}
 			xml.write("</td>\n");
 
-			//str.Format("\" elapse=\"%.1f\" index=\"%d\"/>\n"
-			//	,pvd->astrodata.nTithiElapse, pvd->astrodata.nTithi % 30 + 1 );
-			//xml.write(str;
-
 			str.Format("<td>%c</td>\n", GCStrings::GetPaksaChar(pvd->astrodata.nPaksa) );
 			xml.write(str);
 
@@ -496,36 +385,9 @@ int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout)
 
 			xml.write("<td>");
 			xml.write(((pvd->nFastType!=FAST_NULL)?"FAST</td>":"</td>"));
-			//xml.write("\t\t</sunrise>\n");
-
-			//xml.write("\t\t<dst offset=\"");
-			xml.write(pvd->nDST);
-			xml.write("\" />\n");
-			// arunodaya data
-			//xml.write("\t\t<arunodaya time=\"");
-			xml.write(pvd->astrodata.sun.arunodaya);
-			xml.write("\">\n");
-			//xml.write("\t\t\t<tithi name=\"");
-			xml.write(GCStrings::GetTithiName(pvd->astrodata.nTithiArunodaya));
-			xml.write("\" />\n");
-			//xml.write("\t\t</arunodaya>\n");
 
 			str.Empty();
 
-			//xml.write("\t\t<noon time=\"");
-			xml.write(pvd->astrodata.sun.noon);
-			xml.write("\" />\n");
-
-			//xml.write("\t\t<sunset time=\"");
-			xml.write(pvd->astrodata.sun.set);
-			xml.write("\" />\n");
-
-			// moon data
-			//xml.write("\t\t<moon rise=\"");
-			xml.write(pvd->moonrise);
-			xml.write("\" set=\"");
-			xml.write(pvd->moonset);
-			xml.write("\" />\n");
 
 			xml.write("</tr>\n\n<tr>\n<td></td><td></td><td colspan=4>");
 			if (pvd->ekadasi_parana)
@@ -1456,9 +1318,9 @@ void AvcTransAppDayInfoHTML(const char * szLocName, const char * szCountry, doub
 	
 	TResultApp app;
 	
-	CalcAppDay(loc, vc, app);
+	app.calculateAppDay(loc, vc);
 	
-	WriteAppDayHTML(app, f);
+	app.writeHtml(f);
 }
 
 void AvcTransCalendarHTML(const char * szLocName, const char * szCountry, double Latitude, double Longitude, int timezoneID, int day, int month, int year, int count, FILE * f)
@@ -1500,7 +1362,7 @@ void AvcTransMasaListHTML(const char * szLocName, const char * szCountry, double
 	
 	TResultMasaList mlist;
 	
-	CalcMasaList(mlist, loc, year, count);
+	mlist.CalculateMasaList(loc, year, count);
 	WriteMasaListHTML(mlist, f);
 }
 
@@ -1528,6 +1390,6 @@ void AvcTransEventsHTML(const char * szLocName, const char * szCountry, double L
 	
 	TResultEvents cal;
 	
-	CalcEvents(cal, loc, vc, vcEnd, options);
+	cal.CalculateEvents(loc, vc, vcEnd);
 	WriteEventsHTML(cal, f);
 }

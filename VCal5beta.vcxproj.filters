@@ -292,6 +292,15 @@
     <ClCompile Include="TithiCalc.cpp">
       <Filter>Source Dialog Windows</Filter>
     </ClCompile>
+    <ClCompile Include="TResultApp.cpp">
+      <Filter>Source Dialog Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="GCStringBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCLayoutData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VCal5beta.rc">
@@ -582,6 +591,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GCDisplaySettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCStringBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCLayoutData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
