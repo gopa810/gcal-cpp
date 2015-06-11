@@ -15,6 +15,7 @@
 #include "GCTithi.h"
 #include "GCNaksatra.h"
 #include "GCSankranti.h"
+#include "GCDisplaySettings.h"
 
 // PORTABLE
 
@@ -292,32 +293,25 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 			}
 			str.Empty();
 
-			if (pvd->festivals.GetLength() > 0)
+			for(int h = 0; h < pvd->dayEvents.Count(); h++)
 			{
-				int i = pvd->GetHeadFestival();
-				int nFestClass;
-				TString str2;
-				while(pvd->GetNextFestival(i, str2))
+				GCMutableDictionary * md = pvd->dayEvents.ObjectAtIndex(h);
+				int prio = md->intForKey("prio");
+				if (prio >= PRIO_FESTIVALS_0 && prio <= PRIO_FESTIVALS_6)
 				{
-					if (str2.GetLength() > 1)
-					{
-						nFestClass = pvd->GetFestivalClass(str2);
-						str.Format("\t\t<festival name=\"%s\" class=\"%d\"/>\n", str2.c_str(), nFestClass);
-						xml.write(str);
-					}
+					str.Format("\t\t<festival name=\"%s\" class=\"%d\"/>\n", md->stringForKey("text"), md->intForKey("disp") - CAL_FEST_0);
+					xml.write(str);
 				}
 			}
 
 			if (pvd->nFastType != FAST_NULL)
 			{
+				xml.write("\t\t<fast type=\"\" mark=\"");
 				if (pvd->nFastType == FAST_EKADASI)
 				{
-					xml.write("\t\t<fast type=\"\" mark=\"*\" />\n");
+					xml.write("*");
 				}
-				else
-				{
-					xml.write("\t\t<fast type=\"\" mark=\"\" />\n");
-				}
+				xml.write("\" />\n");
 			}
 
 			if (pvd->sankranti_zodiac >= 0)
@@ -331,48 +325,20 @@ int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout)
 				xml.write(str);
 			}
 
-			if (pvd->was_ksaya)
-			{
-				double h1, m1, h2, m2;
-				m1 = modf(pvd->ksaya_time1*24, &h1);
-				m2 = modf(pvd->ksaya_time2*24, &h2);
-				str.Format("\t\t<ksaya from=\"%02d:%02d\" to=\"%02d:%02d\" />\n", int(h1), abs(int(m1*60)), int(h2), abs(int(m2*60)));
-				xml.write(str);
-			}
-
-			if (pvd->is_vriddhi)
-			{
-				xml.write("\t\t<vriddhi sd=\"yes\" />\n");
-			}
-			else
-			{
-				xml.write("\t\t<vriddhi sd=\"no\" />\n");
-			}
-
-			if (pvd->nCaturmasya & CMASYA_PURN_MASK)
+			if (pvd->nCaturmasya != 0)
 			{
 				xml.write("\t\t<caturmasya day=\"" );
-				xml.write((((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY)) > 1 ? "last" : "first"));
+				xml.write((pvd->nCaturmasya & CMASYA_DAY_MASK) == CMASYA_DAY_FIRST ? "last" : "first");
 				xml.write("\" month=\"");
-				xml.write(int((pvd->nCaturmasya & CMASYA_PURN_MASK_MASA) >> 4));
-				xml.write("\" system=\"PURNIMA\" />\n");
-			}
-
-			if (pvd->nCaturmasya & CMASYA_PRAT_MASK)
-			{
-				xml.write("\t\t<caturmasya day=\"" );
-				xml.write((((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) >> 8) > 1 ? "last" : "first"));
-				xml.write("\" month=\"" );
-				xml.write(int((pvd->nCaturmasya & CMASYA_PRAT_MASK_MASA) >> 12));
-				xml.write("\" system=\"PRATIPAT\" />\n");
-			}
-
-			if (pvd->nCaturmasya & CMASYA_EKAD_MASK)
-			{
-				str.Format("\t<caturmasya day=\"%s\" month=\"%d\" system=\"EKADASI\" />\n"
-					, ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) >> 16) > 1 ? "last" : "first"
-					, int((pvd->nCaturmasya & CMASYA_EKAD_MASK_MASA) >> 20));
-				xml.write(str);
+				xml.write((int)(pvd->nCaturmasya & CMASYA_MONTH_MASK) - CMASYA_MONTH_MASK + 1);
+				xml.write("\" system=\"");
+				if ((pvd->nCaturmasya & CMASYA_SYSTEM_MASK) == CMASYA_SYSTEM_PURNIMA)
+					xml.write("PURNIMA");
+				else if ((pvd->nCaturmasya & CMASYA_SYSTEM_MASK) == CMASYA_SYSTEM_PRATIPAT)
+					xml.write("PRATIPAT");
+				else
+					xml.write("EKADASI");
+				xml.write("\" />\n");
 			}
 
 			xml.write("\t</day>\n\n");

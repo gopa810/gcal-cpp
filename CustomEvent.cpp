@@ -354,33 +354,6 @@ int CustomEventListReadFile_RL(const char * pszFile)
 		// list is modified write it at exit from application
 		gCustomEventList_Modified = 1;
 
-		/*for(i = 200; i < 560; i++)
-		{
-			vd.festivals = GCStrings::getString(i).c_str();
-			ind = vd.GetHeadFestival();
-			while(vd.GetNextFestival(ind, strFest))
-			{
-				cls = vd.GetFestivalClass(strFest);
-				vd.GetFastingSubject(strFest, nFast, strFastSubj);
-				pce = gCustomEventList.add();
-				if (pce)
-				{
-					pce->nClass = cls;
-					pce->nMasa = (i - 200)/30;
-					pce->nTithi = (i - 200) % 30;
-					pce->nVisible = 1;
-					pce->strFastSubject = strFastSubj.c_str();
-					pce->strText = strFest;
-					pce->nFastType = nFast;
-					pce->nUsed = 1;
-					AfxTrace("gCustomEventList.add(%d,%d,%d,%d,\"%s\",\"%s\",%d,%d);\n",
-						pce->nClass, pce->nMasa, pce->nTithi, pce->nVisible,
-						pce->strFastSubject.c_str(),
-						pce->strText.c_str(), pce->nFastType, 1);
-				}
-			}
-		}*/
-
 		CustomEventList_InitDefault();
 
 		pce = gCustomEventList.add();

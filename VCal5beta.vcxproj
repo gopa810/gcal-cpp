@@ -624,6 +624,8 @@
     <ClCompile Include="GCGregorianTime.cpp" />
     <ClCompile Include="GCLayoutData.cpp" />
     <ClCompile Include="GCMoonData.cpp" />
+    <ClCompile Include="GCMutableArray.cpp" />
+    <ClCompile Include="GCMutableDictionary.cpp" />
     <ClCompile Include="GCNaksatra.cpp" />
     <ClCompile Include="GCRasi.cpp" />
     <ClCompile Include="GCSankranti.cpp" />
@@ -721,6 +723,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="NSMutableArray.cpp" />
     <ClCompile Include="outcities.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -956,6 +959,8 @@
     <ClInclude Include="GCGregorianTime.h" />
     <ClInclude Include="GCLayoutData.h" />
     <ClInclude Include="GCMoonData.h" />
+    <ClInclude Include="GCMutableArray.h" />
+    <ClInclude Include="GCMutableDictionary.h" />
     <ClInclude Include="GCNaksatra.h" />
     <ClInclude Include="GCRasi.h" />
     <ClInclude Include="GCSankranti.h" />
@@ -975,6 +980,7 @@
     <ClInclude Include="LocationRef.h" />
     <ClInclude Include="LocsTabCtrl.h" />
     <ClInclude Include="MyWebView.h" />
+    <ClInclude Include="NSMutableArray.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RichEditResults.h" />

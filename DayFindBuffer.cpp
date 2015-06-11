@@ -9,6 +9,7 @@
 #include "GCStrings.h"
 #include "GCSankranti.h"
 #include "TTimeZone.h"
+#include "GCDisplaySettings.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -73,8 +74,6 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 	{
 		m_pData[i].date = date;
 		m_pData[i].date.dayOfWeek = weekday;
-		m_pData[i].fDateValid = true;
-		m_pData[i].fVaisValid = false;
 		date.NextDay();
 		weekday = (weekday + 1) % 7;
 		m_pData[i].moonrise.SetValue(-1);
@@ -108,7 +107,6 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 		}
 		m_pData[i].astrodata.nMasa = m;
 		m_pData[i].astrodata.nGaurabdaYear = nYear;
-		m_pData[i].fAstroValid = true;
 	}
 
 	// 6
@@ -212,8 +210,26 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 
 			if (i_target >= 0)
 			{
+				TString str;
+
 				m_pData[i_target].sankranti_zodiac = zodiac;
 				m_pData[i_target].sankranti_day = date;
+
+				if (GCDisplaySettings::getValue(CAL_SANKRANTI))
+				{
+					str.Format(" %s %s (%s %s %s %d %s, %02d:%02d %s) "
+						, GCStrings::GetSankrantiName(m_pData[i_target].sankranti_zodiac)
+						, GCStrings::getString(56).c_str()
+						, GCStrings::getString(111).c_str(), GCStrings::GetSankrantiNameEn(m_pData[i_target].sankranti_zodiac)
+						, GCStrings::getString(852).c_str()
+						, m_pData[i_target].sankranti_day.day, GCStrings::GetMonthAbreviation(m_pData[i_target].sankranti_day.month)
+						, m_pData[i_target].sankranti_day.GetHour(), m_pData[i_target].sankranti_day.GetMinuteRound()
+						, GCStrings::GetDSTSignature(m_pData[i_target].nDST));
+
+					GCMutableDictionary * dc = m_pData[i_target].AddEvent(PRIO_SANKRANTI, CAL_SANKRANTI, str.c_str());
+					dc->setStringForKey("spec", "sankranti");
+				}
+
 				bFoundSan = true;
 				break;
 			}
@@ -229,21 +245,15 @@ int TFinderBuffer::CalculateFindCalendar(int start_year, int start_month, EARTHD
 	{
 		if (m_pData[i].sankranti_zodiac == MAKARA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += GCStrings::getString(78);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(78).c_str());
 		}
 		else if (m_pData[i].sankranti_zodiac == MESHA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += GCStrings::getString(79);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(79).c_str());
 		}
 		else if (m_pData[i+1].sankranti_zodiac == VRSABHA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += GCStrings::getString(80);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(80).c_str());
 		}
 	}
 

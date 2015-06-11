@@ -5,6 +5,7 @@
 #include "GCTithi.h"
 #include "GCNaksatra.h"
 #include "GCDisplaySettings.h"
+#include "GCMutableDictionary.h"
 #include "math.h"
 
 VAISNAVADAY::~VAISNAVADAY()
@@ -12,25 +13,8 @@ VAISNAVADAY::~VAISNAVADAY()
 
 }
 
-VAISNAVADAY & VAISNAVADAY::operator=(VCTIME &vc)
-{
-	date = vc;
-	fDateValid = true;
-	return * this; 
-}
-
-VAISNAVADAY & VAISNAVADAY::operator=(DAYDATA &dd)
-{
-	astrodata = dd;
-	fAstroValid = true;
-	return * this;
-}
-
 VAISNAVADAY::VAISNAVADAY() 
 {
-	fDateValid = false;
-	fAstroValid = false;
-	fVaisValid = false;
 	// init
 	//festivals = "";
 	nFastType = FAST_NULL;
@@ -40,9 +24,6 @@ VAISNAVADAY::VAISNAVADAY()
 	eparana_time1 = eparana_time2 = 0.0;
 	eparana_type1 = eparana_type2 = EP_TYPE_NULL;
 	sankranti_zodiac = -1;
-	was_ksaya = false;
-	ksaya_time1 = ksaya_time2 = 0.0;
-	is_vriddhi = false;
 	nDST = 0;
 	nCaturmasya = 0;
 	moonrise.SetValue(0);
@@ -51,9 +32,7 @@ VAISNAVADAY::VAISNAVADAY()
 
 void VAISNAVADAY::Clear()
 {
-		fVaisValid = false;
 		// init
-		festivals.Empty();
 		nFastType = FAST_NULL;
 		nFeasting = FEAST_NULL;
 		nMhdType = EV_NULL;
@@ -65,10 +44,6 @@ void VAISNAVADAY::Clear()
 		sankranti_day.shour = 0.0;
 		sankranti_day.month = 0;
 		sankranti_day.year = 0;
-		was_ksaya = false;
-//		nSpecFestival = 0;
-		ksaya_time1 = ksaya_time2 = 0.0;
-		is_vriddhi = false;
 		nCaturmasya = 0;
 		//moonset.SetValue(0);
 		//moonrise.SetValue(0);
@@ -222,41 +197,6 @@ void VAISNAVADAY::GetTextEP(TString &str)
 	}
 }
 
-
-int VAISNAVADAY::GetHeadFestival()
-{
-	if (festivals.IsEmpty())
-		return -1;
-
-	return 0;
-}
-
-bool VAISNAVADAY::GetNextFestival(int &i, TString &str)
-{
-	str.Empty();
-
-	if (i < 0)
-		return FALSE;
-
-	while(i < festivals.GetLength() && festivals.GetAt(i) != '#')
-	{
-		str += festivals.GetAt(i);
-		i++;
-	}
-
-	if (i < festivals.GetLength())
-	{
-		i++;
-	}
-	else
-	{
-		i = -1;
-	}
-
-	return TRUE;
-}
-
-
 bool VAISNAVADAY::GetNaksatraTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to)
 {
 	VCTIME start;
@@ -342,4 +282,27 @@ void VAISNAVADAY::GetFastingSubject(TString &strFest, int &nFast, TString &strFa
 	}
 }
 
+GCMutableDictionary * VAISNAVADAY::AddEvent(int priority, int dispItem, const char * text)
+{
+	GCMutableDictionary * dc = new GCMutableDictionary();
 
+	dc->setIntForKey("prio", priority);
+	dc->setIntForKey("disp", dispItem);
+	dc->setStringForKey("text", text);
+
+	dayEvents.AddObject(dc);
+
+	return dc;
+}
+
+bool VAISNAVADAY::hasEventsOfDisplayIndex(int dispIndex)
+{
+	for(int h = 0; h < dayEvents.Count(); h++)
+	{
+		GCMutableDictionary * md = dayEvents.ObjectAtIndex(h);
+		if (md->intForKey("disp") == dispIndex)
+			return true;
+	}
+
+	return false;
+}

@@ -7,6 +7,8 @@
 #include "GCEarthData.h"
 #include "GCDayData.h"
 #include "GCDayHours.h"
+#include "GCMutableArray.h"
+#include "GCMutableDictionary.h"
 
 class VAISNAVADAY
 {
@@ -21,12 +23,10 @@ public:
 
 	DWORD nCaturmasya;
 	int nDST;
-	int ksaya_day2;
-	int ksaya_day1;
-//	int nSpecFestival;
 	FeastType nFeasting;
-	void Clear();
 	// data for vaisnava calculations
+	GCMutableArray dayEvents;
+
 	TString festivals;
 	FastType nFastType;
 	int nMhdType;
@@ -37,18 +37,10 @@ public:
 	int sankranti_zodiac;
 	//double sankranti_time;
 	VCTIME sankranti_day;
-	bool was_ksaya;
-	double ksaya_time1, ksaya_time2;
-	bool is_vriddhi;
-	// flag for validity
-	bool fDateValid;
-	bool fAstroValid;
-	bool fVaisValid;
 
 	VAISNAVADAY();
 	~VAISNAVADAY();
-	VAISNAVADAY &operator=(VCTIME &vc);
-	VAISNAVADAY &operator=(DAYDATA &dd);
+	void Clear();
 	void GetFastingSubject(TString &strFest, int &nFast, TString &strFastSubj);
 	int GetLineCount();
 	int GetFestivalClass(TString &str);
@@ -60,6 +52,10 @@ public:
 	/* BEGIN GCAL 1.4.3 */
 	void GetTextA(TString &str, int bPaksa, int bNaks, int bYoga, int bFlag, int bRasi);
 	void GetTextRtf(TString &str, int bPaksa, int bNaks, int bYoga, int bFlag, int bRasi);
+	bool hasEventsOfDisplayIndex(int dispIndex);
 	/* END GCAL 1.4.3 */
+
+	GCMutableDictionary * AddEvent(int priority, int dispItem, const char * text);
+
 };
 

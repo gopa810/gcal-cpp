@@ -301,6 +301,15 @@
     <ClCompile Include="GCLayoutData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NSMutableArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCMutableDictionary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCMutableArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VCal5beta.rc">
@@ -597,6 +606,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GCLayoutData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NSMutableArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMutableDictionary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMutableArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

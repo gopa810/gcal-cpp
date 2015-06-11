@@ -490,4 +490,6 @@ const char * GCStrings::GetKalaName(KalaType i)
 	case KT_GULI_KALAM:
 		return "Guli kalam";
 	}
+
+	return "";
 }

@@ -400,8 +400,11 @@ int AvcGetNextLine(TString &str, TString &strLine, int & i)
 
 Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &strText, Boolean defaultRet)
 {
-	static char * pcstr[] = {"", "", "", "", "", "", "", "", "", "", 
-		"[c0]", "[c1]", "[c2]", "[c3]", "[c4]", "[c5]", "", ""};
+	static int pcstr[] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		CAL_FEST_0, CAL_FEST_1, CAL_FEST_2, 
+		CAL_FEST_3, CAL_FEST_4, CAL_FEST_5, 
+		0, 0};
 
 	switch(nClass)
 	{
@@ -449,7 +452,7 @@ Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &str
 	case 14:
 		if (nValue == 0xffff)
 		{
-			return (pd->festivals.Find(pcstr[nClass]) >= 0);
+			return pd->hasEventsOfDisplayIndex(pcstr[nClass]);
 		}
 		else
 		{
@@ -464,7 +467,8 @@ Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &str
 	case 15:
 		if (nValue == 0xffff)
 		{
-			return (strText.Find(pcstr[15]) >= 0);
+			//return (strText.Find(pcstr[15]) >= 0);
+			return false;
 		}
 		else
 		{
@@ -495,126 +499,14 @@ int AvcGetTextLineCount(VAISNAVADAY * pvd)
 		}
 	}
 
-	if (GCDisplaySettings::getValue(6) == 1)
+	for(int i = 0; i < pvd->dayEvents.Count(); i++)
 	{
-		if (pvd->festivals)
-		{
-			i = pvd->GetHeadFestival();
-			while(pvd->GetNextFestival(i, str2))
-			{
-				if (str2.GetLength() > 1)
-				{
-					nFestClass = pvd->GetFestivalClass(str2);
-					if (nFestClass < 0 || GCDisplaySettings::getValue(22 + nFestClass) == 1)
-					{
-						nCount++;
-					}
-				}
-			}
-		}
-	}
-
-	if (GCDisplaySettings::getValue(16) == 1 && pvd->sankranti_zodiac >= 0)
-	{
-		nCount++;
-	}
-
-	if (GCDisplaySettings::getValue(7) == 1 && pvd->was_ksaya)//(m_dshow.m_info_ksaya) && (pvd->was_ksaya))
-	{
-		nCount++;
-	}
-
-	if (GCDisplaySettings::getValue(8) == 1)//(m_dshow.m_info_vriddhi) && (pvd->is_vriddhi))
-	{
-		if (pvd->is_vriddhi)
+		GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
+		int disp = ed->intForKey("disp");
+		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
 		{
 			nCount++;
 		}
-	}
-
-	if (pvd->nCaturmasya & CMASYA_CONT_MASK)
-	{
-		nCount++;
-	}
-
-	if ((GCDisplaySettings::getValue(13) == 1) && (pvd->nCaturmasya & CMASYA_PURN_MASK))
-	{
-		nCount++;
-		if ((pvd->nCaturmasya & CMASYA_PURN_MASK_DAY) == 0x1)
-		{
-			nCount++;
-		}
-	}
-
-	if ((GCDisplaySettings::getValue(14) == 1) && (pvd->nCaturmasya & CMASYA_PRAT_MASK))
-	{
-		nCount++;
-		if ((pvd->nCaturmasya & CMASYA_PRAT_MASK_DAY) == 0x100)
-		{
-			nCount++;
-		}
-	}
-
-	if ((GCDisplaySettings::getValue(15) == 1) && (pvd->nCaturmasya & CMASYA_EKAD_MASK))
-	{
-		nCount++;
-		if ((pvd->nCaturmasya & CMASYA_EKAD_MASK_DAY) == 0x10000)
-		{
-			nCount++;
-		}
-	}
-
-	// tithi at arunodaya
-	if (GCDisplaySettings::getValue(0) == 1)//m_dshow.m_tithi_arun)
-	{
-		nCount++;
-	}
-
-	//"Arunodaya Time",//1
-	if (GCDisplaySettings::getValue(1) == 1)//m_dshow.m_arunodaya)
-	{
-		nCount++;
-	}
-	//"Sunrise Time",//2
-	//"Sunset Time",//3
-	if (GCDisplaySettings::getValue(2) == 1)//m_dshow.m_sunrise)
-	{
-		nCount++;
-	}
-	if (GCDisplaySettings::getValue(3) == 1)//m_dshow.m_sunset)
-	{
-		nCount++;
-
-	}
-	//"Moonrise Time",//4
-	if (GCDisplaySettings::getValue(4) == 1)
-	{
-		nCount++;
-	}
-	//"Moonset Time",//5
-	if (GCDisplaySettings::getValue(5) == 1)
-	{
-		nCount++;
-	}
-	///"Sun Longitude",//9
-	if (GCDisplaySettings::getValue(9) == 1)//m_dshow.m_sun_long)
-	{
-		nCount++;
-	}
-	//"Moon Longitude",//10
-	if (GCDisplaySettings::getValue(10) == 1)//m_dshow.m_sun_long)
-	{
-		nCount++;
-	}
-	//"Ayanamsha value",//11
-	if (GCDisplaySettings::getValue(11) == 1)//m_dshow.m_sun_long)
-	{
-		nCount++;
-	}
-	//"Julian Day",//12
-	if (GCDisplaySettings::getValue(12) == 1)//m_dshow.m_sun_long)
-	{
-		nCount++;
 	}
 
 	return nCount;

@@ -17,6 +17,7 @@
 #include "GCMoonData.h"
 #include "GCDisplaySettings.h"
 #include "TTimeZone.h"
+#include "GCAyanamsha.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -171,6 +172,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	int prev_paksa = 0;
 	int lastMasa = 0;
 	int lastGYear = 0;
+	TString tempStr;
 	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 	Boolean bCalcMasa[] = 
 		{ TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, 
@@ -215,8 +217,6 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		m_pData[i].date = date;
 		m_pData[i].date.dayOfWeek = weekday;
-		m_pData[i].fDateValid = true;
-		m_pData[i].fVaisValid = false;
 		date.NextDay();
 		weekday = (weekday + 1) % 7;
 		m_pData[i].moonrise.SetValue(-1);
@@ -238,6 +238,20 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		{
 			SET_PROG( (0 + 85 * i / (iCount + 1)) * 0.908 );
 			MOONDATA::CalcMoonTimes(earth, m_pData[i].date, double(m_pData[i].nDST), m_pData[i].moonrise, m_pData[i].moonset);
+
+			if (GCDisplaySettings::getValue(CAL_MOON_RISE) && m_pData[i].moonrise.hour >= 0)
+			{
+				tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(53).c_str(), m_pData[i].moonrise.hour
+					, m_pData[i].moonrise.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+				m_pData[i].AddEvent(PRIO_MOON, CAL_MOON_RISE, tempStr.c_str());
+			}
+
+			if (GCDisplaySettings::getValue(CAL_MOON_SET) && m_pData[i].moonset.hour >= 0)
+			{
+				tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(54).c_str(), m_pData[i].moonset.hour
+					, m_pData[i].moonset.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+				m_pData[i].AddEvent(PRIO_MOON, CAL_MOON_SET, tempStr.c_str());
+			}
 		}
 	}
 
@@ -300,7 +314,64 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		}
 		m_pData[i].astrodata.nMasa = lastMasa;
 		m_pData[i].astrodata.nGaurabdaYear = lastGYear;
-		m_pData[i].fAstroValid = true;
+
+		if (GCDisplaySettings::getValue(CAL_ARUN_TITHI))
+		{
+			tempStr.Format("%s: %s", GCStrings::getString(98).c_str(), GCStrings::GetTithiName(m_pData[i].astrodata.nTithiArunodaya));
+			m_pData[i].AddEvent(PRIO_ARUN, CAL_ARUN_TITHI, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_ARUN_TIME))
+		{
+			tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(99).c_str(), m_pData[i].astrodata.sun.arunodaya.hour
+				, m_pData[i].astrodata.sun.arunodaya.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+			m_pData[i].AddEvent(PRIO_ARUN, CAL_ARUN_TIME, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_SUN_RISE))
+		{
+			tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(51).c_str(), m_pData[i].astrodata.sun.rise.hour
+				, m_pData[i].astrodata.sun.rise.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+			m_pData[i].AddEvent(PRIO_SUN, CAL_SUN_RISE, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_SUN_NOON))
+		{
+			tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(857).c_str(), m_pData[i].astrodata.sun.noon.hour
+				, m_pData[i].astrodata.sun.noon.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+			m_pData[i].AddEvent(PRIO_SUN, CAL_SUN_NOON, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_SUN_SET))
+		{
+			tempStr.Format("%s %d:%02d (%s)", GCStrings::getString(52).c_str(), m_pData[i].astrodata.sun.set.hour
+				, m_pData[i].astrodata.sun.set.min, GCStrings::GetDSTSignature(m_pData[i].nDST));
+			m_pData[i].AddEvent(PRIO_SUN, CAL_SUN_SET, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_SUN_LONG))
+		{
+			tempStr.Format("%s: %f (*)", GCStrings::getString(100).c_str(), m_pData[i].astrodata.sun.longitude_deg);
+			m_pData[i].AddEvent(PRIO_ASTRO, CAL_SUN_LONG, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_MOON_LONG))
+		{
+			tempStr.Format("%s: %f (*)", GCStrings::getString(101).c_str(), m_pData[i].astrodata.moon.longitude_deg);
+			m_pData[i].AddEvent(PRIO_ASTRO, CAL_MOON_LONG, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_AYANAMSHA))
+		{
+			tempStr.Format("%s %f (%s) (*)", GCStrings::getString(102).c_str(), m_pData[i].astrodata.msAyanamsa, GCAyanamsha::GetAyanamsaName(GCAyanamsha::GetAyanamsaType()));
+			m_pData[i].AddEvent(PRIO_ASTRO, CAL_AYANAMSHA, tempStr.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(CAL_JULIAN))
+		{
+			tempStr.Format("%s %f (*)", GCStrings::getString(103).c_str(), m_pData[i].astrodata.jdate);
+			m_pData[i].AddEvent(PRIO_ASTRO, CAL_JULIAN, tempStr.c_str());
+		}
 	}
 
 	// 6
@@ -432,8 +503,25 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 
 			if (i_target >= 0)
 			{
+				TString str;
+
 				m_pData[i_target].sankranti_zodiac = zodiac;
 				m_pData[i_target].sankranti_day = date;
+
+				if (GCDisplaySettings::getValue(CAL_SANKRANTI))
+				{
+					str.Format(" %s %s (%s %s %s %d %s, %02d:%02d %s) "
+						, GCStrings::GetSankrantiName(m_pData[i_target].sankranti_zodiac)
+						, GCStrings::getString(56).c_str()
+						, GCStrings::getString(111).c_str(), GCStrings::GetSankrantiNameEn(m_pData[i_target].sankranti_zodiac)
+						, GCStrings::getString(852).c_str()
+						, m_pData[i_target].sankranti_day.day, GCStrings::GetMonthAbreviation(m_pData[i_target].sankranti_day.month)
+						, m_pData[i_target].sankranti_day.GetHour(), m_pData[i_target].sankranti_day.GetMinuteRound()
+						, GCStrings::GetDSTSignature(m_pData[i_target].nDST));
+
+					GCMutableDictionary * dc = m_pData[i_target].AddEvent(PRIO_SANKRANTI, CAL_SANKRANTI, str.c_str());
+					dc->setStringForKey("spec", "sankranti");
+				}
 				bFoundSan = true;
 				break;
 			}
@@ -449,24 +537,15 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		if (m_pData[i].sankranti_zodiac == MAKARA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += GCStrings::getString(78);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(78).c_str());
 		}
 		else if (m_pData[i].sankranti_zodiac == MESHA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += GCStrings::getString(79);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(79).c_str());
 		}
 		else if (m_pData[i+1].sankranti_zodiac == VRSABHA_SANKRANTI)
 		{
-			if (m_pData[i].festivals.IsEmpty() == FALSE)
-				m_pData[i].festivals += "#";
-			m_pData[i].festivals += "[c5]";
-			m_pData[i].festivals += GCStrings::getString(80);
+			m_pData[i].AddEvent(PRIO_FESTIVALS_5, CAL_FEST_5, GCStrings::getString(80).c_str());
 		}
 	}
 
@@ -484,12 +563,16 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 			SET_PROG( 0.588 * (86.5 + 13.5 * i / nTotalCount));
 		}
 		if (m_pData[i].astrodata.nTithi == m_pData[i-1].astrodata.nTithi)
-			m_pData[i].is_vriddhi = true;
+		{
+			if (GCDisplaySettings::getValue(CAL_VRDDHI))
+				m_pData[i].AddEvent(PRIO_KSAYA, CAL_VRDDHI, GCStrings::getString(90).c_str());
+		}
 		else if (m_pData[i].astrodata.nTithi != ((m_pData[i-1].astrodata.nTithi + 1)%30))
 		{
-			m_pData[i].was_ksaya = true;
-
+			double h, m;
+			TString str, str2, str3;
 			VCTIME day1, d1, d2;
+
 			day1 = m_pData[i].date;
 			day1.shour = m_pData[i].astrodata.sun.sunrise_deg/360.0 + earth.tzone/24.0;
 
@@ -505,13 +588,29 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 			d1.NormalizeValues();
 			d2.NormalizeValues();
 
-			m_pData[i].ksaya_day1 = (d1.day == m_pData[i].date.day) ? 0 : -1;
-			m_pData[i].ksaya_time1 = d1.shour;
-			m_pData[i].ksaya_day2 = (d2.day == m_pData[i].date.day) ? 0 : -1;
-			m_pData[i].ksaya_time2 = d2.shour;
+			// zaciatok ksaya tithi
+			m = modf(d1.shour*24, &h);
+			str2.Format("%d %s %02d:%02d", d1.day, GCStrings::GetMonthAbreviation(d1.month), int(h), int(m*60));
+
+			// end of ksaya tithi
+			m = modf(d2.shour*24, &h);
+			str3.Format("%d %s %02d:%02d", d2.day, GCStrings::GetMonthAbreviation(d2.month), int(h), int(m*60));
+
+			// print info
+			str.Format("%s: %s -- %s %s %s (%s)", GCStrings::getString(89).c_str(), GCStrings::GetTithiName((m_pData[i].astrodata.nTithi + 29)%30), str2.c_str(), 
+				GCStrings::getString(851).c_str(), str3.c_str(), GCStrings::GetDSTSignature(m_pData[i].nDST));
+
+			m_pData[i].AddEvent(PRIO_KSAYA, CAL_KSAYA, str.c_str());
 
 		}
 	}
+
+	for(i = BEFORE_DAYS; i < m_PureCount + BEFORE_DAYS; i++)
+	{
+		m_pData[i].dayEvents.SortByIntKey("prio");
+	}
+
+
 	return 1;
 
 }
@@ -615,6 +714,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	VAISNAVADAY & t = m_pData[nIndex];
 	VAISNAVADAY & u = m_pData[nIndex+1];
 	VAISNAVADAY & v = m_pData[nIndex+2];
+	TString tmp;
 
 	/*if (TITHI_EKADASI(t.astrodata.nTithi))
 	{
@@ -973,27 +1073,25 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 		s2 = true;
 	}
 
+	int currFestTop = 0;
+	GCMutableDictionary * md = NULL;
 	pEvx = gCustomEventList.list;
 	//pEvx = pEvx->findMasa(_masa_from);
 	while(s2==true && pEvx)
 	{
 		if (pEvx->nMasa==_masa_from && pEvx->nTithi == _tithi_from && pEvx->nUsed && pEvx->nVisible)
 		{
-			if (t.festivals.IsEmpty() == FALSE)
-				t.festivals += "#";
-			if (pEvx->nFastType==0)
+			md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
+				pEvx->strText.c_str());
+			if (pEvx->nFastType > 0)
 			{
-				evx_temp.Format("[c%d]%s", pEvx->nClass, pEvx->strText.c_str());
+				md->setIntForKey("fasttype", pEvx->nFastType);
+				md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
 			}
-			else
-			{
-				evx_temp.Format("[c%d]%s[f:%d:%s]", pEvx->nClass, pEvx->strText.c_str(),
-					pEvx->nFastType, pEvx->strFastSubject.c_str());
-			}
-			t.festivals += evx_temp.c_str();
+
 			if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
 			{
-				char str10[32];
+				TString ss1;
 				int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
 				char * appx = "th";
 				if (years % 10 == 1) appx = "st";
@@ -1001,14 +1099,15 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 				else if (years % 10 == 3) appx = "rd";
 				if (GCDisplaySettings::getValue(51) == 0)
 				{
-					sprintf(str10, " (%d%s anniversary)", years, appx);
+					ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
 				}
 				else
 				{
-					sprintf(str10, " (%d%s)", years, appx);
+					ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
 				}
-				t.festivals += str10;
+				md->setStringForKey("text", ss1.c_str());
 			}
+
 		}
 
 		pEvx = pEvx->next;
@@ -1021,21 +1120,17 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	{
 		if (pEvx->nMasa==_masa_to && pEvx->nTithi==_tithi_to && pEvx->nUsed && pEvx->nVisible)
 		{
-			if (t.festivals.IsEmpty() == FALSE)
-				t.festivals += "#";
-			if (pEvx->nFastType==0)
+			md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
+				pEvx->strText.c_str());
+			if (pEvx->nFastType > 0)
 			{
-				evx_temp.Format("[c%d]%s", pEvx->nClass, pEvx->strText.c_str());
+				md->setIntForKey("fasttype", pEvx->nFastType);
+				md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
 			}
-			else
-			{
-				evx_temp.Format("[c%d]%s[f:%d:%s]", pEvx->nClass, pEvx->strText.c_str(),
-					pEvx->nFastType, pEvx->strFastSubject.c_str());
-			}
-			t.festivals += evx_temp.c_str();
+
 			if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
 			{
-				char str10[32];
+				TString ss1;
 				int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
 				char * appx = "th";
 				if (years % 10 == 1) appx = "st";
@@ -1043,13 +1138,13 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 				else if (years % 10 == 3) appx = "rd";
 				if (GCDisplaySettings::getValue(51) == 0)
 				{
-					sprintf(str10, " (%d%s anniversary)", years, appx);
+					ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
 				}
 				else
 				{
-					sprintf(str10, " (%d%s)", years, appx);
+					ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
 				}
-				t.festivals += str10;
+				md->setStringForKey("text", ss1.c_str());
 			}
 		}
 
@@ -1140,9 +1235,10 @@ other_fest:
 	{
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nFastType == FAST_EKADASI))
 		{
-			if (t.festivals.GetLength() > 0)
-				t.festivals += "#";
-			t.festivals += GCStrings::getString(81);
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(81).c_str());
+			//if (t.festivals.GetLength() > 0)
+			//	t.festivals += "#";
+			//t.festivals += GCStrings::getString(81);
 		}
 	}
 
@@ -1156,14 +1252,26 @@ other_fest:
 		// purnima system
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_CATURDASI, TITHI_PURNIMA))
 		{
-			u.nCaturmasya |= CMASYA_PURN_1_FIRST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PURNIMA))
+			{
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(112).c_str());
+				u.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				u.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PURNIMA, GCStrings::getString(114).c_str());
+				u.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_FIRST | CMASYA_MONTH_1;
+			}
 		}
 
 		// ekadasi system
 		//if (TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_GAURA_DASAMI, TITHI_GAURA_EKADASI))
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nMhdType != EV_NULL))
 		{
-			t.nCaturmasya |= CMASYA_EKAD_1_FIRST;
+			if (GCDisplaySettings::getValue(CATURMASYA_EKADASI))
+			{
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(112).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_EKADASI, GCStrings::getString(114).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_FIRST | CMASYA_MONTH_1;
+			}
 		}
 	}
 
@@ -1173,28 +1281,50 @@ other_fest:
 	{
 		if (s.astrodata.nMasa == ADHIKA_MASA)
 		{
-			t.nCaturmasya = CMASYA_1_CONT;
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(115).c_str());
 		}
 
 		// pratipat system
 		if (GCTithi::TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_PURNIMA, TITHI_KRSNA_PRATIPAT))
 		{
-			t.nCaturmasya |= CMASYA_PRAT_1_FIRST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PRATIPAT))
+			{
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(112).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PRATIPAT, GCStrings::getString(114).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_FIRST | CMASYA_MONTH_1;
+			}
 		}
 
 		// first day of particular month for PURNIMA system, when purnima is not KSAYA
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_CATURDASI, TITHI_PURNIMA))
 		{
-			u.nCaturmasya |= CMASYA_PURN_2_FIRST;
-			t.nCaturmasya |= CMASYA_PURN_1_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PURNIMA))
+			{
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(116).c_str());
+				u.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				u.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PURNIMA, GCStrings::getString(118).c_str());
+				u.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_FIRST | CMASYA_MONTH_2;
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(113).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_LAST | CMASYA_MONTH_1;
+			}
 		}
 
 		// ekadasi system
 		//if (TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_GAURA_DASAMI, TITHI_GAURA_EKADASI))
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nMhdType != EV_NULL))
 		{
-			t.nCaturmasya |= CMASYA_EKAD_2_FIRST;
-			s.nCaturmasya |= CMASYA_EKAD_1_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_EKADASI))
+			{
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(116).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_EKADASI, GCStrings::getString(118).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_FIRST | CMASYA_MONTH_2;
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(113).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_LAST | CMASYA_MONTH_1;
+			}
 		}
 	}
 
@@ -1204,29 +1334,52 @@ other_fest:
 	{
 		if (s.astrodata.nMasa == ADHIKA_MASA)
 		{
-			t.nCaturmasya = CMASYA_2_CONT;
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(119).c_str());
 		}
 
 		// pratipat system
 		if (GCTithi::TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_PURNIMA, TITHI_KRSNA_PRATIPAT))
-//		if (s.astrodata.nMasa == SRIDHARA_MASA)
 		{
-			t.nCaturmasya |= CMASYA_PRAT_2_FIRST;
-			s.nCaturmasya |= CMASYA_PRAT_1_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PRATIPAT))
+			{
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(116).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PRATIPAT, GCStrings::getString(118).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_FIRST | CMASYA_MONTH_2;
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(113).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_LAST | CMASYA_MONTH_1;
+			}
 		}
 
 		// first day of particular month for PURNIMA system, when purnima is not KSAYA
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_CATURDASI, TITHI_PURNIMA))
 		{
-			u.nCaturmasya |= CMASYA_PURN_3_FIRST;
-			t.nCaturmasya |= CMASYA_PURN_2_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PURNIMA))
+			{
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(120).c_str());
+				u.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				u.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PURNIMA, GCStrings::getString(122).c_str());
+				u.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_FIRST | CMASYA_MONTH_3;
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(117).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_LAST | CMASYA_MONTH_2;
+			}
 		}
 		// ekadasi system
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nMhdType != EV_NULL))
 		//if (TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_GAURA_DASAMI, TITHI_GAURA_EKADASI))
 		{
-			t.nCaturmasya |= CMASYA_EKAD_3_FIRST;
-			s.nCaturmasya |= CMASYA_EKAD_2_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_EKADASI))
+			{
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(120).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_EKADASI, GCStrings::getString(122).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_FIRST | CMASYA_MONTH_3;
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(117).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_LAST | CMASYA_MONTH_2;
+			}
 		}
 	}
 
@@ -1236,29 +1389,53 @@ other_fest:
 	{
 		if (s.astrodata.nMasa == ADHIKA_MASA)
 		{
-			t.nCaturmasya = CMASYA_3_CONT;
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(123).c_str());
 		}
 		// pratipat system
 		if (GCTithi::TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_PURNIMA, TITHI_KRSNA_PRATIPAT))
 //		if (s.astrodata.nMasa == HRSIKESA_MASA)
 		{
-			t.nCaturmasya |= CMASYA_PRAT_3_FIRST;
-			s.nCaturmasya |= CMASYA_PRAT_2_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PRATIPAT))
+			{
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(120).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PRATIPAT, GCStrings::getString(122).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_FIRST | CMASYA_MONTH_3;
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(117).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_LAST | CMASYA_MONTH_2;
+			}
 		}
 
 		// first day of particular month for PURNIMA system, when purnima is not KSAYA
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_CATURDASI, TITHI_PURNIMA))
 		{
-			u.nCaturmasya |= CMASYA_PURN_4_FIRST;
-			t.nCaturmasya |= CMASYA_PURN_3_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PURNIMA))
+			{
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(124).c_str());
+				u.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				u.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PURNIMA, GCStrings::getString(126).c_str());
+				u.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_FIRST | CMASYA_MONTH_4;
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(121).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_LAST | CMASYA_MONTH_3;
+			}
 		}
 
 		// ekadasi system
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nMhdType != EV_NULL))
 		//if (TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_GAURA_DASAMI, TITHI_GAURA_EKADASI))
 		{
-			t.nCaturmasya |= CMASYA_EKAD_4_FIRST;
-			s.nCaturmasya |= CMASYA_EKAD_3_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_EKADASI))
+			{
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(124).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_EKADASI, GCStrings::getString(126).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_FIRST | CMASYA_MONTH_4;
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(121).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_LAST | CMASYA_MONTH_3;
+			}
 		}
 	}
 
@@ -1268,41 +1445,62 @@ other_fest:
 	{
 		if (s.astrodata.nMasa == ADHIKA_MASA)
 		{
-			t.nCaturmasya = CMASYA_4_CONT;
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(127).c_str());
 		}
 		// pratipat system
 		if (GCTithi::TITHI_TRANSIT(s.astrodata.nTithi, t.astrodata.nTithi, TITHI_PURNIMA, TITHI_KRSNA_PRATIPAT))
 		{
-			t.nCaturmasya |= CMASYA_PRAT_4_FIRST;
-			s.nCaturmasya |= CMASYA_PRAT_3_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PRATIPAT))
+			{
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(124).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				t.AddEvent(PRIO_CM_DAYNOTE, CATURMASYA_PRATIPAT, GCStrings::getString(126).c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_FIRST | CMASYA_MONTH_4;
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(121).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_LAST | CMASYA_MONTH_3;
+			}
 		}
 
 		// last day for punima system
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_CATURDASI, TITHI_PURNIMA))
 		{
-			t.nCaturmasya |= CMASYA_PURN_4_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PURNIMA))
+			{
+				tmp.Format("%s [PURNIMA SYSTEM]", GCStrings::getString(125).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PURNIMA, tmp.c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PURNIMA | CMASYA_DAY_LAST | CMASYA_MONTH_4;
+			}
 		}
 
 		// ekadasi system
 		//if (TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_GAURA_DASAMI, TITHI_GAURA_EKADASI))
 		if ((t.astrodata.nPaksa == GAURA_PAKSA) && (t.nMhdType != EV_NULL))
 		{
-			s.nCaturmasya |= CMASYA_EKAD_4_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_EKADASI))
+			{
+				tmp.Format("%s [EKADASI SYSTEM]", GCStrings::getString(125).c_str());
+				s.AddEvent(PRIO_CM_DAY, CATURMASYA_EKADASI, tmp.c_str());
+				s.nCaturmasya = CMASYA_SYSTEM_EKADASI | CMASYA_DAY_LAST | CMASYA_MONTH_4;
+			}
 		}
 
 		if (GCTithi::TITHI_TRANSIT(t.astrodata.nTithi, u.astrodata.nTithi, TITHI_PURNIMA, TITHI_KRSNA_PRATIPAT))
 		{
-			t.nCaturmasya |= CMASYA_PRAT_4_LAST;
+			if (GCDisplaySettings::getValue(CATURMASYA_PRATIPAT))
+			{
+				tmp.Format("%s [PRATIPAT SYSTEM]", GCStrings::getString(125).c_str());
+				t.AddEvent(PRIO_CM_DAY, CATURMASYA_PRATIPAT, tmp.c_str());
+				t.nCaturmasya = CMASYA_SYSTEM_PRATIPAT | CMASYA_DAY_LAST | CMASYA_MONTH_4;
+			}
 
 			// on last day of Caturmasya pratipat system is Bhisma Pancaka ending
-			if (t.festivals.GetLength() > 0)
-				t.festivals += "#";
-			t.festivals += GCStrings::getString(82);
+			//if (t.festivals.GetLength() > 0)
+			//	t.festivals += "#";
+			//t.festivals += GCStrings::getString(82);
+			t.AddEvent(PRIO_CM_DAYNOTE, DISP_ALWAYS, GCStrings::getString(82).c_str());
 		}
 	}
-
-	// vaisnava calendar calculations are valid
-	t.fVaisValid = true;
 
 	return 1;
 }
@@ -1360,14 +1558,12 @@ int TResultCalendar::MahadvadasiCalc(int nIndex, EARTHDATA earth)
 		m_pData[nMhdDay].ekadasi_parana = false;
 		m_pData[nMhdDay].eparana_time1 = 0.0;
 		m_pData[nMhdDay].eparana_time2 = 0.0;
-		m_pData[nMhdDay].fVaisValid = true;
 
 		// parana day
 		m_pData[nMhdDay + 1].nFastType = FAST_NULL;
 		m_pData[nMhdDay + 1].ekadasi_parana = true;
 		m_pData[nMhdDay + 1].eparana_time1 = 0.0;
 		m_pData[nMhdDay + 1].eparana_time2 = 0.0;
-		m_pData[nMhdDay + 1].fVaisValid = true;
 	}
 
 	return 1;
