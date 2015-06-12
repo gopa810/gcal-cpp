@@ -8,11 +8,12 @@
 //
 #include "level_0.h"
 //#include "texteditwnd.h"
-#include "level_5_days.h"	// Added by ClassView
+#include "TResultCalendar.h"	// Added by ClassView
 #include "framebase.h"
 #include "LocationRef.h"
-#include "TResultEvent.h"
+#include "TResultEvents.h"
 #include "TResultApp.h"
+#include "TResultToday.h"
 #include "TResultMasaList.h"	// Added by ClassView
 #include "RichEditResults.h"
 #include "TString.h"	// Added by ClassView
@@ -60,9 +61,9 @@ public:
 	void RetrieveCurrentScreenInRtf(TString &str);
 	void RetrieveCurrentScreenInText(TString &str);
 	TString m_strTxt;
-//	void AddNoteRtf(TString &str);
 	void RecalculateTodayScreen();
 	TResultMasaList m_masalist;
+	TResultToday m_today;
 	VCTIME m_eventDayE;
 	VCTIME m_eventDayA;
 	BOOL m_bJumpToFinalStep;
@@ -73,7 +74,7 @@ public:
 	TResultApp      m_appday;
 	BOOL m_bKeyShift;
 	void RecalculateCurrentScreen();
-	void AddNote1(TString &str);
+	//void AddNote1(TString &str);
 	BOOL m_bKeyControl;
 	UINT m_nInfoType;
 	void SetInfoText(const char * pszText, UINT nType);

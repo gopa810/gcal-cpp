@@ -36,6 +36,7 @@ public:
 	Boolean alloc(int nCountYears);
 	int formatText(TString &str);
 	int formatRtf(TString &str);
+	int writeHtml(FILE * f);
 
 };
 

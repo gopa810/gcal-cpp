@@ -5,7 +5,7 @@
 #include "vcal5beta.h"
 #include "DlgEditLocation.h"
 #include "level_0.h"
-#include "vedic_ui.h"
+
 #include "TTimeZone.h"
 #include "TCountry.h"
 #include "TLocation.h"

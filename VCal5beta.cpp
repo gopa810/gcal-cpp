@@ -22,6 +22,10 @@
 #include "GCCalendar.h"
 #include "GCDisplaySettings.h"
 #include "GCLayoutData.h"
+#include "GCSankranti.h"
+#include "GCNaksatra.h"
+#include "GCTithi.h"
+#include "GCUserInterface.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,10 +35,6 @@ static char THIS_FILE[] = __FILE__;
 
 void AvcShowSetWriteFile(const char *);
 void InitTips(FILE * hFile);
-
-extern int g_ShowMode;
-
-int WriteCalendarXml(TResultCalendar &, FILE * f);
 
 /////////////////////////////////////////////////////////////////////////////
 // GCalApp
@@ -96,7 +96,6 @@ void GetBetaFileDate(SYSTEMTIME &stcr)
 /////////////////////////////////////////////////////////////////////////////
 // GCalApp initialization
 //double AvcGetTimeZone(int);
-//char * AvcGetTimeZoneName(int);
 BOOL GCalApp::InitInstance()
 {
 	//AddDocTemplate(pDocTemplate);
@@ -143,18 +142,9 @@ BOOL GCalApp::InitInstance()
 	// initialization for AppDir
 	GCalApp_InitFolders();
 
-	/*FILE * f = fopen("C:\\op.txt", "w");
-	if (f)	{	double a;
-		for(int i = 0; i < 40; i++)	{
-			a = AvcGetTimeZone(i);
-			fprintf(f, "  { 0, 0x00000000, \"%s\", %+.2fF, -90.0F, +90.0F, %.2fF, %.2fF},\n",
-				AvcGetTimeZoneName(i), a, put_in_180(a*15.0-22.5), put_in_180(a*15.0+7.5));	}
-		fclose(f);}*/
-
-
 	SetRegistryKey(_T("GCAL"));
 	
-	g_ShowMode = GetProfileInt("ui", "show_mode", 1);
+	GCUserInterface::ShowMode = GetProfileInt("ui", "show_mode", 1);
 	GCLayoutData::textSizeNote = GetProfileInt("ui", "note_size", 16);
 	GCLayoutData::textSizeText = GetProfileInt("ui", "text_size", 24);
 	GCLayoutData::textSizeH1 = GetProfileInt("ui", "hdr_size", 36);
@@ -424,7 +414,7 @@ int GCalApp::ExitInstance()
 	TString str;
 //	TLangFileInfo * p;
 
-	WriteProfileInt("ui", "show_mode", g_ShowMode);
+	WriteProfileInt("ui", "show_mode", GCUserInterface::ShowMode);
 	WriteProfileInt("ui", "note_size", GCLayoutData::textSizeNote);
 	WriteProfileInt("ui", "text_size", GCLayoutData::textSizeText);
 	WriteProfileInt("ui", "hdr_size", GCLayoutData::textSizeH1);
@@ -631,14 +621,6 @@ BOOL GCalApp::GetLangFileForAcr(const char * pszAcr, TString &strFile)
 }
 
 #define ISARGSEP(c) (((c) == 0) || ((c)==' '))
-
-
-int WriteXML_FirstDay_Year(FILE *, CLocationRef &loc, VCTIME vc);
-int WriteXML_Sankrantis(FILE *, CLocationRef &loc, VCTIME, VCTIME);
-int WriteXML_Naksatra(FILE *, CLocationRef &loc, VCTIME, int);
-int WriteXML_Tithi(FILE *, CLocationRef &loc, VCTIME);
-int WriteXML_GaurabdaTithi(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIME vaEnd);
-int WriteXML_GaurabdaNextTithi(FILE * fout, CLocationRef &loc, VCTIME vcStart, VATIME vaStart);
 
 
 int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
@@ -910,8 +892,8 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 		// -R -O -LAT -LON -SG -C [-DST -NAME]
 		vcStart.NextDay();
 		vcStart.PreviousDay();
-		CalcCalendar(calendar, loc, vcStart, nCount);
-		WriteCalendarXml(calendar, fout);
+		GCUserInterface::CalculateCalendar(calendar, loc, vcStart, nCount);
+		calendar.writeXml(fout);
 		break;
 	case 11:
 		// -R -O -LAT -LON -SG -ST [-NAME]
@@ -920,7 +902,7 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 		fputs(str, fout);
 		break;
 	case 12:
-		WriteXML_Tithi( fout, loc, vcStart);
+		GCTithi::writeXml( fout, loc, vcStart);
 		break;
 	case 13:
 		if (vcEnd.year == 0)
@@ -928,26 +910,26 @@ int GCalApp::ParseCommandArguments(CCommandLineVCal * cmd)
 			vcEnd = vcStart;
 			vcEnd += nCount;
 		}
-		WriteXML_Sankrantis(fout, loc, vcStart, vcEnd);
+		GCSankranti::writeXml(fout, loc, vcStart, vcEnd);
 		break;
 	case 14:
-		WriteXML_Naksatra(fout, loc, vcStart, nCount);
+		GCNaksatra::writeXml(fout, loc, vcStart, nCount);
 		break;
 	case 15:
-		WriteXML_FirstDay_Year(fout, loc, vcStart);
+		GCCalendar::writeFirstDayXml(fout, loc, vcStart);
 		break;
 	case 16:
 		vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
 		vcEnd = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year + 1);
 		nCount = int(vcEnd.GetJulian() - vcStart.GetJulian());
-		CalcCalendar(calendar, loc, vcStart, nCount);
-		WriteCalendarXml(calendar, fout);
+		GCUserInterface::CalculateCalendar(calendar, loc, vcStart, nCount);
+		calendar.writeXml(fout);
 		break;
 	case 17:
-		WriteXML_GaurabdaTithi( fout, loc, vaStart, vaEnd);
+		GCTithi::writeGaurabdaTithiXml( fout, loc, vaStart, vaEnd);
 		break;
 	case 18:
-		WriteXML_GaurabdaNextTithi( fout, loc, vcStart, vaStart);
+		GCTithi::writeGaurabdaNextTithiXml( fout, loc, vcStart, vaStart);
 		break;
 	case 50:
 		{

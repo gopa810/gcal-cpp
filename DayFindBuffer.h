@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "level_5_days.h"
+#include "TResultCalendar.h"
 #include "level_0.h"	// Added by ClassView
 // PORTABLE
 

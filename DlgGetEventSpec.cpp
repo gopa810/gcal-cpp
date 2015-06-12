@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgGetEventSpec.h"
-#include "level_6.h"
 #include "GCDisplaySettings.h"
 
 #ifdef _DEBUG

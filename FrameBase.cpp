@@ -5,7 +5,7 @@
 #include "vcal5beta.h"
 #include "FrameBase.h"
 #include "strings.h"
-#include "vedic_ui.h"
+
 #include "LocationRef.h"
 #include "enums.h"
 #include "GCStrings.h"
@@ -24,15 +24,8 @@ static char THIS_FILE[] = __FILE__;
 int AvcGetNextLine(TString &, TString &, int &);
 int AvcGetTextLineCount(VAISNAVADAY * pvd);
 
-int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout);
-int CalcCalendar(TResultCalendar &calendar, CLocationRef &loc, VCTIME date, int nDaysCount);
-int FormatCalendarICAL(TResultCalendar &calendar, TString &str);
-int FormatCalendarVCAL(TResultCalendar &calendar, TString &str);
-int FormatCalendarOld(TResultCalendar &, TString &);
-
 extern EARTHDATA gMyLocation;
 extern VCTIME gTodayAct;
-extern const char * gpszSeparator;
 
 //IMPLEMENT_DYNCREATE(CFrameBase, CFrameWnd)
 
@@ -137,24 +130,6 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			// zistuje kolko riadkov zaberie nasledujuci den
 			nLineCount = AvcGetTextLineCount(pvd);
 			
-			if (GCDisplaySettings::getValue(21) == 1)
-			{
-				if (prevd != NULL)
-				{
-					if (prevd->astrodata.nMasa != pvd->astrodata.nMasa)
-					{
-						nLineCount++;
-					}
-				}
-				if (nextd != NULL)
-				{
-					if (nextd->astrodata.nMasa != pvd->astrodata.nMasa)
-					{
-						nLineCount++;
-					}
-				}
-			}
-
 			if ((yLine * nLineCount + yCurr) > rcPrint.bottom)
 				bStart = true;
 
@@ -163,7 +138,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				strHdr.Format("%s %s, Gaurabda %d", GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str(), pvd->astrodata.nGaurabdaYear);
 //				if ((pvd->astrodata.nMasa == ADHIKA_MASA) && ((lastmasa >= SRIDHARA_MASA) && (lastmasa <= DAMODARA_MASA)))
 				{
-//					AddListText(m_text, GCStrings::getString(128]);
+//					GCStringBuilder::AppendTwoColumnText(m_text, GCStrings::getString(128]);
 				}
 				lastmasa = pvd->astrodata.nMasa;
 				bStart = true;
@@ -259,24 +234,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 			dc.TextOut(rcPrint.left + nColumn[0] + 11*nColumn[6] + nColumn[6]/2
 				, yCurr, LPCTSTR(GCStrings::getString(pvd->date.dayOfWeek)), 2);
 
-			str = GCStrings::GetTithiName(pvd->astrodata.nTithi);
-
-			if ((pvd->astrodata.nTithi == 10) || (pvd->astrodata.nTithi == 25) || (pvd->astrodata.nTithi == 11) || (pvd->astrodata.nTithi == 26))
-			{
-				if (pvd->ekadasi_parana == false)
-				{
-					if (pvd->nMhdType == EV_NULL)
-					{
-						str += " ";
-						str += GCStrings::getString(58);
-					}
-					else
-					{
-						str += " ";
-						str += GCStrings::getString(59);
-					}
-				}
-			}
+			str = pvd->GetFullTithiName().c_str();
 			dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
 
 			dc.TextOut(rcPrint.left + nColumn[2] - nColumn[6], yCurr, GCStrings::GetPaksaName(pvd->astrodata.nPaksa), 1);
@@ -291,18 +249,6 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				dc.TextOut(rcPrint.left + nColumn[5], yCurr, "*", 1);
 
 			yCurr += yLine;
-
-			if (GCDisplaySettings::getValue(17) == 1)
-			{
-				if (pvd->ekadasi_parana)
-				{
-					pvd->GetTextEP(strt);
-					str = strt.c_str();
-					str.Delete(0, 17);
-					dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
-					yCurr += yLine;
-				}
-			}
 
 			for(int i = 0; i < pvd->dayEvents.Count(); i++)
 			{
@@ -329,30 +275,6 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 					yCurr += yLine;
 				}
 			}
-
-			if (GCDisplaySettings::getValue(21) == 1)
-			{
-				if (prevd != NULL)
-				{
-					if (prevd->astrodata.nMasa != pvd->astrodata.nMasa)
-					{
-						str.Format("%s %s %s", GCStrings::getString(780).c_str(), GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str());
-						dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
-						yCurr += yLine;
-					}
-				}
-				if (nextd != NULL)
-				{
-					if (nextd->astrodata.nMasa != pvd->astrodata.nMasa)
-					{
-						str.Format("%s %s %s", GCStrings::getString(781).c_str(), GCStrings::GetMasaName(pvd->astrodata.nMasa), GCStrings::getString(22).c_str());
-						dc.TextOut(rcPrint.left + nColumn[1], yCurr, str);
-						yCurr += yLine;
-					}
-				}
-			}
-
-
 
 		}
 		date.shour = 0;

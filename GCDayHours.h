@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TString.h"
 
 class DAYTIME
 {
@@ -19,6 +20,8 @@ public:
 	void SetValue(int i);
 	void SetDayTime(double d);
 	void SetDegTime(double);
+
+	void ToLongTimeString(TString &str);
 };
 
 

@@ -181,6 +181,8 @@ void TResultApp::formatPlainText(TString &strResult)
 		sb.AppendLine(str);
 	}
 
+
+	sb.AppendNote();
 }
 
 void TResultApp::formatRtf(TString &strResult)

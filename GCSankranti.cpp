@@ -3,6 +3,9 @@
 #include "gmath.h"
 #include "GCAyanamsha.h"
 #include "GCSunData.h"
+#include "TFileXml.h"
+#include "GCStrings.h"
+
 
 GCSankranti::GCSankranti(void)
 {
@@ -108,4 +111,79 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 	}
 
 	return d;
+}
+
+int GCSankranti::writeXml(FILE * fout, CLocationRef & loc, VCTIME vcStart, VCTIME vcEnd)
+{
+	VCTIME d;
+	DAYTIME dt;
+	int zodiac;
+
+	TFileXml xml;
+
+	// open file
+	xml.initWithFile(fout);
+
+	d = vcStart;
+
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Sankranti\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"location\" val=\"");
+	xml.write(loc.m_strName);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+				xml.write(vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"enddate\" val=\"");
+				xml.write(vcEnd);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"SankrantiList\">\n");
+
+	while(d.IsBeforeThis(vcEnd))
+	{
+		d = GCSankranti::GetNextSankranti(d, zodiac);
+		d.InitWeekDay();
+		xml.write("\t\t<sank date=\"");
+		xml.write(d);
+		xml.write("\" ");
+		xml.write("dayweekid=\"");
+		xml.write(d.dayOfWeek);
+		xml.write("\" dayweek=\"");
+		xml.write(GCStrings::getString(d.dayOfWeek));
+		xml.write("\" ");
+
+		dt.SetDegTime( 360 * d.shour );
+
+		xml.write(" time=\"");
+		xml.write(dt);
+		xml.write("\" >\n");
+		xml.write("\t\t<zodiac sans=\"");
+		xml.write(GCStrings::GetSankrantiName(zodiac));
+		xml.write("\" eng=\"");
+		xml.write(GCStrings::GetSankrantiNameEn(zodiac));
+		xml.write("\" id=\"");
+		xml.write(zodiac);
+		xml.write("\" />\n");
+		xml.write("\t\t</sank>\n\n");
+
+		d.NextDay();
+		d.NextDay();
+	}
+
+	xml.write("\t</result>\n");
+	xml.write("</xml>");
+
+	return 1;
 }

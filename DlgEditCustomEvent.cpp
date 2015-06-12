@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgEditCustomEvent.h"
-#include "vedic_ui.h"
+
 #include "GCStrings.h"
 #include "GCDisplaySettings.h"
 

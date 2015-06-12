@@ -3,6 +3,7 @@
 #include "GCGregorianTime.h"
 #include "GCEarthData.h"
 #include "GCVedicTime.h"
+#include "LocationRef.h"
 
 class GCCalendar
 {
@@ -16,5 +17,6 @@ public:
 	static int CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd, VATIME &vaEnd, int nType, int nCount);
 	static int ComboMasaToMasa(int nComboMasa);
 	static int MasaToComboMasa(int nComboMasa);
+	static int writeFirstDayXml(FILE * fout, CLocationRef & loc, VCTIME vcStart);
 };
 

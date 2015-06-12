@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "VCal5beta.h"
 #include "TithiCalc.h"
-#include "vedic_ui.h"
-#include "level_6.h"
+
+
 #include "strings.h"
 #include "GCStrings.h"
 #include "GCCalendar.h"
@@ -15,8 +15,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-int WriteXML_GaurabdaTithi(const char * foutName, EARTHDATA earth, int, int, int, int, int);
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetStartDate dialog

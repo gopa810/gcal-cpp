@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "VCal5beta.h"
 #include "DlgObservedEvents.h"
-#include "vedic_ui.h"
+
 #include "strings.h"
 #include "level_0.h"
 #include "TFile.h"

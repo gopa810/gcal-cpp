@@ -116,6 +116,23 @@ void GCStringBuilder::AppendDocumentTail(void)
 	}
 }
 
+void GCStringBuilder::AppendTwoColumnText(const char *pText, const char * pText2)
+{
+	TString str;
+	if (Format == SBTF_TEXT)
+	{
+		str.Format("%-17s%s", pText, pText2);
+		str.TrimRight();
+		str+= "\r\n";
+	}
+	else if (Format == SBTF_RTF)
+	{
+		str.Format("\\par %s\\tab %s", pText, pText2);
+	}
+
+	(*Target) += str;
+}
+
 void GCStringBuilder::AppendSeparatorWithWidth(int width)
 {
 	static const char * szSeparator = "----------------";

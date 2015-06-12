@@ -6,7 +6,7 @@
 #include "DlgGetLocation.h"
 #include "DlgGetLocationEx.h"
 #include "level_0.h"
-#include "vedic_ui.h"
+
 #include "TTimeZone.h"
 #include "GCStrings.h"
 

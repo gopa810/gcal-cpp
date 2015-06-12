@@ -4,6 +4,8 @@
 #include "GCSunData.h"
 #include "GCDayData.h"
 #include "gmath.h"
+#include "TFileXml.h"
+#include "GCStrings.h"
 
 GCTithi::GCTithi(void)
 {
@@ -505,5 +507,393 @@ VCTIME GCTithi::CalcTithiDate(int nGYear, int nMasa, int nPaksa, int nTithi, EAR
 	//
 
 	return d;
+}
+
+int GCTithi::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc)
+{
+	TString str;
+	VCTIME date;
+
+	TFileXml xml;
+	xml.initWithFile(fout);
+
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(vc);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
+
+	VCTIME d = vc;
+	VCTIME d1, d2;
+	d.tzone = loc.m_fTimezone;
+	VCTIME dn;
+	DAYTIME dt;
+	EARTHDATA earth = (EARTHDATA)loc;
+
+
+	DAYDATA day;
+
+	day.DayCalc(vc, earth);
+
+	d.shour = day.sun.sunrise_deg/360.0 + loc.m_fTimezone/24.0;
+
+	GCTithi::GetPrevTithiStart(earth, d, d1);
+	GCTithi::GetNextTithiStart(earth, d, d2);
+
+	{
+		dt.SetDegTime( d1.shour * 360 );
+		// start tithi at t[0]
+		xml.write("\t\t<tithi\n\t\t\tid=\"");
+	xml.write(day.nTithi);
+	xml.write("\"\n");
+		xml.write("\t\t\tname=\"");
+	xml.write(GCStrings::GetTithiName(day.nTithi));
+	xml.write("\"\n");
+		xml.write("\t\t\tstartdate=\"");
+	xml.write(d1);
+	xml.write("\"\n");
+		xml.write("\t\t\tstarttime=\"");
+	xml.write(dt);
+	xml.write("\"\n");
+	
+		dt.SetDegTime( d2.shour * 360 );
+		xml.write("\t\t\tenddate=\"");
+	xml.write(d2);
+	xml.write("\"\n");
+		xml.write("\t\t\tendtime=\"");
+	xml.write(dt);
+	xml.write("\"\n />");
+	}
+
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
+
+	return 1;
+}
+
+
+
+int GCTithi::writeGaurabdaTithiXml(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIME vaEnd)
+{
+	int gyearA = vaStart.gyear;
+	int gyearB = vaEnd.gyear;
+	int gmasa = vaStart.masa;
+	int gpaksa = vaStart.tithi / 15;
+	int gtithi = vaStart.tithi % 15;
+
+	if (gyearB < gyearA)
+		gyearB = gyearA;
+
+	TFileXml xml;
+
+	xml.initWithFile(fout);
+
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	if (gyearA > 1500)
+	{
+		xml.write("\t\t<arg name=\"year-start\" val=\"");
+		xml.write(gyearA);
+		xml.write("\" />\n");
+		xml.write("\t\t<arg name=\"year-end\" val=\"");
+		xml.write(gyearB);
+		xml.write("\" />\n");
+	}
+	else
+	{
+		xml.write("\t\t<arg name=\"gaurabdayear-start\" val=\"");
+		xml.write(gyearA);
+		xml.write("\" />\n");
+		xml.write("\t\t<arg name=\"gaurabdayear-end\" val=\"");
+		xml.write(gyearB);
+		xml.write("\" />\n");
+	}
+	xml.write("\t\t<arg name=\"masa\" val=\"");
+	xml.write(gmasa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"paksa\" val=\"");
+	xml.write(gpaksa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"tithi\" val=\"");
+	xml.write(gtithi);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
+
+
+	EARTHDATA earth = (EARTHDATA)loc;
+	VCTIME vcs, vce, today;
+	SUNDATA sun;
+	int A, B;
+	double sunrise;
+	DAYDATA day;
+	int oTithi, oPaksa, oMasa, oYear;
+
+	if (gyearA > 1500)
+	{
+		A = gyearA - 1487;
+		B = gyearB - 1485;
+	}
+	else
+	{
+		A = gyearA;
+		B = gyearB;
+	}
+
+	for(; A <= B; A++)
+	{
+		vcs = GCTithi::CalcTithiEnd(A, gmasa, gpaksa, gtithi, earth, vce);
+		if (gyearA > 1500)
+		{
+			if ((vcs.year < gyearA) || (vcs.year > gyearB))
+				continue;
+		}
+		oTithi = gpaksa*15 + gtithi;
+		oMasa = gmasa;
+		oPaksa = gpaksa;
+		oYear = 0;
+		xml.write("\t<celebration\n");
+		//		xml.write("\t\t<tithi\n";
+		xml.write("\t\trtithi=\"");
+		xml.write(GCStrings::GetTithiName(oTithi));
+		xml.write("\"\n");
+		xml.write("\t\trmasa=\"");
+		xml.write(GCStrings::GetMasaName(oMasa));
+		xml.write("\"\n");
+		xml.write("\t\trpaksa=\"");
+		xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+		xml.write("\"\n");
+		// test ci je ksaya
+		today = vcs;
+		today.shour = 0.5;
+		sun.SunCalc(today, earth);
+		sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
+		if (sunrise < vcs.shour)
+		{
+			today = vce;
+			sun.SunCalc(today, earth);
+			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
+			if (sunrise < vce.shour)
+			{
+				// normal type
+				vcs.NextDay();
+				xml.write("\t\ttype=\"normal\"\n");
+			}
+			else
+			{
+				// ksaya
+				vcs.NextDay();
+				day.DayCalc(vcs, earth);
+				oTithi = day.nTithi;
+				oPaksa = day.nPaksa;
+				oMasa = day.MasaCalc(vcs, earth);
+				oYear = day.nGaurabdaYear;
+				xml.write("\t\ttype=\"ksaya\"\n");
+			}
+		}
+		else
+		{
+			// normal, alebo prvy den vriddhi
+			today = vce;
+			sun.SunCalc(today, earth);
+			if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
+			{
+				// first day of vriddhi type
+				xml.write("\t\ttype=\"vriddhi\"\n");
+			}
+			else
+			{
+				// normal
+				xml.write("\t\ttype=\"normal\"\n");
+			}
+		}
+		xml.write("\t\tdate=\"");
+		xml.write(vcs);
+		xml.write("\"\n");
+		xml.write("\t\totithi=\"");
+		xml.write(GCStrings::GetTithiName(oTithi));
+		xml.write("\"\n");
+		xml.write("\t\tomasa=\"");
+		xml.write(GCStrings::GetMasaName(oMasa));
+		xml.write("\"\n");
+		xml.write("\t\topaksa=\"");
+		xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+		xml.write("\"\n");
+		xml.write("\t/>\n");
+		//		xml.write("\t\t</celebration>\n";
+
+	}
+
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
+
+	return 1;
+}
+
+int GCTithi::writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vcStart, VATIME vaStart)
+{
+	int gmasa, gpaksa, gtithi;
+	TFileXml xml;
+
+	gmasa = vaStart.masa;
+	gpaksa = vaStart.tithi / 15;
+	gtithi = vaStart.tithi % 15;
+
+	xml.initWithFile(fout);
+
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Tithi\" version=\"");
+	xml.write(GCStrings::getString(130).c_str());
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"start date\" val=\"");
+	xml.write(vcStart);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"masa\" val=\"");
+	xml.write(gmasa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"paksa\" val=\"");
+	xml.write(gpaksa);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"tithi\" val=\"");
+	xml.write(gtithi);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Tithi\">\n");
+
+	EARTHDATA earth = (EARTHDATA)loc;
+	VCTIME vcs, vce, today;
+	SUNDATA sun;
+	int A;
+	double sunrise;
+	DAYDATA day;
+	int oTithi, oPaksa, oMasa, oYear;
+
+	today = vcStart;
+	today.PreviousDay();
+	vcStart -= 15;
+	for(A = 0; A <= 3; A++)
+	{
+		vcs = GCTithi::CalcTithiEndEx(vcStart, 0, gmasa, gpaksa, gtithi, earth, vce);
+		if (!vcs.IsBeforeThis(today))
+		{
+			oTithi = gpaksa*15 + gtithi;
+			oMasa = gmasa;
+			oPaksa = gpaksa;
+			oYear = 0;
+			xml.write("\t<celebration\n");
+			//		xml.write("\t\t<tithi\n";
+			xml.write("\t\trtithi=\"");
+			xml.write(GCStrings::GetTithiName(oTithi));
+			xml.write("\"\n");
+			xml.write("\t\trmasa=\"");
+			xml.write(GCStrings::GetMasaName(oMasa));
+			xml.write("\"\n");
+			xml.write("\t\trpaksa=\"");
+			xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+			xml.write("\"\n");
+			// test ci je ksaya
+			today = vcs;
+			today.shour = 0.5;
+			sun.SunCalc(today, earth);
+			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
+			if (sunrise < vcs.shour)
+			{
+				today = vce;
+				sun.SunCalc(today, earth);
+				sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
+				if (sunrise < vce.shour)
+				{
+					// normal type
+					vcs.NextDay();
+					xml.write("\t\ttype=\"normal\"\n");
+				}
+				else
+				{
+					// ksaya
+					vcs.NextDay();
+					day.DayCalc(vcs, earth);
+					oTithi = day.nTithi;
+					oPaksa = day.nPaksa;
+					oMasa = day.MasaCalc(vcs, earth);
+					oYear = day.nGaurabdaYear;
+					xml.write("\t\ttype=\"ksaya\"\n");
+				}
+			}
+			else
+			{
+				// normal, alebo prvy den vriddhi
+				today = vce;
+				sun.SunCalc(today, earth);
+				if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
+				{
+					// first day of vriddhi type
+					xml.write("\t\ttype=\"vriddhi\"\n");
+				}
+				else
+				{
+					// normal
+					xml.write("\t\ttype=\"normal\"\n");
+				}
+			}
+			xml.write("\t\tdate=\"");
+			xml.write(vcs);
+			xml.write("\"\n");
+			xml.write("\t\totithi=\"");
+			xml.write(GCStrings::GetTithiName(oTithi));
+			xml.write("\"\n");
+			xml.write("\t\tomasa=\"");
+			xml.write(GCStrings::GetMasaName(oMasa));
+			xml.write("\"\n");
+			xml.write("\t\topaksa=\"");
+			xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
+			xml.write("\"\n");
+			xml.write("\t/>\n");
+			break;
+		}
+		else
+		{
+			vcStart = vcs;
+			vcs.NextDay();
+		}
+	}
+
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
+
+
+	return 1;
 }
 

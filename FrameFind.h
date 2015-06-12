@@ -3,7 +3,7 @@
 
 #include "ConditionsView.h"	// Added by ClassView
 #include "framebase.h"
-#include "level_5_days.h"	// Added by ClassView
+#include "TResultCalendar.h"	// Added by ClassView
 #include "editclipboarded.h"
 #include "listboxclipboarded.h"
 

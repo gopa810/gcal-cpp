@@ -5,8 +5,8 @@
 #include "vcal5beta.h"
 #include "FrameMain.h"
 #include "level_0.h"
-#include "level_5_days.h"
-#include "vedic_ui.h"
+#include "TResultCalendar.h"
+
 #include "strings.h"
 #include "TFile.h"
 #include "dlgselectlangoutput.h"
@@ -25,7 +25,7 @@
 #include "dlgmasalisting.h"
 #include "location.h"
 #include "frameserver.h"
-#include "level_6.h"
+
 #include "locationref.h"
 #include "dlgcustomeventdialog.h"
 #include "tipdlg.h"
@@ -35,6 +35,7 @@
 #include "GCDisplaySettings.h"
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
+#include "GCUserInterface.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,18 +45,6 @@ static char THIS_FILE[] = __FILE__;
 
 int AvcGetNextLine(TString &, TString &, int &);
 int AvcGetTextLineCount(VAISNAVADAY * pvd);
-int WriteCalendarXml(TResultCalendar &daybuff, FILE * fout);
-int WriteCalendarHtmlTable(TResultCalendar &daybuff, FILE * fout);
-int WriteCalendarHTML(TResultCalendar &daybuff, FILE * fout);
-int WriteEventsHTML(TResultEvents &inEvents, FILE * f);
-int WriteMasaListHTML(TResultMasaList &mlist, FILE * f);
-int CalcCalendar(TResultCalendar &calendar, EARTHDATA earth, VCTIME date, int nDaysCount);
-int FormatCalendarOld(TResultCalendar &, TString &);
-int FormatCalendarICAL(TResultCalendar &calendar, TString &str);
-int FormatCalendarVCAL(TResultCalendar &calendar, TString &str);
-void time_print(TString &, DAYTIME);
-int AvcGetTextLineCount(VAISNAVADAY * pvd);
-void AddNoteText(TString &str);
 
 extern GCalApp theApp;
 extern CLocationRef gMyLocation;
@@ -64,8 +53,6 @@ extern VCTIME gTodayAct;
 extern VCTIME gToday;
 extern VCTIME gTomorrow;
 extern VCTIME gYesterday;
-extern const char * gpszSeparator;
-extern int g_ShowMode;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -229,12 +216,12 @@ int CFrameMain::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	// TODO: Add your specialized creation code here
-	m_textTXT.Create(WS_CHILD | (g_ShowMode==0?WS_VISIBLE:0) | ES_MULTILINE | WS_VSCROLL | ES_AUTOVSCROLL | WS_HSCROLL | ES_AUTOHSCROLL
+	m_textTXT.Create(WS_CHILD | (GCUserInterface::ShowMode==0?WS_VISIBLE:0) | ES_MULTILINE | WS_VSCROLL | ES_AUTOVSCROLL | WS_HSCROLL | ES_AUTOHSCROLL
 		, CRect(0,0,0,0), this, 101);
-	m_textRTF.Create(WS_CHILD | (g_ShowMode==1?WS_VISIBLE:0) | ES_MULTILINE | WS_VSCROLL | ES_AUTOVSCROLL | WS_HSCROLL | ES_AUTOHSCROLL
+	m_textRTF.Create(WS_CHILD | (GCUserInterface::ShowMode==1?WS_VISIBLE:0) | ES_MULTILINE | WS_VSCROLL | ES_AUTOVSCROLL | WS_HSCROLL | ES_AUTOHSCROLL
 		, CRect(0,0,0,0), this, 101);
 
-	m_Info.Create(GCStrings::getString(43).c_str(), WS_CHILD | WS_BORDER | (g_ShowMode==0?WS_VISIBLE:0), CRect(0,0,0,0), this, 102);
+	m_Info.Create(GCStrings::getString(43).c_str(), WS_CHILD | WS_BORDER | (GCUserInterface::ShowMode==0?WS_VISIBLE:0), CRect(0,0,0,0), this, 102);
 
 	m_hIcon = ::LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
 
@@ -304,18 +291,17 @@ _step_final:
 	calendar.va_end   = dend.va_end;
 	calendar.count = int(dend.vc_end.GetJulian() - dend.vc_start.GetJulian());
 
-	CalcCalendar(m_calendar, earth, calendar.vc_start, calendar.count);
+	GCUserInterface::CalculateCalendar(m_calendar, earth, calendar.vc_start, calendar.count);
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
-		FormatCalendarOld(m_calendar, text);
-		AddNote1(text);
+		m_calendar.formatPlainText(text);
 		m_textTXT.SetWindowText(text);
 		m_strTxt = text;
 	}
 	else
 	{
-		FormatCalendarRtf(m_calendar, rtf);
+		m_calendar.formatRtf(rtf);
 		m_textRTF.LimitText(384000);
 		m_textRTF.SetTextRtf(&rtf);
 	}
@@ -361,10 +347,9 @@ _step_final:
 	
 	m_appday.formatXml(m_strXml);
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_appday.formatPlainText(str);
-		AddNote1(str);
 		m_textTXT.SetWindowText( str );
 		m_strTxt = str;
 	}
@@ -420,7 +405,7 @@ _step_final:
 	if (dspec.m_nNextStep < 0) goto _step_3;
 	naks.fOptions = dspec.m_fOptions;
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_textTXT.SetWindowText("\r\n\r\n        Calculation in progress....");
 		m_textTXT.UpdateWindow();
@@ -436,10 +421,9 @@ _step_final:
 
 	m_events.CalculateEvents(naks.m_loc, naks.vc_start, naks.vc_end);
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_events.formatText(str);
-		AddNote1(str);
 		m_textTXT.SetWindowText( str );
 		m_strTxt = str;
 	}
@@ -541,9 +525,8 @@ _step_final:
 	if (dlg.m_nNextStep == -1) goto _step_1;
 	else if (dlg.m_nNextStep == 0) return;
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
-		AddNote1(dlg.m_strResult);
 		m_textTXT.SetWindowText( dlg.m_strResult );
 		m_strTxt = dlg.m_strResult;
 	}
@@ -586,7 +569,7 @@ void CFrameMain::OnToolsFindMhd()
 
 void CFrameMain::OnEditCopy() 
 {
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_textTXT.SetFocus();
 		m_textTXT.Copy();
@@ -600,7 +583,7 @@ void CFrameMain::OnEditCopy()
 
 void CFrameMain::OnEditClearselection() 
 {
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_textTXT.SetFocus();
 		m_textTXT.SetSel(-1, -1);
@@ -614,7 +597,7 @@ void CFrameMain::OnEditClearselection()
 
 void CFrameMain::OnEditSelectall() 
 {
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_textTXT.SetFocus();
 		m_textTXT.SetSel(0, -1);
@@ -691,15 +674,17 @@ void CFrameMain::OnCalculateToday()
 	gYesterday = gToday;
 	gYesterday.PreviousDay();
 
-	if (g_ShowMode == 1)
+	m_today.Calculate(gTodayAct, gMyLocation);
+
+	if (GCUserInterface::ShowMode == 1)
 	{
-		FormatTodayInfoRtf(gTodayAct, gMyLocation, str);
+		m_today.formatRtf(str);
 		m_nInfoType = MW_MODE_TODAY;
 		m_textRTF.SetWindowText(str);
 	}
 	else
 	{
-		AvcGetTodayInfo(gTodayAct, gMyLocation, str);
+		m_today.formatPlain(str);
 		VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
 		SetInfoText(info, MW_MODE_TODAY);
 		m_textTXT.SetWindowText(str);
@@ -718,15 +703,17 @@ void CFrameMain::OnCalculatePreviousday()
 		gTodayAct.PreviousDay();
 		gTodayAct.tzone = gMyLocation.m_fTimezone;
 
-		if (g_ShowMode == 1)
+		m_today.Calculate(gTodayAct, gMyLocation);
+
+		if (GCUserInterface::ShowMode == 1)
 		{
-			FormatTodayInfoRtf(gTodayAct, gMyLocation, str);
+			m_today.formatRtf(str);
 			m_nInfoType = MW_MODE_TODAY;
 			m_textRTF.SetWindowText(str);
 		}
 		else
 		{
-			AvcGetTodayInfo(gTodayAct, gMyLocation, str);
+			m_today.formatPlain(str);
 			VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
 			info.Insert(0, " ");
 			SetInfoText(info, MW_MODE_TODAY);
@@ -747,15 +734,17 @@ void CFrameMain::OnCalculateNextday()
 		gTodayAct.NextDay();
 		gTodayAct.tzone = gMyLocation.m_fTimezone;
 
-		if (g_ShowMode == 1)
+		m_today.Calculate(gTodayAct, gMyLocation);
+
+		if (GCUserInterface::ShowMode == 1)
 		{
-			FormatTodayInfoRtf(gTodayAct, gMyLocation, str);
+			m_today.formatRtf(str);
 			m_nInfoType = MW_MODE_TODAY;
 			m_textRTF.SetWindowText(str);
 		}
 		else
 		{
-			AvcGetTodayInfo(gTodayAct, gMyLocation, str);
+			m_today.formatPlain(str);
 			VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
 			info.Insert(0, " ");
 			SetInfoText(info, MW_MODE_TODAY);
@@ -1065,7 +1054,7 @@ void CFrameMain::OnFileSave()
 						FILE * fout = fopen(fd.GetPathName(), "wt");
 						if (fout != NULL)
 						{
-							WriteCalendarXml(m_calendar, fout);
+							m_calendar.writeXml(fout);
 							fclose(fout);
 						}
 					}
@@ -1073,7 +1062,7 @@ void CFrameMain::OnFileSave()
 				case 3:
 					if (std.Open(fd.GetPathName(), "w") == TRUE)
 					{
-						WriteMasaListHTML(m_masalist, std.m_fHandle);
+						m_masalist.writeHtml(std.m_fHandle);
 						std.Close();
 					}
 					break;
@@ -1098,7 +1087,7 @@ void CFrameMain::OnFileSave()
 				case 1:
 					if (std.Open(fd.GetPathName(), "w") == TRUE)
 					{
-						FormatCalendarICAL(m_calendar, str);
+						m_calendar.formatICal(str);
 						std.WriteString(str);
 						std.Close();
 					}
@@ -1106,7 +1095,7 @@ void CFrameMain::OnFileSave()
 				case 2:
 					if (std.Open(fd.GetPathName(), "w") == TRUE)
 					{
-						WriteEventsHTML(m_events, std.m_fHandle);
+						m_events.writeHtml(std.m_fHandle);
 						std.Close();
 					}
 					break;
@@ -1125,7 +1114,7 @@ void CFrameMain::OnFileSave()
 		case 5:
 			if (std.Open(fd.GetPathName(), "w") == TRUE)
 			{
-				FormatCalendarVCAL(m_calendar, str);
+				m_calendar.formatVCal(str);
 				std.WriteString(str);
 				std.Close();
 			}
@@ -1133,7 +1122,7 @@ void CFrameMain::OnFileSave()
 		case 6:
 			if (std.Open(fd.GetPathName(), "w") == TRUE)
 			{
-				FormatCalendarCSV(m_calendar, str);
+				m_calendar.formatCsv(str);
 				std.WriteString(str);
 				std.Close();
 			}
@@ -1141,14 +1130,14 @@ void CFrameMain::OnFileSave()
 		case 7:
 			if (std.Open(fd.GetPathName(), "w") == TRUE)
 			{
-				WriteCalendarHtmlTable(m_calendar, std.m_fHandle);
+				m_calendar.writeTableHtml(std.m_fHandle);
 				std.Close();
 			}
 			break;
 		case 8:
 			if (std.Open(fd.GetPathName(), "w") == TRUE)
 			{
-				WriteCalendarHTML(m_calendar, std.m_fHandle);
+				m_calendar.writeHtml(std.m_fHandle);
 				std.Close();
 			}
 			break;
@@ -1191,7 +1180,7 @@ void CFrameMain::OnSettingsMyevents()
 
 }
 
-void CFrameMain::AddNote1(TString &str)
+/*void CFrameMain::AddNote1(TString &str)
 {
 	str += "\r\n\r\n";
 	str += gpszSeparator;
@@ -1206,11 +1195,12 @@ void CFrameMain::AddNote1(TString &str)
 	// last line
 	str += "\r\nGenerated by ";
 	str += GCStrings::getString(131);
-}
+}*/
 
 void CFrameMain::RecalculateCurrentScreen()
 {
 	TString text;
+
 	switch(m_nInfoType)
 	{
 	case MW_MODE_CAL:
@@ -1224,16 +1214,15 @@ void CFrameMain::RecalculateCurrentScreen()
 
 			m_calendar.m_pProgress = &(dcp.m_p1);
 			
-			if (g_ShowMode == 0)
+			if (GCUserInterface::ShowMode == 0)
 			{
-				FormatCalendarOld(m_calendar, text);
-				AddNoteText(text);
+				m_calendar.formatPlainText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
-			else if (g_ShowMode == 1)
+			else if (GCUserInterface::ShowMode == 1)
 			{
-				FormatCalendarRtf(m_calendar, text);
+				m_calendar.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 			//m_text.SetTextRtf(&text);
@@ -1247,42 +1236,39 @@ void CFrameMain::RecalculateCurrentScreen()
 		//m_text.SetWindowText( text );
 		break;
 	case MW_MODE_EVENTS:
-			if (g_ShowMode == 0)
+			if (GCUserInterface::ShowMode == 0)
 			{
 				m_events.formatText(text);
-				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
-			else if (g_ShowMode == 1)
+			else if (GCUserInterface::ShowMode == 1)
 			{
 				m_events.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 		break;
 	case MW_MODE_MASALIST:
-			if (g_ShowMode == 0)
+			if (GCUserInterface::ShowMode == 0)
 			{
 				m_masalist.formatText(text);
-				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
-			else if (g_ShowMode == 1)
+			else if (GCUserInterface::ShowMode == 1)
 			{
 				m_masalist.formatRtf(text);
 				m_textRTF.SetWindowText( text );
 			}
 		break;
 	case MW_MODE_APPDAY:
-			if (g_ShowMode == 0)
+			if (GCUserInterface::ShowMode == 0)
 			{
 				m_appday.formatPlainText(text);
-				AddNoteText(text);
 				m_textTXT.SetWindowText( text );
 				m_strTxt = text;
 			}
-			else if (g_ShowMode == 1)
+			else if (GCUserInterface::ShowMode == 1)
 			{
 				m_appday.formatRtf(text);
 				m_textRTF.SetWindowText( text );
@@ -1643,7 +1629,7 @@ int CFrameMain::PrintNaksatras(CDC &dc, EARTHDATA earth, int m_masa, int m_year,
 		// sunrise time get
 		sun.SunCalc(d, earth);
 		//sun.rise.hour += dst;
-		time_print(str[4], sun.rise);
+		sun.rise.ToLongTimeString(str[4]);
 		S = str[4];
 		dc.TextOut(nColumn[1], yCurr, S);
 
@@ -1793,7 +1779,7 @@ void CFrameMain::OnFileStringmanager()
 void CFrameMain::OnSettingsTextview() 
 {
 	// TODO: Add your command handler code here
-	g_ShowMode = 0;
+	GCUserInterface::ShowMode = 0;
 	m_Info.ShowWindow(TRUE);
 	m_textTXT.ShowWindow(TRUE);
 	m_textRTF.ShowWindow(FALSE);
@@ -1803,13 +1789,13 @@ void CFrameMain::OnSettingsTextview()
 void CFrameMain::OnUpdateSettingsTextview(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->SetRadio(g_ShowMode == 0);	
+	pCmdUI->SetRadio(GCUserInterface::ShowMode == 0);	
 }
 
 void CFrameMain::OnSettingsRichtextview() 
 {
 	// TODO: Add your command handler code here
-	g_ShowMode = 1;
+	GCUserInterface::ShowMode = 1;
 	m_Info.ShowWindow(FALSE);
 	m_textTXT.ShowWindow(FALSE);
 	m_textRTF.ShowWindow(TRUE);
@@ -1818,7 +1804,7 @@ void CFrameMain::OnSettingsRichtextview()
 
 void CFrameMain::OnUpdateSettingsRichtextview(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetRadio(g_ShowMode == 1);
+	pCmdUI->SetRadio(GCUserInterface::ShowMode == 1);
 }
 
 void CFrameMain::OnSettingsTextsize10() 
@@ -1834,7 +1820,7 @@ void CFrameMain::OnSettingsTextsize10()
 void CFrameMain::OnUpdateSettingsTextsize10(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(g_ShowMode == 1);
+	pCmdUI->Enable(GCUserInterface::ShowMode == 1);
 	pCmdUI->SetRadio(GCLayoutData::textSizeText==20);
 }
 
@@ -1852,7 +1838,7 @@ void CFrameMain::OnSettingsTextsize11()
 void CFrameMain::OnUpdateSettingsTextsize11(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(g_ShowMode == 1);
+	pCmdUI->Enable(GCUserInterface::ShowMode == 1);
 	pCmdUI->SetRadio(GCLayoutData::textSizeText==22);
 	
 }
@@ -1871,7 +1857,7 @@ void CFrameMain::OnSettingsTextsize12()
 void CFrameMain::OnUpdateSettingsTextsize12(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(g_ShowMode == 1);
+	pCmdUI->Enable(GCUserInterface::ShowMode == 1);
 	pCmdUI->SetRadio(GCLayoutData::textSizeText==24);
 	
 }
@@ -1890,7 +1876,7 @@ void CFrameMain::OnSettingsTextsize13()
 void CFrameMain::OnUpdateSettingsTextsize13(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(g_ShowMode == 1);
+	pCmdUI->Enable(GCUserInterface::ShowMode == 1);
 	pCmdUI->SetRadio(GCLayoutData::textSizeText==26);
 	
 }
@@ -1909,14 +1895,14 @@ void CFrameMain::OnSettingsTextsize14()
 void CFrameMain::OnUpdateSettingsTextsize14(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(g_ShowMode == 1);
+	pCmdUI->Enable(GCUserInterface::ShowMode == 1);
 	pCmdUI->SetRadio(GCLayoutData::textSizeText==28);
 	
 }
 
 void CFrameMain::RetrieveCurrentScreenInText(TString &text)
 {
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		text = m_strTxt;
 		return;
@@ -1925,28 +1911,23 @@ void CFrameMain::RetrieveCurrentScreenInText(TString &text)
 	switch(m_nInfoType)
 	{
 	case MW_MODE_CAL:
-		FormatCalendarOld(m_calendar, text);
-		AddNoteText(text);
+		m_calendar.formatPlainText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_EVENTS:
 		m_events.formatText(text);
-		AddNoteText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_MASALIST:
 		m_masalist.formatText(text);
-		AddNoteText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_APPDAY:
 		m_appday.formatPlainText(text);
-		AddNoteText(text);
 		m_strTxt = text;
 		break;
 	case MW_MODE_TODAY:
-		AvcGetTodayInfo(gTodayAct, gMyLocation, text);
-		AddNoteText(text);
+		m_today.formatPlain(text);
 		m_strTxt = text;
 		break;
 	default:
@@ -1959,7 +1940,7 @@ void CFrameMain::RetrieveCurrentScreenInRtf(TString &text)
 	switch(m_nInfoType)
 	{
 	case MW_MODE_CAL:
-		FormatCalendarRtf(m_calendar, text);
+		m_calendar.formatRtf(text);
 		break;
 	case MW_MODE_EVENTS:
 		m_events.formatRtf(text);
@@ -1971,7 +1952,7 @@ void CFrameMain::RetrieveCurrentScreenInRtf(TString &text)
 		m_appday.formatRtf(text);
 		break;
 	case MW_MODE_TODAY:
-		FormatTodayInfoRtf(gTodayAct, gMyLocation, text);
+		m_today.formatRtf(text);
 		break;
 	default:
 		break;

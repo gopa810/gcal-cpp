@@ -4,18 +4,11 @@
 #include "stdafx.h"
 #include "VCal5beta.h"
 #include "DlgMasaListing.h"
-#include "level_6.h"
-#include "vedic_ui.h"
+
 #include "strings.h"
 #include "TResultMasaList.h"
+#include "GCUserInterface.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-extern int g_ShowMode;
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgMasaListing dialog
@@ -88,11 +81,11 @@ void DlgMasaListing::OnOK()
 
 	m_pMasaList->CalculateMasaList(m_loc, m_Year, m_Count);
 
-	if (g_ShowMode == 0)
+	if (GCUserInterface::ShowMode == 0)
 	{
 		m_pMasaList->formatText(m_strResult);
 	}
-	else if (g_ShowMode == 1)
+	else if (GCUserInterface::ShowMode == 1)
 	{
 		m_pMasaList->formatRtf(m_strResult);
 	}

@@ -6,7 +6,7 @@
 #include "vcal5beta.h"
 #include "FrameEvents.h"
 #include "FrameServer.h"
-#include "vedic_ui.h"
+
 #include "CustomEvent.h"
 #include "DlgEditCustomEvent.h"
 #include "GCStrings.h"

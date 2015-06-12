@@ -5,9 +5,9 @@
 #include "platform.h"
 #include "vcal5beta.h"
 #include "ConditionsView.h"
-#include "level_6.h"
+
 #include "strings.h"
-#include "vedic_ui.h"
+
 #include "locationref.h"
 #include "dlggetlocation.h"
 

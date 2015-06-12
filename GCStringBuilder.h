@@ -32,6 +32,8 @@ public:
 	void AppendDocumentTail(void);
 	void AppendNote(void);
 	void AppendSeparatorWithWidth(int width);
+	void AppendTwoColumnText(const char *pText, const char * pText2);
+
 
 
 	static void GCStringBuilder::AppendRtfHeader(TString * m_text);

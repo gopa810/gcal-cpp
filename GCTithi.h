@@ -2,6 +2,7 @@
 
 #include "GCEarthData.h"
 #include "GCGregorianTime.h"
+#include "LocationRef.h"
 
 class GCTithi
 {
@@ -14,7 +15,9 @@ public:
 	static VCTIME CalcTithiEnd(int nGYear, int nMasa, int nPaksa, int nTithi, EARTHDATA, VCTIME &);
     static VCTIME CalcTithiEndEx(VCTIME vcStart, int GYear, int nMasa, int nPaksa, int nTithi, EARTHDATA earth, VCTIME & endTithi);
     static VCTIME CalcTithiDate(int nGYear, int nMasa, int nPaksa, int nTithi, EARTHDATA earth);
-
+	static int writeXml(FILE * fout, CLocationRef &loc, VCTIME vc);
+	static int writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vcStart, VATIME vaStart);
+	static int writeGaurabdaTithiXml(FILE * fout, CLocationRef &loc, VATIME vaStart, VATIME vaEnd);
 
 	static int TITHI_EKADASI(int a) 
 	{

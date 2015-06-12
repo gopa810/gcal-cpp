@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "TResultEvent.h"
+#include "TResultEvents.h"
 #include "GCDisplaySettings.h"
 #include "TTimeZone.h"
 #include "GCAyanamsha.h"
@@ -474,6 +474,11 @@ int TResultEvents::formatText(TString &res)
 	unsigned int i;
 	TString str, temp;
 
+	GCStringBuilder sb;
+
+	sb.Target = &res;
+	sb.Format = SBTF_TEXT;
+
 	TResultEvents &inEvents = *this;
 
 	res.Format("Events from %d %s %d to %d %s %d.\r\n\r\n", 
@@ -683,6 +688,8 @@ int TResultEvents::formatText(TString &res)
 	}
 
 	res += "\r\n";
+
+	sb.AppendNote();
 
 	return 1;
 }
@@ -981,6 +988,170 @@ int TResultEvents::formatRtf(TString &res)
 	sb.AppendNote();
 	sb.AppendDocumentTail();
 
+
+	return 1;
+}
+
+
+/******************************************************************************************/
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/*                                                                                        */
+/******************************************************************************************/
+
+int TResultEvents::writeHtml(FILE * f)
+{
+	TResultEvents &inEvents = *this;
+	unsigned int i;
+	TString str, temp;
+
+	fprintf(f, "<html>\n<head>\n<title>Core Events</title>\n\n");
+	fprintf(f, "<style>\n<!--\nbody {\n  font-family:Verdana;\n  font-size:11pt;\n}\n\ntd.hed {\n  font-size:11pt;\n  font-weight:bold;\n");
+	fprintf(f, "  background:#aaaaaa;\n  color:white;\n  text-align:center;\n  vertical-align:center;\n  padding-left:15pt;\n  padding-right:15pt;\n");
+	fprintf(f, "  padding-top:5pt;\n  padding-bottom:5pt;\n}\n-->\n</style>\n");
+	fprintf(f, "</head>\n");
+	fprintf(f, "<body>\n\n");
+	fprintf(f, "<h1 align=center>Events</h1>\n<p align=center>From %d %s %d to %d %s %d.</p>\n\n", 
+		inEvents.m_vcStart.day,
+		GCStrings::GetMonthAbreviation(inEvents.m_vcStart.month),
+		inEvents.m_vcStart.year,
+		inEvents.m_vcEnd.day,
+		GCStrings::GetMonthAbreviation(inEvents.m_vcEnd.month),
+		inEvents.m_vcEnd.year);
+
+	fprintf(f, "<p align=center>%s</p>\n", inEvents.m_location.m_strFullName.c_str());
+
+	VCTIME prevd;
+	int prevt = -1;
+
+	prevd.day = 0;
+	prevd.month = 0;
+	prevd.year = 0;
+
+	fprintf(f, "<table align=center><tr>\n");
+	for(i = 0; i < inEvents.n_count; i++)
+	{
+		TDayEvent & dnr = inEvents[i];
+
+		if (inEvents.b_sorted)
+		{
+			if (prevd.day != dnr.Time.day || prevd.month != dnr.Time.month || prevd.year != dnr.Time.year)
+			{
+				fprintf(f, "<td class=\"hed\" colspan=2>%d %s %d </td></tr>\n<tr>", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year);
+			}
+			prevd = dnr.Time;
+		}
+		else
+		{
+			if (prevt != dnr.nType)
+			{
+				switch(dnr.nType)
+				{
+				case 10:
+				case 11:
+				case 12:
+				case 13:
+					if (prevt < 10 || prevt >= 14)
+					{
+						fprintf(f, "<td class=\"hed\" colspan=3>SUNRISE, SUNSET</td></tr>\n<tr>\n");
+					}
+					break;
+				case 20:
+					fprintf(f, "<td class=\"hed\" colspan=3>TITHIS</td></tr>\n<tr>\n");
+					break;
+				case 21:
+					fprintf(f, "<td class=\"hed\" colspan=3>NAKSATRAS</td></tr>\n<tr>\n");
+					break;
+				case 22:
+					fprintf(f, "<td class=\"hed\" colspan=3>SANKRANTIS</td></tr>\n<tr>\n");
+					break;
+				case 23:
+					fprintf(f, "<td class=\"hed\" colspan=3>SUN-MOON CONJUNCTIONS</td></tr>\n<tr>\n");
+					break;
+				}
+			}
+			prevt = dnr.nType;
+		}
+
+		if (!inEvents.b_sorted)
+		{
+			fprintf(f, "<td>%d %s %d </td>", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year);
+		}
+
+		switch(dnr.nType)
+		{
+		case CCTYPE_S_ARUN:
+			fprintf(f, "<td>Arunodaya</td><td>%02d:%02d:%02d</td></tr><tr>\n",
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_S_RISE:
+			fprintf(f, "<td>Sunrise</td><td>%02d:%02d:%02d</td></tr><tr>\n",
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_S_NOON:
+			fprintf(f, "<td>Noon</td><td>%02d:%02d:%02d</td></tr><tr>\n",
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_S_SET:
+			fprintf(f, "<td>Sunset</td><td>%02d:%02d:%02d</td></tr><tr>\n",
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_TITHI:
+			fprintf(f, "<td>%s Tithi</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
+				GCStrings::GetTithiName(dnr.nData),
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_NAKS:
+			fprintf(f, "<td>%s Naksatra</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
+				GCStrings::GetNaksatraName(dnr.nData),
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_SANK:
+			fprintf(f, "<td>%s Sankranti</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
+				GCStrings::GetSankrantiName(dnr.nData)
+				, dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_CONJ:
+			fprintf(f, "<td>Conjunction in %s rasi</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
+				GCStrings::GetSankrantiName(dnr.nData)
+				, dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_KALA_START:
+			fprintf(f, "<td>");
+			fprintf(f, GCStrings::GetKalaName((KalaType)dnr.nData));
+			fprintf(f, " starts</td>");
+			fprintf(f, "<td>");
+			fprintf(f, dnr.Time.c_str());
+			fprintf(f, "</td></tr><tr>");
+			break;
+		case CCTYPE_KALA_END:
+			fprintf(f, "<td>");
+			fprintf(f, GCStrings::GetKalaName((KalaType)dnr.nData));
+			fprintf(f, " ends</td>");
+			fprintf(f, "<td>");
+			fprintf(f, dnr.Time.c_str());
+			fprintf(f, "</td></tr><tr>");
+			break;
+		default:
+			break;
+		}
+	}
+
+	fprintf(f, "</tr></table>\n");
+	fprintf(f, "<hr align=center width=\"50%%\">\n<p align=center>Generated by %s</p>", GCStrings::getString(130).c_str());
+	fprintf(f, "</body>\n</html>\n");
 
 	return 1;
 }

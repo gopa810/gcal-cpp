@@ -57,24 +57,7 @@ void VAISNAVADAY::GetTextA(TString &str, int bPaksa, int bNaks, int bYoga, int b
 
 	TString s1, s2;
 
-	s1 = GCStrings::GetTithiName(astrodata.nTithi);
-
-	if ((astrodata.nTithi == 10) || (astrodata.nTithi == 25) || (astrodata.nTithi == 11) || (astrodata.nTithi == 26))
-	{
-		if (ekadasi_parana == false)
-		{
-			if (nMhdType == EV_NULL)
-			{
-				s1 += " ";
-				s1 += GCStrings::getString(58);
-			}
-			else
-			{
-				s1 += " ";
-				s1 += GCStrings::getString(59);
-			}
-		}
-	}
+	s1 = GetFullTithiName();
 
 	GCStrings::getString(this->date.dayOfWeek).Left(2, s2);
 	str.Format("%2d %s %d %s  %-34s%c ", this->date.day, GCStrings::GetMonthAbreviation(date.month), this->date.year
@@ -111,24 +94,7 @@ void VAISNAVADAY::GetTextRtf(TString &str, int bPaksa, int bNaks, int bYoga, int
 {
 	TString s1, s2;
 
-	s1 = GCStrings::GetTithiName(astrodata.nTithi);
-
-	if ((astrodata.nTithi == 10) || (astrodata.nTithi == 25) || (astrodata.nTithi == 11) || (astrodata.nTithi == 26))
-	{
-		if (ekadasi_parana == false)
-		{
-			if (nMhdType == EV_NULL)
-			{
-				s1 += " ";
-				s1 += GCStrings::getString(58);
-			}
-			else
-			{
-				s1 += " ";
-				s1 += GCStrings::getString(59);
-			}
-		}
-	}
+	s1 = GetFullTithiName();
 
 	GCStrings::getString(this->date.dayOfWeek).Left(2, s2);
 	str.Format("\\par %2d %s %d %s\\tab %s\\tab %c ", this->date.day, GCStrings::GetMonthAbreviation(date.month), this->date.year
@@ -173,27 +139,26 @@ void VAISNAVADAY::GetTextEP(TString &str)
 	{
 		m2 = modf(eparana_time2, &h2);
 		if (GCDisplaySettings::getValue(50))
-			str.Format("                 %s %02d:%02d (%s) - %02d:%02d (%s) %s", GCStrings::getString(60).c_str(),
+			str.Format("%s %02d:%02d (%s) - %02d:%02d (%s) %s", GCStrings::getString(60).c_str(),
 				int(h1), int(m1*60), GCStrings::GetParanaReasonText(eparana_type1), 
 				int(h2), int(m2*60), GCStrings::GetParanaReasonText(eparana_type2),
 				GCStrings::GetDSTSignature(nDST));
 		else
-			str.Format("                 %s %02d:%02d - %02d:%02d (%s)", GCStrings::getString(60).c_str(),
+			str.Format("%s %02d:%02d - %02d:%02d (%s)", GCStrings::getString(60).c_str(),
 				int(h1), int(m1*60), int(h2), int(m2*60), GCStrings::GetDSTSignature(nDST));
 	}
 	else if (eparana_time1 >= 0.0)
 	{
 		if (GCDisplaySettings::getValue(50))
-			str.Format("                 %s %02d:%02d (%s) %s", GCStrings::getString(61).c_str(),
+			str.Format("%s %02d:%02d (%s) %s", GCStrings::getString(61).c_str(),
 				int(h1), int(m1*60), GCStrings::GetParanaReasonText(eparana_type1), GCStrings::GetDSTSignature(nDST) );
 		else
-			str.Format("                 %s %02d:%02d (%s)", GCStrings::getString(61).c_str(),
+			str.Format("%s %02d:%02d (%s)", GCStrings::getString(61).c_str(),
 				int(h1), int(m1*60), GCStrings::GetDSTSignature(nDST) );
 	}
 	else
 	{
-		str = "                 ";
-		str += GCStrings::getString(62);
+		str = GCStrings::getString(62);
 	}
 }
 
@@ -225,63 +190,6 @@ bool VAISNAVADAY::GetTithiTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to)
 
 }
 
-
-int VAISNAVADAY::GetFestivalClass(TString &str)
-{
-	int i, j, val;
-
-	i = str.Find("[c");
-
-	if (i >= 0)
-	{
-//		i += 2;
-		if ((i + 2) < str.GetLength())
-		{
-			val = int(str.GetAt(i+2) - '0');
-			j = str.Find("]", i);
-			if (j >= str.GetLength())
-				j = str.GetLength();
-			if (j > i)
-			{
-				str.Delete(i, j - i + 1);
-			}
-			if (val < 0 || val > 6)
-				return -1;
-			return val;
-		}
-		else
-			return -1;
-	}
-	else
-	{
-		return -1;
-	}
-
-}
-
-void VAISNAVADAY::GetFastingSubject(TString &strFest, int &nFast, TString &strFastSubj)
-{
-	int nf, nf2;
-
-	// default values
-	nFast = 0;
-	strFastSubj.Empty();
-
-	// finding fast subject
-	nf = strFest.Find("[f:");
-	if (nf >= 0 && nf < strFest.GetLength())
-	{
-		// ziskava typ postu
-		nFast = strFest.GetAt(nf+3) - '0';
-		nf2 = strFest.Find("]", nf);
-		if (nf2 >= 0)
-		{
-			strFest.Mid(nf + 5, nf2 - nf - 5, strFastSubj);
-		}
-		strFest.Delete(nf, strFest.GetLength() - nf);
-	}
-}
-
 GCMutableDictionary * VAISNAVADAY::AddEvent(int priority, int dispItem, const char * text)
 {
 	GCMutableDictionary * dc = new GCMutableDictionary();
@@ -305,4 +213,58 @@ bool VAISNAVADAY::hasEventsOfDisplayIndex(int dispIndex)
 	}
 
 	return false;
+}
+
+GCMutableDictionary * VAISNAVADAY::findEventsText(const char * text)
+{
+	GCMutableDictionary * md;
+
+	for(int h = 0; h < dayEvents.Count(); h++)
+	{
+		md = dayEvents.ObjectAtIndex(h);
+		const char * checkText = md->stringForKey("text");
+
+		if (strstr(checkText, text) != NULL)
+			return md;
+	}
+
+	return NULL;
+}
+
+bool VAISNAVADAY::AddSpecFestival(int nSpecialFestival, int nFestClass)
+{
+	TString str;
+
+	if (GCStrings::GetSpecFestivalNameEx(str, nSpecialFestival))
+	{
+		AddEvent(PRIO_FESTIVALS_0 + (nFestClass-CAL_FEST_0)*100, nFestClass, str.c_str());
+
+		return true;
+	}
+
+	return false;
+}
+
+TString & VAISNAVADAY::GetFullTithiName(void)
+{
+	static TString str;
+	str = GCStrings::GetTithiName(astrodata.nTithi);
+
+	if ((astrodata.nTithi == 10) || (astrodata.nTithi == 25) || (astrodata.nTithi == 11) || (astrodata.nTithi == 26))
+	{
+		if (ekadasi_parana == false)
+		{
+			str += " ";
+			if (nMhdType == EV_NULL)
+			{
+				str += GCStrings::getString(58);
+			}
+			else
+			{
+				str += GCStrings::getString(59);
+			}
+		}
+	}
+
+	return str;
 }

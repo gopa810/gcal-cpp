@@ -2,6 +2,8 @@
 #include "GCCalendar.h"
 #include "GCDayData.h"
 #include "GCTithi.h"
+#include "TFileXml.h"
+#include "GCStrings.h"
 
 GCCalendar::GCCalendar(void)
 {
@@ -143,3 +145,42 @@ int GCCalendar::MasaToComboMasa(int nMasa)
 {
 	return (nMasa == 12) ? 12 : ((nMasa + 1) % 12);
 }
+
+int GCCalendar::writeFirstDayXml(FILE * fout, CLocationRef & loc, VCTIME vcStart)
+{
+	TFileXml xml;
+
+	xml.initWithFile(fout);
+
+	vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
+	vcStart.InitWeekDay();
+
+	// write
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"FirstDay\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"year\" val=\"");
+	xml.write(vcStart.year);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"FirstDay_of_GaurabdaYear\">\n");
+	xml.write("\t\t<firstday date=\"");
+	xml.write(vcStart);
+	xml.write("\" dayweekid = \"");
+	xml.write(vcStart.dayOfWeek);
+	xml.write("\" dayweek=\"");
+	xml.write(GCStrings::getString(vcStart.dayOfWeek));
+	xml.write("\" />\n");
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
+
+	return 0;
+}
+

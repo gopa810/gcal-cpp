@@ -180,3 +180,7 @@ void DAYTIME::SetDegTime(double time_deg)
 	mili = int( floor(time_hr) );
 }
 
+void DAYTIME::ToLongTimeString(TString &str)
+{
+	str.Format("%02d:%02d:%02d", hour, min, sec);
+}

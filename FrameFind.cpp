@@ -7,21 +7,14 @@
 #include "DlgSetPrintStyle.h"
 
 #include "DayFindBuffer.h"
-#include "level_6.h"
+
 #include "strings.h"
 #include "FrameServer.h"
 #include "TFile.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-
+#include "GCUserInterface.h"
+#include "TResultCalendar.h"
 
 extern GCalApp theApp;
-int AvcGetOldCalendarDayText(VAISNAVADAY *, TString &);
 int AvcGetNextLine(TString &, TString &, int &);
 Boolean ConditionEvaluate(VAISNAVADAY *, int, int, TString &, Boolean);
 
@@ -212,8 +205,8 @@ BOOL CFrameFind::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 
 				m_viewCond.m_edits[0].GetWindowText(str);
 				m_viewCond.m_earth.m_strName = str;
-				CalcCalendar(m_calendar, m_viewCond.m_earth, vc, 10);
-				FormatCalendarOld(m_calendar, text);
+				GCUserInterface::CalculateCalendar(m_calendar, m_viewCond.m_earth, vc, 10);
+				m_calendar.formatPlainText(text);
 
 				calendar.vc_start = vc;
 				calendar.count = 10;
@@ -267,8 +260,8 @@ void CFrameFind::OnEventFind()
 	year1 = m_viewCond.GetStartYear();
 	ycount = m_viewCond.GetCountYear();
 
-	AvcProgressWindowCreate();
-	AvcProgressWindowSetRange(0, (ycount + 1)*12);
+	GCUserInterface::CreateProgressWindow();
+	GCUserInterface::SetProgressWindowRange(0, (ycount + 1)*12);
 	c = 0;
 
 	// 
@@ -279,7 +272,7 @@ void CFrameFind::OnEventFind()
 
 			// vypocet dni pre datum
 			buf.CalculateFindCalendar(i, j, m_viewCond.m_earth, m_viewCond.m_dst);
-			AvcProgressWindowSetPos(c++);
+			GCUserInterface::SetProgressWindowPos(c++);
 			//m_progress.UpdateWindow();
 
 			// prechadzanie cez datumy
@@ -306,7 +299,7 @@ void CFrameFind::OnEventFind()
 
 				if (succ)
 				{
-					AvcGetOldCalendarDayText(pd, str);
+					TResultCalendar::formatPlainTextDay(pd, str);
 					dwDateNote = MAKELONG(MAKEWORD(pd->date.day, pd->date.month), pd->date.year);
 					indexLine = 0;
 					while(AvcGetNextLine(str, s1, indexLine))
@@ -339,7 +332,7 @@ void CFrameFind::OnEventFind()
 //	GetDlgItem(IDC_BUTTON_LISTTOCAL)->EnableWindow(m_pViewText != NULL);
 
 
-	AvcProgressWindowClose();
+	GCUserInterface::CloseProgressWindow();
 }
 
 void CFrameFind::OnSize(UINT nType, int cx, int cy) 

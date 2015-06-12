@@ -19,9 +19,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="astro_html.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="avc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,18 +68,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="init_tips.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_0.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_5.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_5_days.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="level_6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ListBoxClipboarded.cpp">
@@ -143,15 +128,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VCal5beta.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vedic_ui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="write_f.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="XmlFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DlgAskLimitation.cpp">
@@ -310,6 +286,18 @@
     <ClCompile Include="GCMutableArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GCUserInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultCalendar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultToday.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileXml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VCal5beta.rc">
@@ -449,12 +437,6 @@
     <ClInclude Include="level_0.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="level_5_days.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="level_6.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ListBoxClipboarded.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -518,9 +500,6 @@
     <ClInclude Include="TResultApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TResultEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TResultMasaList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -534,18 +513,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VCal5beta.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vedic_ui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="write_f.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="write_s.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="XmlFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="enums.h">
@@ -615,6 +582,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GCMutableArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCUserInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultToday.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultCalendar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileXml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

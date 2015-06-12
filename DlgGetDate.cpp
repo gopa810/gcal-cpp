@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgGetDate.h"
-#include "level_6.h"
 #include "TTimeZone.h"
 
 #ifdef _DEBUG

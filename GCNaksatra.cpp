@@ -3,6 +3,8 @@
 #include "GCMoonData.h"
 #include "gmath.h"
 #include "GCAyanamsha.h"
+#include "GCStrings.h"
+#include "TFileXml.h"
 
 GCNaksatra::GCNaksatra(void)
 {
@@ -156,3 +158,84 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 
 }
 
+int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCount)
+{
+	TString str;
+	VCTIME date;
+
+	TFileXml xml;
+	xml.initWithFile(fout);
+
+	xml.write("<xml>\n");
+	xml.write("\t<request name=\"Naksatra\" version=\"");
+	xml.write(GCStrings::getString(130));
+	xml.write("\">\n");
+	xml.write("\t\t<arg name=\"longitude\" val=\"");
+	xml.write(loc.m_fLongitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"latitude\" val=\"");
+	xml.write(loc.m_fLatitude);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"timezone\" val=\"");
+	xml.write(loc.m_fTimezone);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"startdate\" val=\"");
+	xml.write(vc);
+	xml.write("\" />\n");
+	xml.write("\t\t<arg name=\"daycount\" val=\"");
+	xml.write(nDaysCount);
+	xml.write("\" />\n");
+	xml.write("\t</request>\n");
+	xml.write("\t<result name=\"Naksatra\">\n");
+
+	VCTIME d = vc;
+	d.tzone = loc.m_fTimezone;
+	VCTIME dn;
+	DAYTIME dt;
+	SUNDATA sun;
+	int nak;
+	EARTHDATA earth = (EARTHDATA)loc;
+
+	for(int i = 0; i < 30; i++)
+	{
+		nak = GCNaksatra::GetNextNaksatra(earth, d, dn);
+		d = dn;
+		xml.write("\t\t<day date=\"");
+		xml.write(d);
+		xml.write("\">\n");
+		//str.Format("%d.%d.%d", d.day, d.month, d.year);
+		//n = m_list.InsertItem(50, GetNaksatraName(nak));
+		//m_list.SetItemText(n, 1, str);
+		xml.write("\t\t\t<naksatra id=\"");
+		xml.write(nak);
+		xml.write("\" name=\"");
+		xml.write(GCStrings::GetNaksatraName(nak));
+		xml.write("\"\n");
+		dt.SetDegTime( d.shour * 360);
+		//time_print(str, dt);
+		xml.write("\t\t\t\tstarttime=\"");
+		xml.write(dt);
+		xml.write("\" />\n");
+		//m_list.SetItemText(n, 2, str);
+
+		// sunrise time get
+		sun.SunCalc(d, earth);
+		//time_print(str, sun.rise);
+		//m_list.SetItemText(n, 3, str);
+		xml.write("\t\t\t<sunrise time=\"");
+		xml.write(sun.rise);
+		xml.write("\" />\n");
+
+		xml.write("\t\t</day>\n");
+		// increment for non-duplication of naksatra
+		d = dn;
+		d.shour += 1.0/8.0;
+	}
+
+
+	xml.write("\t</result>\n");
+	xml.write("</xml>\n");
+
+
+	return 1;
+}

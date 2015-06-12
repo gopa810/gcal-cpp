@@ -5,7 +5,7 @@
 #include "platform.h"
 #include "vcal5beta.h"
 #include "DlgEventsGaubdTM.h"
-#include "vedic_ui.h"
+
 #include "GCStrings.h"
 
 #ifdef _DEBUG

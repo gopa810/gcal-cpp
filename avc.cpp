@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "LocationRef.h"
-#include "level_6.h"
-#include "vedic_ui.h"
+
+
 #include "strings.h"
 #include "TTimeZone.h"
 #include "TFile.h"
@@ -337,24 +337,6 @@ int AvcGetLocationAsText(TString &str, EARTHDATA earth)
 	return 1;
 }
 
-const char * AvcDoubleToString(double d)
-{
-	static TCHAR ts[128];
-
-	sprintf(ts, "%f", d);
-
-	return ts;
-}
-
-const char * AvcIntToString(int d)
-{
-	static TCHAR ts[32];
-
-	sprintf(ts, "%d", d);
-
-	return ts;
-}
-
 const char * AvcDateToString(VCTIME vc)
 {
 	static TCHAR ts[32];
@@ -460,7 +442,7 @@ Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &str
 				return FALSE;
 			if (abs(pd->astrodata.nTithi + pd->astrodata.nMasa*30 - nValue + 200) > 2)
 				return FALSE;
-			if (pd->festivals.Find(strText) >= 0)
+			if (pd->findEventsText(strText) != NULL)
 				return TRUE;
 		}
 		return FALSE;
@@ -474,7 +456,7 @@ Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &str
 		{
 			// difference against 10-14 is that we cannot test tithi-masa date
 			// because some festivals in this category depends on sankranti
-			if (pd->festivals.Find(strText) >= 0)
+			if (pd->findEventsText(strText) != NULL)
 				return TRUE;
 		}
 		return FALSE;
@@ -485,19 +467,10 @@ Boolean ConditionEvaluate(VAISNAVADAY * pd, int nClass, int nValue, TString &str
 
 int AvcGetTextLineCount(VAISNAVADAY * pvd)
 {
-	int i, nFestClass;
 	int nCount = 0;
 	TString str2;
 
 	nCount++;
-
-	if (GCDisplaySettings::getValue(17) == 1)
-	{
-		if (pvd->ekadasi_parana)
-		{
-			nCount++;
-		}
-	}
 
 	for(int i = 0; i < pvd->dayEvents.Count(); i++)
 	{

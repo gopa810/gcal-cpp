@@ -6,7 +6,7 @@
 #include "DlgCustomEventDialog.h"
 #include "DlgEditCustomEvent.h"
 #include "CustomEvent.h"
-#include "vedic_ui.h"
+
 #include "avc.h"
 #include "GCStrings.h"
 
@@ -88,7 +88,6 @@ BOOL DlgCustomEventDialog::OnInitDialog()
 //#include "DlgGetTime.h"
 #include "DlgGetLocation.h"
 #include "DlgEventsGetText.h"
-#include "level_6.h"
 
 void DlgCustomEventDialog::OnAddEvent() 
 {

@@ -8,7 +8,6 @@
 //==================================================================
 
 int g_dstSelMethod = 2;
-const char * gpszSeparator = "----------------------------------------------------------------------------------";
 CLocationRef gMyLocation;
 CLocationRef gLastLocation;
 VCTIME gTodayAct;

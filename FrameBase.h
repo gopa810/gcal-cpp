@@ -5,8 +5,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 // FrameBase.h : header file
-#include "level_6.h"
 //
+#include "LocationRef.h"
+#include "GCGregorianTime.h"
+#include "GCVedicTime.h"
+#include "TResultCalendar.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameBase frame

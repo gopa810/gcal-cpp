@@ -41,21 +41,19 @@ public:
 	VAISNAVADAY();
 	~VAISNAVADAY();
 	void Clear();
-	void GetFastingSubject(TString &strFest, int &nFast, TString &strFastSubj);
 	int GetLineCount();
-	int GetFestivalClass(TString &str);
 	bool GetTithiTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to);
 	bool GetNaksatraTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to);
-	bool GetNextFestival(int &i, TString &str);
-	int GetHeadFestival(void);
 	void GetTextEP(TString &str);
-	/* BEGIN GCAL 1.4.3 */
+
 	void GetTextA(TString &str, int bPaksa, int bNaks, int bYoga, int bFlag, int bRasi);
 	void GetTextRtf(TString &str, int bPaksa, int bNaks, int bYoga, int bFlag, int bRasi);
 	bool hasEventsOfDisplayIndex(int dispIndex);
-	/* END GCAL 1.4.3 */
-
+	GCMutableDictionary * findEventsText(const char * text);
 	GCMutableDictionary * AddEvent(int priority, int dispItem, const char * text);
+	bool AddSpecFestival(int nSpecialFestival, int nFestClass);
+	TString & GetFullTithiName(void);
+
 
 };
 
