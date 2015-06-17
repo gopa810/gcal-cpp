@@ -8,15 +8,12 @@
 
 #include "DayFindBuffer.h"
 
-#include "strings.h"
 #include "FrameServer.h"
 #include "TFile.h"
 #include "GCUserInterface.h"
 #include "TResultCalendar.h"
-
-extern GCalApp theApp;
-int AvcGetNextLine(TString &, TString &, int &);
-Boolean ConditionEvaluate(VAISNAVADAY *, int, int, TString &, Boolean);
+#include "GCTextParser.h"
+#include "GCGlobal.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -143,7 +140,7 @@ void CFrameFind::OnSetFocus(CWnd* pOldWnd)
 {
 	CFrameWnd::OnSetFocus(pOldWnd);
 	
-	theApp.m_pActiveWnd = this;	
+	GCGlobal::application.m_pActiveWnd = this;	
 	m_bKeyCtrl = FALSE;
 	m_bKeyShift = FALSE;
 }
@@ -235,7 +232,7 @@ BOOL CFrameFind::OnChildNotify(UINT message, WPARAM wParam, LPARAM lParam, LRESU
 
 void CFrameFind::OnEventFind() 
 {
-	int i, j, k, n, c, indexLine;
+	int i, j, k, n, c;
 	int year1, ycount;
 	TFinderBuffer buf;
 	TString str, s1;
@@ -286,23 +283,24 @@ void CFrameFind::OnEventFind()
 				succ = false;
 				if (m_viewCond.m_bMethodAnd)
 				{
-					succ = (ConditionEvaluate(pd, m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
-						&& ConditionEvaluate(pd, m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
-						&& ConditionEvaluate(pd, m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
+					succ = (pd->ConditionEvaluate(m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
+						&& pd->ConditionEvaluate(m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
+						&& pd->ConditionEvaluate(m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
 				}
 				else
 				{
-					succ = (ConditionEvaluate(pd, m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
-						|| ConditionEvaluate(pd, m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
-						|| ConditionEvaluate(pd, m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
+					succ = (pd->ConditionEvaluate(m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
+						|| pd->ConditionEvaluate(m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
+						|| pd->ConditionEvaluate(m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
 				}
 
 				if (succ)
 				{
 					TResultCalendar::formatPlainTextDay(pd, str);
 					dwDateNote = MAKELONG(MAKEWORD(pd->date.day, pd->date.month), pd->date.year);
-					indexLine = 0;
-					while(AvcGetNextLine(str, s1, indexLine))
+					GCTextParser parser;
+					parser.SetTarget(&str);
+					while(parser.GetNextLine(s1))
 					{
 						n = m_wndList.AddString(s1);
 						m_wndList.SetItemData(n, dwDateNote);
@@ -608,7 +606,7 @@ void CFrameFind::OnDestroy()
 	CFrameBase::OnDestroy();
 	
 	// TODO: Add your message handler code here
-	theFrameServer.RemoveFromFinders();
+	GCUserInterface::windowController.RemoveFromFinders();
 }
 
 void CFrameFind::OnFileSave() 
@@ -678,27 +676,27 @@ void CFrameFind::OnFileSave()
 void CFrameFind::OnHelpHelp() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("index.htm");
+	GCUserInterface::ShowHelp("index.htm");
 	
 }
 
 void CFrameFind::OnUpdateHelpHelp(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }
 
 void CFrameFind::OnHelpHelptopicthiswindow() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("ref-evfin.htm");
+	GCUserInterface::ShowHelp("ref-evfin.htm");
 	
 }
 
 void CFrameFind::OnUpdateHelpHelptopicthiswindow(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }

@@ -3,7 +3,7 @@
 #include "GCTithi.h"
 #include "GCAyanamsha.h"
 #include "GCRasi.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCConjunction.h"
 
 DAYDATA::DAYDATA(void)
@@ -120,7 +120,7 @@ int DAYDATA::DayCalc(VCTIME date, EARTHDATA earth)
 	// moon position at sunrise on that day
 	this->moon.Calculate(date.GetJulianDetailed(), earth);
 
-	this->msDistance = put_in_360( this->moon.longitude_deg - this->sun.longitude_deg - 180.0);
+	this->msDistance = GCMath::putIn360( this->moon.longitude_deg - this->sun.longitude_deg - 180.0);
 	this->msAyanamsa = GCAyanamsha::GetAyanamsa( jdate );
 
 	// tithi
@@ -131,13 +131,13 @@ int DAYDATA::DayCalc(VCTIME date, EARTHDATA earth)
 
 
 	// naksatra
-	d = put_in_360( this->moon.longitude_deg - this->msAyanamsa );
+	d = GCMath::putIn360( this->moon.longitude_deg - this->msAyanamsa );
 	d = ( d * 3.0) / 40.0;
 	this->nNaksatra = int(floor(d));
 	this->nNaksatraElapse = (d - floor(d)) * 100.0;
 
 	// yoga
-	d = put_in_360( this->moon.longitude_deg + this->sun.longitude_deg - 2*this->msAyanamsa);
+	d = GCMath::putIn360( this->moon.longitude_deg + this->sun.longitude_deg - 2*this->msAyanamsa);
 	d = (d * 3.0) / 40.0;
 	this->nYoga = int(floor(d));
 	this->nYogaElapse = (d - floor(d)) * 100.0;
@@ -152,12 +152,12 @@ int DAYDATA::DayCalc(VCTIME date, EARTHDATA earth)
 	MOONDATA moon;
 	date.shour = this->sun.sunset_deg/360.0;
 	moon.Calculate(date.GetJulianDetailed(), earth);
-	d = put_in_360(moon.longitude_deg - this->sun.longitude_set_deg - 180) / 12.0;
+	d = GCMath::putIn360(moon.longitude_deg - this->sun.longitude_set_deg - 180) / 12.0;
 	this->nTithiSunset = (int)floor(d);
 
 	date.shour = this->sun.arunodaya_deg/360.0;
 	moon.Calculate(date.GetJulianDetailed(), earth);
-	d = put_in_360(moon.longitude_deg - this->sun.longitude_arun_deg - 180) / 12.0;
+	d = GCMath::putIn360(moon.longitude_deg - this->sun.longitude_arun_deg - 180) / 12.0;
 	this->nTithiArunodaya = (int)floor(d);
 
 	return 1;

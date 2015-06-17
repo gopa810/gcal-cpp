@@ -4,28 +4,17 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "FrameBase.h"
-#include "strings.h"
 
 #include "LocationRef.h"
 #include "enums.h"
 #include "GCStrings.h"
 #include "GCAyanamsha.h"
 #include "GCDisplaySettings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "GCGlobal.h"
+#include "GCTextParser.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameBase
-
-int AvcGetNextLine(TString &, TString &, int &);
-int AvcGetTextLineCount(VAISNAVADAY * pvd);
-
-extern EARTHDATA gMyLocation;
-extern VCTIME gTodayAct;
 
 //IMPLEMENT_DYNCREATE(CFrameBase, CFrameWnd)
 
@@ -69,8 +58,6 @@ int CFrameBase::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	return 0;
 }
-
-int AvcGetTextLineCount(VAISNAVADAY * pd);
 
 int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocationRef & earth, VCTIME date
 									 , int nDaysCount, CRect & rcPrint)
@@ -128,7 +115,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 		if (pvd)
 		{
 			// zistuje kolko riadkov zaberie nasledujuci den
-			nLineCount = AvcGetTextLineCount(pvd);
+			nLineCount = pvd->GetTextLineCount();
 			
 			if ((yLine * nLineCount + yCurr) > rcPrint.bottom)
 				bStart = true;
@@ -310,8 +297,9 @@ int CFrameBase::PrintBlockText(CDC &pdc, TString &strTitle, TString &strText, in
 	pdc.SelectObject(&m_fontPrintText);
 	str = strText.c_str();
 	sz = pdc.GetTextExtent(str);
-	nPos = 0;
-	while(AvcGetNextLine(strText, strLine, nPos))
+	GCTextParser parser;
+	parser.SetTarget(&strText);
+	while(parser.GetNextLine(strLine))
 	{
 		str = strLine.c_str();
 		sz = pdc.GetTextExtent(str);
@@ -320,9 +308,8 @@ int CFrameBase::PrintBlockText(CDC &pdc, TString &strTitle, TString &strText, in
 	}
 
 	xOffset = (rcPrint.Width() - nMaxWidth) / 2;
-	nPos = 0;
-
-	while(AvcGetNextLine(strText, strLine, nPos))
+	parser.SetTarget(&strText);
+	while(parser.GetNextLine(strLine))
 	{
 		if (strLine.IsEmpty())
 			strLine = " ";

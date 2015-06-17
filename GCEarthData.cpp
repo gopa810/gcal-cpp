@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "GCEarthData.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCAyanamsha.h"
+#include "TTimeZone.h"
+#include "GCStrings.h"
 
 EARTHDATA::EARTHDATA()
 {
@@ -10,6 +12,16 @@ EARTHDATA::EARTHDATA()
 	latitude_deg = 0.0;
 	tzone = 0.0;
 	dst = 0;
+}
+
+int EARTHDATA::ToString(TString &str)
+{
+	str.Format("%s: %s  %s: %s  %s: %s", 
+		GCStrings::getString(10).c_str(), EARTHDATA::GetTextLatitude(latitude_deg), 
+		GCStrings::getString(11).c_str(), EARTHDATA::GetTextLongitude(longitude_deg),
+		GCStrings::getString(12).c_str(), TTimeZone::GetTimeZoneOffsetText(tzone));
+
+	return 1;
 }
 
 void EARTHDATA::calc_epsilon_phi(double date, double & delta_phi, double & epsilon)
@@ -122,7 +134,7 @@ void EARTHDATA::calc_epsilon_phi(double date, double & delta_phi, double & epsil
 	t = ( date -2451545.0)/36525;
 
 	// longitude of rising knot
-	omega =put_in_360(125.04452+(-1934.136261+(0.0020708+1.0/450000*t)*t)*t);
+	omega =GCMath::putIn360(125.04452+(-1934.136261+(0.0020708+1.0/450000*t)*t)*t);
 
 	if (1)
 	{
@@ -132,24 +144,24 @@ void EARTHDATA::calc_epsilon_phi(double date, double & delta_phi, double & epsil
   ls = 218.3165+481267.8813*t;
 
   //(* correction due to nutation *)
-  delta_epsilon =9.20*cos_d(omega)+0.57*cos_d(2*l)+0.10*cos_d(2*ls)-0.09*cos_d(2*omega);
+  delta_epsilon =9.20*GCMath::cosDeg(omega)+0.57*GCMath::cosDeg(2*l)+0.10*GCMath::cosDeg(2*ls)-0.09*GCMath::cosDeg(2*omega);
 
   //(* longitude correction due to nutation *)
-  delta_phi =(-17.20*sin_d(omega)-1.32*sin_d(2*l)-0.23*sin_d(2*ls)+0.21*sin_d(2*omega))/3600;
+  delta_phi =(-17.20*GCMath::sinDeg(omega)-1.32*GCMath::sinDeg(2*l)-0.23*GCMath::sinDeg(2*ls)+0.21*GCMath::sinDeg(2*omega))/3600;
 	}
 	else
 	{
 	// mean elongation of moon to sun
-	d = put_in_360(297.85036+(445267.111480+(-0.0019142+t/189474)*t)*t);
+	d = GCMath::putIn360(297.85036+(445267.111480+(-0.0019142+t/189474)*t)*t);
 
 	// mean anomaly of the sun
-	m =put_in_360(357.52772+(35999.050340+(-0.0001603-t/300000)*t)*t);
+	m =GCMath::putIn360(357.52772+(35999.050340+(-0.0001603-t/300000)*t)*t);
 
 	// mean anomaly of the moon
-	ms =put_in_360(134.96298+(477198.867398+(0.0086972+t/56250)*t)*t);
+	ms =GCMath::putIn360(134.96298+(477198.867398+(0.0086972+t/56250)*t)*t);
 
 	// argument of the latitude of the moon
-	f = put_in_360(93.27191+(483202.017538+(-0.0036825+t/327270)*t)*t);
+	f = GCMath::putIn360(93.27191+(483202.017538+(-0.0036825+t/327270)*t)*t);
 
 	delta_phi = 0;
 	delta_epsilon = 0;
@@ -161,8 +173,8 @@ void EARTHDATA::calc_epsilon_phi(double date, double & delta_phi, double & epsil
 		   +arg_mul[i][2]*ms
 		   +arg_mul[i][3]*f
 		   +arg_mul[i][4]*omega;
-		delta_phi=delta_phi+(arg_phi[i][0]+arg_phi[i][1]*t*0.1)*sin_d(s);
-		delta_epsilon=delta_epsilon+(arg_eps[i][0]+arg_eps[i][1]*t*0.1)*cos_d(s);
+		delta_phi=delta_phi+(arg_phi[i][0]+arg_phi[i][1]*t*0.1)*GCMath::sinDeg(s);
+		delta_epsilon=delta_epsilon+(arg_eps[i][0]+arg_eps[i][1]*t*0.1)*GCMath::cosDeg(s);
 	}
 
 	delta_phi=delta_phi*0.0001/3600;
@@ -184,22 +196,22 @@ void EARTHDATA::calc_geocentric(double &longitude, double &latitude, double &rek
 
 	EARTHDATA::calc_epsilon_phi(date, delta_phi, epsilon);
 
-	longitude = put_in_360(longitude+delta_phi);
+	longitude = GCMath::putIn360(longitude+delta_phi);
 
-	alpha = arctan2_d( sin_d(longitude)*cos_d(epsilon)-tan_d(latitude)*sin_d(epsilon), cos_d(longitude));
+	alpha = GCMath::arcTan2Deg( GCMath::sinDeg(longitude)*GCMath::cosDeg(epsilon)-GCMath::tanDeg(latitude)*GCMath::sinDeg(epsilon), GCMath::cosDeg(longitude));
 
-	delta = arcsin_d( sin_d(latitude)*cos_d(epsilon)+cos_d(latitude)*sin_d(epsilon)*sin_d(longitude));
+	delta = GCMath::arcSinDeg( GCMath::sinDeg(latitude)*GCMath::cosDeg(epsilon)+GCMath::cosDeg(latitude)*GCMath::sinDeg(epsilon)*GCMath::sinDeg(longitude));
 
 	rektaszension = alpha;
 	declination = delta;
 
 	double xg, yg, zg;
 
-	xg = cos_d(longitude)*cos_d(latitude);
-	yg = sin_d(longitude)*cos_d(latitude);
-	zg = sin_d(latitude);
+	xg = GCMath::cosDeg(longitude)*GCMath::cosDeg(latitude);
+	yg = GCMath::sinDeg(longitude)*GCMath::cosDeg(latitude);
+	zg = GCMath::sinDeg(latitude);
 
-	alpha = arctan2_d(yg*cos_d(epsilon) - zg*sin_d(epsilon), cos_d(longitude)*cos_d(latitude));
+	alpha = GCMath::arcTan2Deg(yg*GCMath::cosDeg(epsilon) - zg*GCMath::sinDeg(epsilon), GCMath::cosDeg(longitude)*GCMath::cosDeg(latitude));
 }
 
 
@@ -243,14 +255,14 @@ double EARTHDATA::star_time(double date)
 	jd = date;
 	t =(jd-2451545.0)/36525.0;
 	EARTHDATA::calc_epsilon_phi(date,delta_phi,epsilon);
-	return put_in_360(280.46061837+360.98564736629*(jd-2451545.0)+
+	return GCMath::putIn360(280.46061837+360.98564736629*(jd-2451545.0)+
                      t*t*(0.000387933-t/38710000)+
-                     delta_phi*cos_d(epsilon) );
+                     delta_phi*GCMath::cosDeg(epsilon) );
 }
 
 double EARTHDATA::GetHorizontDegrees(double jday)
 {
-	return put_in_360(EARTHDATA::star_time(jday) - longitude_deg - GCAyanamsha::GetAyanamsa(jday) + 155);
+	return GCMath::putIn360(EARTHDATA::star_time(jday) - longitude_deg - GCAyanamsha::GetAyanamsa(jday) + 155);
 }
 
 int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)

@@ -5,16 +5,9 @@
 #include "VCal5beta.h"
 #include "DlgObservedEvents.h"
 
-#include "strings.h"
 #include "level_0.h"
 #include "TFile.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgObservedEvents dialog

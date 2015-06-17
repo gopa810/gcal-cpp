@@ -8,7 +8,7 @@
 #include "GCDisplaySettings.h"
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
-
+#include "GCMath.h"
 
 void TResultApp::calculateAppDay(CLocationRef &location, VCTIME eventDate)
 {
@@ -33,7 +33,7 @@ void TResultApp::calculateAppDay(CLocationRef &location, VCTIME eventDate)
 	vcsun.tzone = 0.0;
 	d.sun.SunPosition(vcsun, m_earth, vcsun.shour - 0.5);
 	d.moon.Calculate(vcsun.GetJulianComplete(), m_earth);
-	d.msDistance = put_in_360( d.moon.longitude_deg - d.sun.longitude_deg - 180.0);
+	d.msDistance = GCMath::putIn360( d.moon.longitude_deg - d.sun.longitude_deg - 180.0);
 	d.msAyanamsa = GCAyanamsha::GetAyanamsa( vc.GetJulianComplete() );
 
 	// tithi
@@ -44,7 +44,7 @@ void TResultApp::calculateAppDay(CLocationRef &location, VCTIME eventDate)
 
 
 	// naksatra
-	dd = put_in_360( d.moon.longitude_deg - d.msAyanamsa );
+	dd = GCMath::putIn360( d.moon.longitude_deg - d.msAyanamsa );
 	dd = ( dd * 3.0) / 40.0;
 	d.nNaksatra = int(floor(dd));
 	d.nNaksatraElapse = (dd - floor(dd)) * 100.0;

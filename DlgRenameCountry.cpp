@@ -6,12 +6,8 @@
 #include "DlgRenameCountry.h"
 #include "TCountry.h"
 #include "Location.h"
+#include "GCGlobal.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgRenameCountry dialog
@@ -68,7 +64,7 @@ void DlgRenameCountry::OnSaveEdit()
 		m_List.DeleteString(nSelected + 1);
 		m_List.SetItemData(nSelected, idx);
 		m_List.SetCurSel(nSelected);
-		theLocs.RenameCountry((LPCTSTR)strOld, str);
+		GCGlobal::locationsList.RenameCountry((LPCTSTR)strOld, str);
 	}
 }
 

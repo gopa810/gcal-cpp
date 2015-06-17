@@ -7,14 +7,8 @@
 #include "DlgEditLocation.h"
 #include "Location.h"
 #include "TFile.h"
-#include "avc.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
+#include "enums.h"
+#include "GCGlobal.h"
 
 #define ID_MENU_CREATELOC 0x100
 #define ID_MENU_EDITLOC   0x101
@@ -24,8 +18,6 @@ static char THIS_FILE[] = __FILE__;
 #define ID_MENU_SHOWGMAPS  0x112
 #define ID_MENU_IMPORTGMAPS 0x113
 
-
-const char * GCalApp_GetFileName(int i);
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocationEx dialog
@@ -71,7 +63,7 @@ END_MESSAGE_MAP()
 	ON_BN_CLICKED(IDC_BUTTON6, OnResetList)
 */
 
-int g_nCurrentCountry = 0;
+int DlgGetLocationEx::nCurrentCountry = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocationEx message handlers
@@ -82,7 +74,7 @@ BOOL DlgGetLocationEx::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	int tabs[] = {185, 245, 305};
-	int nCurrentCountry = g_nCurrentCountry;
+	int nCurrentCountry = DlgGetLocationEx::nCurrentCountry;
 
 	m_cities.SetTabStops(3, tabs);
 
@@ -123,7 +115,7 @@ void DlgGetLocationEx::OnCreateLocation()
 
 	if (dlg.DoModal() == IDOK)
 	{
-		theLocs.AddTail( dlg.m_loc );
+		GCGlobal::locationsList.AddTail( dlg.m_loc );
 		m_countries.ResetContent();
 		m_cities.ResetContent();
 		n = InitCountries( dlg.m_loc->m_strCountry );
@@ -132,7 +124,7 @@ void DlgGetLocationEx::OnCreateLocation()
 		m_countries.SetCurSel(n);
 		if (m >= 0)
 			m_cities.SetCurSel(m);
-		g_nCurrentCountry = n;
+		DlgGetLocationEx::nCurrentCountry = n;
 	}
 	else
 	{
@@ -163,7 +155,7 @@ void DlgGetLocationEx::OnEditLocation()
 		m_countries.ResetContent();
 		m_cities.ResetContent();
 		n = InitCountries( dlg.m_loc->m_strCountry );
-		if (g_nCurrentCountry == 0)
+		if (DlgGetLocationEx::nCurrentCountry == 0)
 			n = 0;
 		m = InitCitiesForCountry( n, dlg.m_loc->m_strCity);
 
@@ -200,11 +192,11 @@ void DlgGetLocationEx::OnDeleteLocation()
 
 	if (AfxMessageBox(str, MB_YESNO) == IDYES)
 	{
-		theLocs.RemoveAt(loc);
+		GCGlobal::locationsList.RemoveAt(loc);
 		m_countries.ResetContent();
 		m_cities.ResetContent();
 		n = InitCountries( loc->m_strCountry );
-		if ((g_nCurrentCountry == 0) || (n < 0))
+		if ((DlgGetLocationEx::nCurrentCountry == 0) || (n < 0))
 			n = 0;
 		m = InitCitiesForCountry( n );
 
@@ -235,9 +227,9 @@ void DlgGetLocationEx::OnChangeEdit1()
 
 void DlgGetLocationEx::OnSelendokCombo1() 
 {
-	g_nCurrentCountry = m_countries.GetCurSel();
+	DlgGetLocationEx::nCurrentCountry = m_countries.GetCurSel();
 	
-	InitCitiesForCountry(g_nCurrentCountry);
+	InitCitiesForCountry(DlgGetLocationEx::nCurrentCountry);
 
 }
 
@@ -269,7 +261,7 @@ int  DlgGetLocationEx::InitCitiesForCountry(int nCurrentCountry, const char * ps
 		m_countries.GetLBText(nCurrentCountry, country);
 	}
 
-	pos = theLocs.GetHeadPosition();
+	pos = GCGlobal::locationsList.GetHeadPosition();
 	while(pos)
 	{
 		pos_old = pos;
@@ -316,7 +308,7 @@ int DlgGetLocationEx::InitCountries(const char * pszCurrentCountry)
 	
 	TString city, country;
 	CLocation * pos, * pos_old;
-	pos = theLocs.GetHeadPosition();
+	pos = GCGlobal::locationsList.GetHeadPosition();
 	//
 	// initializes list of countries
 	m_countries.AddString("< all cities >");
@@ -357,7 +349,7 @@ void DlgGetLocationEx::OnSetCountryByCity()
 	if (pos == NULL)
 		return;
 
-	g_nCurrentCountry = n = m_countries.FindString(-1, pos->m_strCountry);
+	DlgGetLocationEx::nCurrentCountry = n = m_countries.FindString(-1, pos->m_strCountry);
 	m_countries.SetCurSel(n);
 	OnSelendokCombo1();
 
@@ -385,7 +377,7 @@ void DlgGetLocationEx::OnAllCities()
 	}
 
 
-	g_nCurrentCountry = 0;
+	DlgGetLocationEx::nCurrentCountry = 0;
 	m_countries.SetCurSel(0);
 	OnSelendokCombo1();
 
@@ -405,14 +397,14 @@ void DlgGetLocationEx::OnResetList()
 {
 	if (AfxMessageBox("Are you sure to revert list of locations to the internal build-in list of locations?", MB_YESNO) == IDYES)
 	{
-		theLocs.RemoveAll();
-		theLocs.InitInternal();
+		GCGlobal::locationsList.RemoveAll();
+		GCGlobal::locationsList.InitInternal();
 		InitCountries();
 
 		// setting the current country
-		m_countries.SetCurSel(g_nCurrentCountry = 0);
+		m_countries.SetCurSel(DlgGetLocationEx::nCurrentCountry = 0);
 
-		InitCitiesForCountry(g_nCurrentCountry);
+		InitCitiesForCountry(DlgGetLocationEx::nCurrentCountry);
 //		GetDlgItem(IDC_BUTTON2)->EnableWindow(FALSE);
 //		GetDlgItem(IDC_BUTTON3)->EnableWindow(FALSE);
 	}
@@ -492,7 +484,7 @@ void DlgGetLocationEx::OnImportList()
 		return;
 
 	// vklada
-	if (theLocs.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
+	if (GCGlobal::locationsList.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
 	{
 		MessageBox("Importing of file was not succesful.", "Importing progress");
 		return;
@@ -504,9 +496,9 @@ void DlgGetLocationEx::OnImportList()
 	InitCountries();
 
 	// setting the current country
-	m_countries.SetCurSel(g_nCurrentCountry = 0);
+	m_countries.SetCurSel(DlgGetLocationEx::nCurrentCountry = 0);
 
-	InitCitiesForCountry(g_nCurrentCountry);
+	InitCitiesForCountry(DlgGetLocationEx::nCurrentCountry);
 
 	// koniec
 }
@@ -528,7 +520,7 @@ BOOL DlgGetLocationEx::ShowInGoogleMaps()
 						   "\"></head><body></body><html>", loc->m_fLatitude, loc->m_fLongitude);
 			TFile file;
 			TString fileName;
-			fileName = GCalApp_GetFileName(GSTR_TEMFOLDER);
+			fileName = GCGlobal::getFileName(GSTR_TEMFOLDER);
 			fileName += "temp.html";
 			if (file.Open(fileName, "w") == TRUE)
 			{
@@ -551,8 +543,8 @@ void DlgGetLocationEx::OnSelchangeCombo1()
 void DlgGetLocationEx::OnSelendcancelCombo1() 
 {
 	// TODO: Add your control notification handler code here
-	//g_nCurrentCountry = m_countries.GetCurSel();
+	//DlgGetLocationEx::nCurrentCountry = m_countries.GetCurSel();
 	
-	//InitCitiesForCountry(g_nCurrentCountry);
+	//InitCitiesForCountry(DlgGetLocationEx::nCurrentCountry);
 	
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GCGregorianTime.h"
+#include "TString.h"
 
 class EARTHDATA
 {
@@ -29,7 +30,9 @@ public:
 	static char * GetTextLongitude(double d);
 	static double star_time(double date);
 
-	double EARTHDATA::GetHorizontDegrees(double jday);
+	double GetHorizontDegrees(double jday);
 	int GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate);
+	int ToString(TString &str);
+
 };
 

@@ -8,7 +8,9 @@ class GCStrings
 public:
 	GCStrings(void);
 	~GCStrings(void);
-
+	static int gstr_Modified;
+	static TString gstr[950];
+	static void InitGlobalStrings(int nRange);
 	static const char * GetMonthAbreviation(int month);
 	static const char * GetTithiName(int i);
 	static const char * GetNaksatraName(int n);
@@ -36,6 +38,8 @@ public:
 	static const char * GetDayOfWeek(int i);
 	static int readFile(const char * pszFile);
 	static int writeFile(const char * pszFile);
+	static const char * getLongitudeDirectionName(double d);
+	static const char * getLatitudeDirectionName(double d);
 
 };
 

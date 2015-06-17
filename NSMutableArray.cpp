@@ -7,6 +7,8 @@ NSMutableArray::NSMutableArray(void)
 	count = 0;
 	size = 32;
 	arr = new void_ptr[size];
+	for(int i = 0; i < size; i++)
+		arr[i] = NULL;
 }
 
 
@@ -74,6 +76,8 @@ void NSMutableArray::CheckSpace(int newSize, int newIdx, int insSize)
 				newOffset = insSize;
 			newArr[i + newOffset] = arr[i];
 		}
+		for(int i = count + insSize; i < newSize + 16; i++)
+			newArr[i] = NULL;
 		delete arr;
 		arr = newArr;
 		size = newSize + 16;

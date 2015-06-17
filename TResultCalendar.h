@@ -27,7 +27,6 @@ public:
 	int m_vcCount;
 public:
 	void ResolveFestivalsFasting(int i);
-	CProgressCtrl * m_pProgress;
 	int CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &begin, double &end, EARTHDATA earth);
 	int FindDate(VCTIME vc);
 	Boolean IsFestivalDay(VAISNAVADAY &yesterday, VAISNAVADAY &today, int nTithi);

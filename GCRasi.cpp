@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCRasi.h"
-#include "gmath.h"
+#include "GCMath.h"
 
 GCRasi::GCRasi(void)
 {
@@ -19,5 +19,5 @@ GCRasi::~GCRasi(void)
 
 int GCRasi::GetRasi(double SunLongitude, double Ayanamsa)
 {
-	return (int)floor(put_in_360(SunLongitude - Ayanamsa)/30.0);
+	return (int)floor(GCMath::putIn360(SunLongitude - Ayanamsa)/30.0);
 }

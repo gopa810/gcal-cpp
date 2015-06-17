@@ -12,14 +12,8 @@
 #include "GCStrings.h"
 #include "GCDisplaySettings.h"
 #include "GCCalendar.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-extern GCalApp theApp;
+#include "GCUserInterface.h"
+#include "GCGlobal.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -165,7 +159,7 @@ void CFrameEvents::OnDestroy()
 	CFrameBase::OnDestroy();
 	
 	// TODO: Add your message handler code here
-	theFrameServer.RemoveFromEventFrames();
+	GCUserInterface::windowController.RemoveFromEventFrames();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -278,16 +272,12 @@ void CFrameEvents::FillListView()
 	int i;
 	CCustomEvent * p;
 
-	p = gCustomEventList.list;
+	p = GCGlobal::customEventList.list;
 
 	m_wndList.DeleteAllItems();
 
 	while(p)
 	{
-		if (p->nClass==0)
-		{
-			TRACE3("{/*tithi*/ %d, /*masa*/ %d, /*fast*/ %d, 9_7}\n", p->nTithi, p->nMasa, p->nFastType);
-		}
 		if (p->nMasa>=0 && p->nMasa<12 && p->nClass>=0 && p->nClass<10 && b_class[p->nClass] && b_masa[p->nMasa] && p->nDeleted==0)
 		{
 			i = m_wndList.InsertItem(0, p->strText.c_str());
@@ -387,7 +377,7 @@ void CFrameEvents::OnEventsEditevent()
 				else
 					pe->nStartYear = -10000;
 
-				gCustomEventList_Modified = 1;
+				GCGlobal::customEventListModified = 1;
 				GCStrings::SetSpecFestivalName(pe->nSpec, (LPCTSTR)d.m_strText);
 				FillListView();
 			}
@@ -407,7 +397,7 @@ void CFrameEvents::OnEventsNewevent()
 
 	if (d.DoModal() == IDOK)
 	{
-		CCustomEvent * p = gCustomEventList.add();
+		CCustomEvent * p = GCGlobal::customEventList.add();
 		if (p)
 		{
 			p->nClass = d.m_nClass;
@@ -418,7 +408,7 @@ void CFrameEvents::OnEventsNewevent()
 			p->nTithi = d.m_nTithi;
 			p->strFastSubject = (LPCTSTR)d.m_strFastSubject;
 			p->strText = (LPCTSTR)d.m_strText;
-			gCustomEventList_Modified = 1;
+			GCGlobal::customEventListModified = 1;
 			GCStrings::SetSpecFestivalName(p->nSpec, (LPCTSTR)d.m_strText);
 			FillListView();
 		}
@@ -498,33 +488,33 @@ void CFrameEvents::UpdateItemsFasting()
 
 void CFrameEvents::OnFileSave() 
 {
-	CustomEventList_Export();	
+	CCustomEventList::Export();	
 }
 
 void CFrameEvents::OnHelpHelp() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("index.htm");
+	GCUserInterface::ShowHelp("index.htm");
 	
 }
 
 void CFrameEvents::OnUpdateHelpHelp(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }
 
 void CFrameEvents::OnHelpHelptopicthiswindow() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("ref-evman.htm");
+	GCUserInterface::ShowHelp("ref-evman.htm");
 	
 }
 
 void CFrameEvents::OnUpdateHelpHelptopicthiswindow(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }

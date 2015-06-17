@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCConjunction.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCMoonData.h"
 #include "GCSunData.h"
 
@@ -38,10 +38,10 @@ bool GCConjunction::IsConjunction(double m1, double s1, double s2, double m2)
 	if ((m1 <= s1) && (s1 < s2) && (s2 <= m2))
 		return true;
 
-	m1 = put_in_180(m1);
-	m2 = put_in_180(m2);
-	s1 = put_in_180(s1);
-	s2 = put_in_180(s2);
+	m1 = GCMath::putIn180(m1);
+	m2 = GCMath::putIn180(m2);
+	s1 = GCMath::putIn180(s1);
+	s2 = GCMath::putIn180(s2);
 
 	if ((m1 <= s1) && (s1 < s2) && (s2 <= m2))
 		return true;
@@ -87,7 +87,7 @@ double GCConjunction::GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 	moon.Calculate(jd, earth);
 	prevSun = SUNDATA::GetSunLongitude(d);
 	prevMoon = moon.longitude_deg;
-	prevDiff = put_in_180(prevSun - prevMoon);
+	prevDiff = GCMath::putIn180(prevSun - prevMoon);
 
 	do
 	{
@@ -99,7 +99,7 @@ double GCConjunction::GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 		moon.Calculate(jd, earth);
 		nowSun = SUNDATA::GetSunLongitude(d);
 		nowMoon = moon.longitude_deg;
-		nowDiff = put_in_180(nowSun - nowMoon);
+		nowDiff = GCMath::putIn180(nowSun - nowMoon);
 		// if difference of previous has another sign than now calculated
 		// then it is the case that moon was faster than sun and he 
 		//printf("        prevsun=%f\nprevmoon=%f\nnowsun=%f\nnowmoon=%f\n", prevSun, prevMoon, nowSun, nowMoon);
@@ -124,11 +124,11 @@ double GCConjunction::GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 			date = d;
 			double other = SUNDATA::GetSunLongitude(d);
 //			double other2 = nowSun + (prevSun - nowSun)*x;
-			put_in_360(prevSun);
-			put_in_360(nowSun);
+			GCMath::putIn360(prevSun);
+			GCMath::putIn360(nowSun);
 			if (fabs(prevSun - nowSun) > 10.0)
 			{
-				return put_in_180(nowSun) + (put_in_180(prevSun) - put_in_180(nowSun))*x;
+				return GCMath::putIn180(nowSun) + (GCMath::putIn180(prevSun) - GCMath::putIn180(nowSun))*x;
 			}
 			else
 				return nowSun + (prevSun - nowSun)*x;
@@ -181,9 +181,9 @@ double GCConjunction::GetNextConjunction(VCTIME &date, EARTHDATA earth)
 	// NOTE: for grenwich
 	//SunPosition(d, earth, sun, 0.0);
 	moon.Calculate(jd, earth);
-	nowSun = put_in_360(SUNDATA::GetSunLongitude(d));
-	nowMoon = put_in_360(moon.longitude_deg);
-	nowDiff = put_in_180(nowSun - nowMoon);
+	nowSun = GCMath::putIn360(SUNDATA::GetSunLongitude(d));
+	nowMoon = GCMath::putIn360(moon.longitude_deg);
+	nowDiff = GCMath::putIn180(nowSun - nowMoon);
 
 	do
 	{
@@ -195,7 +195,7 @@ double GCConjunction::GetNextConjunction(VCTIME &date, EARTHDATA earth)
 		moon.Calculate(jd, earth);
 		prevSun = SUNDATA::GetSunLongitude(d);
 		prevMoon = moon.longitude_deg;
-		prevDiff = put_in_180(prevSun - prevMoon);
+		prevDiff = GCMath::putIn180(prevSun - prevMoon);
 		// if difference of previous has another sign than now calculated
 		// then it is the case that moon was faster than sun and he 
 		//printf("        prevsun=%f\nprevmoon=%f\nnowsun=%f\nnowmoon=%f\n", prevSun, prevMoon, nowSun, nowMoon);
@@ -218,11 +218,11 @@ double GCConjunction::GetNextConjunction(VCTIME &date, EARTHDATA earth)
 				d.shour = x - 0.5;
 			}
 			date = d;
-			put_in_360(prevSun);
-			put_in_360(nowSun);
+			GCMath::putIn360(prevSun);
+			GCMath::putIn360(nowSun);
 			if (fabs(prevSun - nowSun) > 10.0)
 			{
-				return put_in_180(nowSun) + (put_in_180(prevSun) - put_in_180(nowSun))*x;
+				return GCMath::putIn180(nowSun) + (GCMath::putIn180(prevSun) - GCMath::putIn180(nowSun))*x;
 			}
 			else
 				return nowSun + (prevSun - nowSun)*x;
@@ -268,7 +268,7 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 
 	moon.Calculate(jday, earth);
 	sunl = SUNDATA::GetSunLongitude(d);
-	l1 = put_in_180(moon.longitude_deg - sunl);
+	l1 = GCMath::putIn180(moon.longitude_deg - sunl);
 	prev_tit = int(floor(l1/phi));
 
 	int counter = 0;
@@ -287,7 +287,7 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 
 		moon.Calculate(jday, earth);
 		sunl = SUNDATA::GetSunLongitude(d);
-		l2 = put_in_180(moon.longitude_deg - sunl);
+		l2 = GCMath::putIn180(moon.longitude_deg - sunl);
 		new_tit = int(floor(l2/phi));
 
 		if (prev_tit >= 0 && new_tit < 0)
@@ -340,7 +340,7 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 
 	moon.Calculate(jday, earth);
 	sunl = SUNDATA::GetSunLongitude(d);
-	l1 = put_in_180(moon.longitude_deg - sunl);
+	l1 = GCMath::putIn180(moon.longitude_deg - sunl);
 	prev_tit = int(floor(l1/phi));
 
 	int counter = 0;
@@ -359,7 +359,7 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 
 		moon.Calculate(jday, earth);
 		sunl = SUNDATA::GetSunLongitude(d);
-		l2 = put_in_180(moon.longitude_deg - sunl);
+		l2 = GCMath::putIn180(moon.longitude_deg - sunl);
 		new_tit = int(floor(l2/phi));
 
 		if (prev_tit < 0 && new_tit >= 0)

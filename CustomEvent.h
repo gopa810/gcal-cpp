@@ -52,26 +52,16 @@ public:
 	CCustomEventList() { list = NULL; }
 	~CCustomEventList() { clear(); };
 	CCustomEvent * add(void);
+
+	static void Export();
+	static int ReadFile(const char * pszFile);
+	static int ReadFileRL(const char * pszFile);
+	static int WriteFile(const char * pszFile);
+	static int WriteFileRL(const char * pszFile);
+	static void RefreshLinks();
+	static int InitDefault();
+
 };
 
-//==============================================================
-//
-//==============================================================
-
-extern CCustomEventList gCustomEventList;
-extern int              gCustomEventList_Modified;
-
-//==============================================================
-//
-//==============================================================
-
-/*extern TString gCustomEventTexts[360];*/
-
-int CustomEventListReadFile(const char * pszFile);
-int CustomEventListReadFile_RL(const char * pszFile);
-int CustomEventListWriteFile(const char * pszFile);
-int CustomEventListWriteFile_RL(const char * pszFile);
-void CustomEventListRefreshLinks();
-void CustomEventList_Export();
 
 #endif // !defined(AFX_CUSTOMEVENT_H__BDEA8D48_FABB_4E56_BB2C_F21F3C2FB071__INCLUDED_)

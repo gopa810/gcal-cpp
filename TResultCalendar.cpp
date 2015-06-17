@@ -5,9 +5,7 @@
 
 #include "stdafx.h"
 #include "TResultCalendar.h"
-
-#include "strings.h"
-
+#include "GCMath.h"
 #include "customevent.h"
 #include "enums.h"
 #include "GCStrings.h"
@@ -21,7 +19,8 @@
 #include "TFileXml.h"
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
-
+#include "GCUserInterface.h"
+#include "GCGlobal.h"
 
 /*
 
@@ -30,11 +29,6 @@
 Main func is TResultCalendar::CalculateCalendar
 
 */
-
-
-
-extern int gp_Fasting[];
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -47,7 +41,6 @@ TResultCalendar::TResultCalendar()
 	m_pData = NULL;
 	m_PureCount = 0;
 	m_nCount = 0;
-	m_pProgress = NULL;
 }
 
 TResultCalendar::~TResultCalendar()
@@ -165,7 +158,6 @@ Boolean TResultCalendar::IsMhd58(int nIndex, int &nMahaType)
 	return FALSE;
 }
 
-#define SET_PROG(i) if (m_pProgress) { m_pProgress->SetPos(int(i)); m_pProgress->UpdateWindow();}
 
 /******************************************************************************************/
 /* Main fucntion for VCAL calculations                                                    */
@@ -247,7 +239,8 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		for(i = 0; i < nTotalCount; i++)
 		{
-			SET_PROG( (0 + 85 * i / (iCount + 1)) * 0.908 );
+			GCUserInterface::SetProgressWindowPos( (0 + 85 * i / (iCount + 1)) * 0.908 );
+
 			MOONDATA::CalcMoonTimes(earth, m_pData[i].date, double(m_pData[i].nDST), m_pData[i].moonrise, m_pData[i].moonset);
 
 			if (GCDisplaySettings::getValue(CAL_MOON_RISE) && m_pData[i].moonrise.hour >= 0)
@@ -272,11 +265,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		if (bCalcMoon)
 		{
-			SET_PROG( (85 + 2 * i / nTotalCount) * 0.908);
+			GCUserInterface::SetProgressWindowPos( (85 + 2 * i / nTotalCount) * 0.908);
 		}
 		else
 		{
-			SET_PROG( 0.588 * 14.8 * i / nTotalCount );
+			GCUserInterface::SetProgressWindowPos( 0.588 * 14.8 * i / nTotalCount );
 		}
 		m_pData[i].astrodata.DayCalc(m_pData[i].date, earth);
 
@@ -295,27 +288,15 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		
 		if (bCalcMoon)
 		{
-			SET_PROG( (87 + 2 * i / nTotalCount) * 0.908 );
+			GCUserInterface::SetProgressWindowPos( (87 + 2 * i / nTotalCount) * 0.908 );
 		}
 		else
 		{
-			SET_PROG( 0.588 * (14.8 + 32.2 * i / nTotalCount));
+			GCUserInterface::SetProgressWindowPos( 0.588 * (14.8 + 32.2 * i / nTotalCount));
 		}
 
 		if (i == 0)
 			calc_masa = TRUE;
-
-		/*if (i > 0)
-		{
-			if ((m_pData[i-1].astrodata.nTithi <=14) && (m_pData[i].astrodata.nTithi >= 15))
-			{
-				calc_masa = TRUE;
-			}
-			else if (m_pData[i-1].astrodata.nTithi > m_pData[i].astrodata.nTithi)
-			{
-				calc_masa = TRUE;
-			}
-		}*/
 
 		if (calc_masa)
 		{
@@ -431,11 +412,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		if (bCalcMoon)
 		{
-			SET_PROG( (89 + 5 * i / nTotalCount) * 0.908 );
+			GCUserInterface::SetProgressWindowPos( (89 + 5 * i / nTotalCount) * 0.908 );
 		}
 		else
 		{
-			SET_PROG( 0.588 * (47.0 + 39.5 * i / nTotalCount));
+			GCUserInterface::SetProgressWindowPos( 0.588 * (47.0 + 39.5 * i / nTotalCount));
 		}
 		EkadasiCalc(i, earth);
 	}
@@ -599,11 +580,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		if (bCalcMoon)
 		{
-			SET_PROG( (94 + 6 * i / nTotalCount) * 0.908 );
+			GCUserInterface::SetProgressWindowPos( (94 + 6 * i / nTotalCount) * 0.908 );
 		}
 		else
 		{
-			SET_PROG( 0.588 * (86.5 + 13.5 * i / nTotalCount));
+			GCUserInterface::SetProgressWindowPos( 0.588 * (86.5 + 13.5 * i / nTotalCount));
 		}
 		if (m_pData[i].astrodata.nTithi == m_pData[i-1].astrodata.nTithi)
 		{
@@ -657,9 +638,6 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	return 1;
 
 }
-
-#define MAX_VAL(a,b) ((a) > (b) ? (a) : (b))
-#define MIN_VAL(a,b) ((a) < (b) ? (a) : (b))
 
 
 int TResultCalendar::EkadasiCalc(int nIndex, EARTHDATA earth)
@@ -736,14 +714,6 @@ int TResultCalendar::EkadasiCalc(int nIndex, EARTHDATA earth)
 	return 1;
 }
 
-
-int ctoi(TCHAR c)
-{
-	if ((c >= '0') && (c <= '9'))
-		return c - '0';
-	else
-		return 0;
-}
 
 /******************************************************************************************/
 /*                                                                                        */
@@ -1118,7 +1088,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 
 	int currFestTop = 0;
 	GCMutableDictionary * md = NULL;
-	pEvx = gCustomEventList.list;
+	pEvx = GCGlobal::customEventList.list;
 	//pEvx = pEvx->findMasa(_masa_from);
 	while(s2==true && pEvx)
 	{
@@ -1158,7 +1128,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 		//pEvx = pEvx->next_in_masa;
 	}
 
-	pEvx = gCustomEventList.list;
+	pEvx = GCGlobal::customEventList.list;
 	//pEvx = pEvx->findMasa(_masa_to);
 	while(pEvx && s1==true)
 	{
@@ -1692,29 +1662,6 @@ int TResultCalendar::FindDate(VCTIME vc)
 	return -1;
 }
 
-double GcGetHigher(double a, double b)
-{
-	if (a > b)
-		return a;
-	return b;
-}
-
-double GcGetLower(double a, double b)
-{
-	if (a < b)
-		return a;
-	return b;
-}
-
-double GcGetNaksatraEndHour(EARTHDATA earth, VCTIME yesterday, VCTIME today)
-{
-	VCTIME nend;
-	VCTIME snd = yesterday;
-	snd.shour = 0.5;
-	GCNaksatra::GetNextNaksatra(earth, snd, nend);
-	return nend.GetJulian() - today.GetJulian() + nend.shour;
-}
-
 int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &begin, double &end, EARTHDATA earth)
 {
 	t.nMhdType = EV_NULL;
@@ -1748,7 +1695,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 	case EV_VYANJULI:
 		parBeg = sunRise;
 		t.eparana_type1 = EP_TYPE_SUNRISE;
-		parEnd = GcGetLower(titEnd, third_day);
+		parEnd = GCMath::Min(titEnd, third_day);
 		if (parEnd == titEnd)
 			t.eparana_type2 = EP_TYPE_TEND;
 		else
@@ -1763,7 +1710,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 	case EV_JAYANTI:
 	case EV_VIJAYA:
 
-		naksEnd = GcGetNaksatraEndHour(earth, s.date, t.date); //GetNextNaksatra(earth, snd, nend);
+		naksEnd = GCNaksatra::GetEndHour(earth, s.date, t.date); //GetNextNaksatra(earth, snd, nend);
 		if (GCTithi::TITHI_DVADASI(t.astrodata.nTithi))
 		{
 			if (naksEnd < titEnd)
@@ -1772,7 +1719,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 				{
 					parBeg = naksEnd;
 					t.eparana_type1 = EP_TYPE_NAKEND;
-					parEnd = GcGetLower(titEnd, third_day);
+					parEnd = GCMath::Min(titEnd, third_day);
 					if (parEnd == titEnd)
 						t.eparana_type2 = EP_TYPE_TEND;
 					else
@@ -1790,7 +1737,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 			{
 				parBeg = sunRise;
 				t.eparana_type1 = EP_TYPE_SUNRISE;
-				parEnd = GcGetLower(titEnd, third_day);
+				parEnd = GCMath::Min(titEnd, third_day);
 				if (parEnd == titEnd)
 					t.eparana_type2 = EP_TYPE_TEND;
 				else
@@ -1801,7 +1748,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 		{
 			parBeg = sunRise;
 			t.eparana_type1 = EP_TYPE_SUNRISE;
-			parEnd = GcGetLower( naksEnd, third_day );
+			parEnd = GCMath::Min( naksEnd, third_day );
 			if (parEnd == naksEnd)
 				t.eparana_type2 = EP_TYPE_NAKEND;
 			else
@@ -1812,7 +1759,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 	case EV_JAYA:
 	case EV_PAPA_NASINI:
 
-		naksEnd = GcGetNaksatraEndHour(earth, s.date, t.date); //GetNextNaksatra(earth, snd, nend);
+		naksEnd = GCNaksatra::GetEndHour(earth, s.date, t.date); //GetNextNaksatra(earth, snd, nend);
 
 		if (GCTithi::TITHI_DVADASI(t.astrodata.nTithi))
 		{
@@ -1822,7 +1769,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 				{
 					parBeg = naksEnd;
 					t.eparana_type1 = EP_TYPE_NAKEND;
-					parEnd = GcGetLower(titEnd, third_day);
+					parEnd = GCMath::Min(titEnd, third_day);
 					if (parEnd == titEnd)
 						t.eparana_type2 = EP_TYPE_TEND;
 					else
@@ -1840,7 +1787,7 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 			{
 				parBeg = sunRise;
 				t.eparana_type1 = EP_TYPE_SUNRISE;
-				parEnd = GcGetLower(titEnd, third_day);
+				parEnd = GCMath::Min(titEnd, third_day);
 				if (parEnd == titEnd)
 					t.eparana_type2 = EP_TYPE_TEND;
 				else
@@ -1868,12 +1815,12 @@ int TResultCalendar::CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &be
 		break;
 	default:
 		// first initial
-		parEnd = GcGetLower(titEnd, third_day);
+		parEnd = GCMath::Min(titEnd, third_day);
 		if (parEnd == titEnd)
 			t.eparana_type2 = EP_TYPE_TEND;
 		else
 			t.eparana_type2 = EP_TYPE_3DAY;
-		parBeg = GcGetHigher(sunRise, tithi_quart);
+		parBeg = GCMath::Max(sunRise, tithi_quart);
 		if (parBeg == sunRise)
 			t.eparana_type1 = EP_TYPE_SUNRISE;
 		else
@@ -2364,17 +2311,14 @@ int TResultCalendar::formatPlainText(TString &m_text)
 		pvd = daybuff.GetDay(k);
 		nextd = daybuff.GetDay(k + 1);
 
-		if (daybuff.m_pProgress != NULL)
+		if (bCalcMoon)
 		{
-			if (bCalcMoon)
-			{
-				daybuff.m_pProgress->SetPos(int(90.8 + 9.2 * k / daybuff.m_vcCount));
-			}
-			else
-			{
-				rate = double(k) / daybuff.m_vcCount;
-				daybuff.m_pProgress->SetPos(int(58.8 + 41.2 * rate * rate));
-			}
+			GCUserInterface::SetProgressWindowPos(int(90.8 + 9.2 * k / daybuff.m_vcCount));
+		}
+		else
+		{
+			rate = double(k) / daybuff.m_vcCount;
+			GCUserInterface::SetProgressWindowPos(int(58.8 + 41.2 * rate * rate));
 		}
 
 		if (pvd)

@@ -1,12 +1,7 @@
 // VCal5beta.h : main header file for the VCAL5BETA application
 //
 
-#if !defined(AFX_VCAL5BETA_H__4EB2C87E_15E1_473C_99CC_85E0D2F92D67__INCLUDED_)
-#define AFX_VCAL5BETA_H__4EB2C87E_15E1_473C_99CC_85E0D2F92D67__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #ifndef __AFXWIN_H__
 	#error include 'stdafx.h' before including this file for PCH
@@ -55,11 +50,3 @@ private:
 	void ShowTipOfTheDay(void);
 };
 
-void GCalShowHelp(LPCTSTR pszFile);
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_VCAL5BETA_H__4EB2C87E_15E1_473C_99CC_85E0D2F92D67__INCLUDED_)

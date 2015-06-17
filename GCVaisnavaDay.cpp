@@ -10,7 +10,7 @@
 
 VAISNAVADAY::~VAISNAVADAY()
 {
-
+	dayEvents.RemoveAllObjects();
 }
 
 VAISNAVADAY::VAISNAVADAY() 
@@ -30,6 +30,25 @@ VAISNAVADAY::VAISNAVADAY()
 	moonset.SetValue(0);
 }
 
+int VAISNAVADAY::GetTextLineCount()
+{
+	int nCount = 0;
+	TString str2;
+
+	nCount++;
+
+	for(int i = 0; i < dayEvents.Count(); i++)
+	{
+		GCMutableDictionary * ed = dayEvents.ObjectAtIndex(i);
+		int disp = ed->intForKey("disp");
+		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		{
+			nCount++;
+		}
+	}
+
+	return nCount;
+}
 void VAISNAVADAY::Clear()
 {
 		// init
@@ -267,4 +286,91 @@ TString & VAISNAVADAY::GetFullTithiName(void)
 	}
 
 	return str;
+}
+
+bool VAISNAVADAY::ConditionEvaluate(int nClass, int nValue, TString &strText, bool defaultRet)
+{
+	VAISNAVADAY * pd = this;
+
+	static int pcstr[] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		CAL_FEST_0, CAL_FEST_1, CAL_FEST_2, 
+		CAL_FEST_3, CAL_FEST_4, CAL_FEST_5, 
+		0, 0};
+
+	switch(nClass)
+	{
+	// mahadvadasis
+	case 1:
+		if (nValue == EV_NULL)
+			return ((pd->nMhdType != EV_NULL) && (pd->nMhdType != EV_SUDDHA));
+		else
+			return (pd->nMhdType == nValue);
+	// sankrantis
+	case 2:
+		if (nValue == 0xff)
+			return (pd->sankranti_zodiac >= 0);
+		else
+			return (pd->sankranti_zodiac == nValue);
+	// tithi + paksa
+	case 3:
+		return (pd->astrodata.nTithi == nValue);
+	// naksatras
+	case 4:
+		return (pd->astrodata.nNaksatra == nValue);
+	// yogas
+	case 5:
+		return (pd->astrodata.nYoga == nValue);
+	// fast days
+	case 6:
+		if (nValue == 0)
+			return (pd->nFastType != FAST_NULL);
+		else
+			return (pd->nFastType == (0x200 + nValue));
+	
+	// week day
+	case 7:
+		return (pd->date.dayOfWeek == nValue);
+	// tithi
+	case 8:
+		return (pd->astrodata.nTithi % 15 == nValue);
+	// paksa
+	case 9:
+		return (pd->astrodata.nPaksa == nValue);
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+	case 14:
+		if (nValue == 0xffff)
+		{
+			return pd->hasEventsOfDisplayIndex(pcstr[nClass]);
+		}
+		else
+		{
+			if (pd->astrodata.nMasa == 12)
+				return FALSE;
+			if (abs(pd->astrodata.nTithi + pd->astrodata.nMasa*30 - nValue + 200) > 2)
+				return FALSE;
+			if (pd->findEventsText(strText) != NULL)
+				return TRUE;
+		}
+		return FALSE;
+	case 15:
+		if (nValue == 0xffff)
+		{
+			//return (strText.Find(pcstr[15]) >= 0);
+			return false;
+		}
+		else
+		{
+			// difference against 10-14 is that we cannot test tithi-masa date
+			// because some festivals in this category depends on sankranti
+			if (pd->findEventsText(strText) != NULL)
+				return TRUE;
+		}
+		return FALSE;
+	default:
+		return defaultRet;
+	}
 }

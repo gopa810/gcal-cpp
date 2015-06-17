@@ -8,6 +8,7 @@ class GCSankranti
 public:
 	GCSankranti(void);
 	~GCSankranti(void);
+	static int sankrantiDetermineType;
 
 	static int GetSankrantiType(void);
 	static int SetSankrantiType(int i);

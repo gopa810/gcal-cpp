@@ -4,18 +4,10 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgStringManager.h"
-#include "strings.h"
 #include "DlgEditString.h"
-#include "avc.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-extern GCalApp theApp;
+#include "GCUserInterface.h"
+#include "GCGlobal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgStringManager dialog
@@ -74,7 +66,7 @@ void DlgStringManager::OnEdit()
 		if (des.DoModal()==IDOK)
 		{
 			m_List.SetItemText(i, 1, des.m_new);
-			gstr_Modified = 1;
+			GCStrings::gstr_Modified = 1;
 		}
 	}
 }
@@ -98,7 +90,7 @@ BOOL DlgStringManager::OnInitDialog()
 
 	InitListWithStrings();
 
-	GetDlgItem(IDC_BUTTON5)->EnableWindow(theApp.m_bHelpAvailable);
+	GetDlgItem(IDC_BUTTON5)->EnableWindow(GCGlobal::application.m_bHelpAvailable);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -137,7 +129,7 @@ void DlgStringManager::OnImport()
 			InitListWithStrings();
 			str.Format("Imported %d strings", i);
 			MessageBox(str, "Import Strings", MB_OK | MB_ICONINFORMATION);
-			gstr_Modified = 1;
+			GCStrings::gstr_Modified = 1;
 		}
 	}
 }
@@ -167,7 +159,7 @@ void DlgStringManager::OnExport()
 
 void DlgStringManager::OnButton4() 
 {
-	InitGlobalStrings(1);
+	GCStrings::InitGlobalStrings(1);
 	InitListWithStrings();
 }
 
@@ -208,7 +200,7 @@ void DlgStringManager::InitListWithStrings()
 void DlgStringManager::OnHelp() 
 {
 	// TODO: Add your control notification handler code here
-	GCalShowHelp("ref-strman.htm");
+	GCUserInterface::ShowHelp("ref-strman.htm");
 	
 }
 

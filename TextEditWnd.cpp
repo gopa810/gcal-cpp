@@ -6,16 +6,6 @@
 #include "TextEditWnd.h"
 #include "FrameMain.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-
-int AvcOneStepBack(CFrameMain *);
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CTextEditWnd
 
@@ -95,7 +85,7 @@ void CTextEditWnd::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case VK_BACK:
 		if (m_bKeyControl == TRUE)
 		{
-			AvcOneStepBack((CFrameMain *)GetParent());
+			((CFrameMain *)GetParent())->AvcOneStepBack();
 		}
 		break;
 	case VK_F11:

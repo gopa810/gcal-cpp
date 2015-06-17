@@ -6,12 +6,6 @@
 #include "RichEditResults.h"
 #include "FrameMain.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // CRichEditResults
 
@@ -24,9 +18,6 @@ CRichEditResults::CRichEditResults()
 CRichEditResults::~CRichEditResults()
 {
 }
-
-int AvcOneStepBack(CFrameMain *);
-
 
 BEGIN_MESSAGE_MAP(CRichEditResults, CRichEditCtrl)
 	//{{AFX_MSG_MAP(CRichEditResults)
@@ -152,7 +143,7 @@ void CRichEditResults::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case VK_BACK:
 		if (m_bCtrl == TRUE)
 		{
-			AvcOneStepBack(Getparent());
+			Getparent()->AvcOneStepBack();
 		}
 		break;
 	case 'E':

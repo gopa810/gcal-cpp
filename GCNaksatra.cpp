@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GCNaksatra.h"
 #include "GCMoonData.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCAyanamsha.h"
 #include "GCStrings.h"
 #include "TFileXml.h"
@@ -24,7 +24,7 @@ double GCNaksatra::CalculateMidnightNaksatra(VCTIME date, EARTHDATA earth)
 	date.shour = 1.0;
 	jdate = date.GetJulianDetailed();
 	moon.Calculate(jdate, earth);
-	d = put_in_360( moon.longitude_deg - GCAyanamsha::GetAyanamsa(jdate));
+	d = GCMath::putIn360( moon.longitude_deg - GCAyanamsha::GetAyanamsa(jdate));
 	return floor(( d * 3.0) / 40.0 );
 }
 
@@ -54,7 +54,7 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	VCTIME xd;
 
 	moon.Calculate(jday, ed);
-	l1 = put_in_360(moon.longitude_deg - ayanamsa);
+	l1 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 	prev_naks = int(floor(l1 / phi));
 
 	int counter = 0;
@@ -72,7 +72,7 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 		}
 
 		moon.Calculate(jday, ed);
-		l2 = put_in_360(moon.longitude_deg - ayanamsa);
+		l2 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 		new_naks = int(floor(l2/phi));
 		if (prev_naks != new_naks)
 		{
@@ -117,7 +117,7 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	VCTIME xd;
 
 	moon.Calculate(jday, ed);
-	l1 = put_in_360(moon.longitude_deg - ayanamsa);
+	l1 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 	prev_naks = int(floor(l1/phi));
 
 	int counter = 0;
@@ -135,7 +135,7 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 		}
 
 		moon.Calculate(jday, ed);
-		l2 = put_in_360(moon.longitude_deg - ayanamsa);
+		l2 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 		new_naks = int(floor(l2/phi));
 
 		if (prev_naks != new_naks)
@@ -238,4 +238,13 @@ int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCou
 
 
 	return 1;
+}
+
+double GCNaksatra::GetEndHour(EARTHDATA earth, VCTIME yesterday, VCTIME today)
+{
+	VCTIME nend;
+	VCTIME snd = yesterday;
+	snd.shour = 0.5;
+	GCNaksatra::GetNextNaksatra(earth, snd, nend);
+	return nend.GetJulian() - today.GetJulian() + nend.shour;
 }

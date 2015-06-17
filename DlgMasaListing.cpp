@@ -5,7 +5,7 @@
 #include "VCal5beta.h"
 #include "DlgMasaListing.h"
 
-#include "strings.h"
+#include "TString.h"
 #include "TResultMasaList.h"
 #include "GCUserInterface.h"
 

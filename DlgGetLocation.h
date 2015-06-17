@@ -36,6 +36,8 @@ public:
 	BOOL wrongCoordinates;
 	const char * errorText;
 	DlgGetLocation(LPCTSTR szTitle, CWnd* pParent = NULL);   // standard constructor
+	int LocGetDeg(double d);
+	int LocGetArc(double d);
 
 // Dialog Data
 	//{{AFX_DATA(DlgGetLocation)

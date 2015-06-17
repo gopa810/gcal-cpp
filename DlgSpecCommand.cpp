@@ -9,14 +9,8 @@
 #include "Location.h"
 #include "TTimeZone.h"
 #include "CustomEvent.h"
-#include "strings.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "GCGlobal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgSpecCommand dialog
@@ -89,7 +83,7 @@ void DlgSpecCommand::ExportLocsCocoa()
 
 		if (std.Open(cfd.GetPathName(), CFile::modeWrite|CFile::modeCreate))
 		{
-			CLocation * p = theLocs.GetHeadPosition();
+			CLocation * p = GCGlobal::locationsList.GetHeadPosition();
 			while(p)
 			{
 				str.Format("%s|%s|%s|%s|%s#",
@@ -190,7 +184,7 @@ void DlgSpecCommand::ExportEventsCocoa()
 
 		if (std.Open(cfd.GetPathName(), CFile::modeWrite|CFile::modeCreate))
 		{
-			CCustomEvent * p = gCustomEventList.list;
+			CCustomEvent * p = GCGlobal::customEventList.list;
 			while(p)
 			{
 				str.Format("%s|%d|%d|%d|%d|%s|%d|%d|%d~",

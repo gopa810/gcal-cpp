@@ -1,14 +1,4 @@
-// TLocation.h: interface for the TLocation class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_TLOCATION_H__1A20E2CD_B98A_47EC_B2F7_7CD68C11DBCB__INCLUDED_)
-#define AFX_TLOCATION_H__1A20E2CD_B98A_47EC_B2F7_7CD68C11DBCB__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// PORTABLE
 
 class TLocation  
 {
@@ -22,8 +12,6 @@ public:
 	unsigned short country_code;
 	unsigned short timezone_id;
 
+	static const char * ParseDegreesFromString(const char * str, bool bNorth, double &Longitude);
 };
 
-extern TLocation gloc[];
-
-#endif // !defined(AFX_TLOCATION_H__1A20E2CD_B98A_47EC_B2F7_7CD68C11DBCB__INCLUDED_)

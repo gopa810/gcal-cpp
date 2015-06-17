@@ -5,23 +5,15 @@
 #include <winreg.h>
 #include <sys\stat.h>
 #include <sys\types.h>
-#include "avc.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "GCGlobal.h"
+#include "enums.h"
+#include "GCWelcomeTips.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CTipDlg dialog
 
 #define MAX_BUFLEN 1000
-
-static const TCHAR szSection[] = _T("Tip");
-static const TCHAR szIntFilePos[] = _T("FilePos");
-static const TCHAR szTimeStamp[] = _T("TimeStamp");
-static const TCHAR szIntStartup[] = _T("StartUp");
 
 CTipDlg::CTipDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_TIP, pParent)
@@ -33,11 +25,11 @@ CTipDlg::CTipDlg(CWnd* pParent /*=NULL*/)
 	// We need to find out what the startup and file position parameters are
 	// If startup does not exist, we assume that the Tips on startup is checked TRUE.
 	CWinApp* pApp = AfxGetApp();
-	m_bStartup = !pApp->GetProfileInt(szSection, szIntStartup, 0);
-	UINT iFilePos = pApp->GetProfileInt(szSection, szIntFilePos, 0);
+	m_bStartup = !pApp->GetProfileInt(GCWelcomeTips::szSection, GCWelcomeTips::szIntStartup, 0);
+	UINT iFilePos = pApp->GetProfileInt(GCWelcomeTips::szSection, GCWelcomeTips::szIntFilePos, 0);
 
 	// Now try to open the tips file
-	m_pStream = fopen(GCalApp_GetFileName(GSTR_TIPS_FILE), "r");
+	m_pStream = fopen(GCGlobal::getFileName(GSTR_TIPS_FILE), "r");
 	if (m_pStream == NULL) 
 	{
 		m_strTip.LoadString(CG_IDS_FILE_ABSENT);
@@ -53,11 +45,11 @@ CTipDlg::CTipDlg(CWnd* pParent /*=NULL*/)
 	CString strCurrentTime = ctime(&buf.st_ctime);
 	strCurrentTime.TrimRight();
 	CString strStoredTime = 
-		pApp->GetProfileString(szSection, szTimeStamp, NULL);
+		pApp->GetProfileString(GCWelcomeTips::szSection, GCWelcomeTips::szTimeStamp, NULL);
 	if (strCurrentTime != strStoredTime) 
 	{
 		iFilePos = 0;
-		pApp->WriteProfileString(szSection, szTimeStamp, strCurrentTime);
+		pApp->WriteProfileString(GCWelcomeTips::szSection, GCWelcomeTips::szTimeStamp, strCurrentTime);
 	}
 
 	if (fseek(m_pStream, iFilePos, SEEK_SET) != 0) 
@@ -81,7 +73,7 @@ CTipDlg::~CTipDlg()
 	if (m_pStream != NULL) 
 	{
 		CWinApp* pApp = AfxGetApp();
-		pApp->WriteProfileInt(szSection, szIntFilePos, ftell(m_pStream));
+		pApp->WriteProfileInt(GCWelcomeTips::szSection, GCWelcomeTips::szIntFilePos, ftell(m_pStream));
 		fclose(m_pStream);
 	}
 }
@@ -158,7 +150,7 @@ void CTipDlg::OnOK()
 	
     // Update the startup information stored in the INI file
 	CWinApp* pApp = AfxGetApp();
-	pApp->WriteProfileInt(szSection, szIntStartup, !m_bStartup);
+	pApp->WriteProfileInt(GCWelcomeTips::szSection, GCWelcomeTips::szIntStartup, !m_bStartup);
 }
 
 BOOL CTipDlg::OnInitDialog()

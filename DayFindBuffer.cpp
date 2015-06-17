@@ -5,20 +5,11 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DayFindBuffer.h"
-#include "strings.h"
 #include "GCStrings.h"
 #include "GCSankranti.h"
 #include "TTimeZone.h"
 #include "GCDisplaySettings.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-
-extern int gp_Fasting[];
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

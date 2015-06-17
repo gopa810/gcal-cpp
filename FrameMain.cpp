@@ -7,7 +7,6 @@
 #include "level_0.h"
 #include "TResultCalendar.h"
 
-#include "strings.h"
 #include "TFile.h"
 #include "dlgselectlangoutput.h"
 #include <C:\Program Files (x86)\HTML Help Workshop\include\htmlhelp.h>
@@ -36,24 +35,9 @@
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
 #include "GCUserInterface.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-int AvcGetNextLine(TString &, TString &, int &);
-int AvcGetTextLineCount(VAISNAVADAY * pvd);
-
-extern GCalApp theApp;
-extern CLocationRef gMyLocation;
-extern CLocationRef gLastLocation;
-extern VCTIME gTodayAct;
-extern VCTIME gToday;
-extern VCTIME gTomorrow;
-extern VCTIME gYesterday;
-
+#include "GCGlobal.h"
+#include "GCTextParser.h"
+#include "enums.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -189,23 +173,7 @@ BEGIN_MESSAGE_MAP(CFrameMain, CFrameWnd)
 END_MESSAGE_MAP()
 
 
-////////////////////////////////////////////////////////
 
-#define MW_MODE_CAL      1
-#define MW_MODE_EVENTS   2
-#define MW_MODE_MASALIST 3
-#define MW_MODE_APPDAY   6
-#define MW_MODE_TODAY    7
-
-
-void GCalShowHelp(LPCTSTR pszFile)
-{
-	CString str;
-
-	str.Format("gcal.chm::/%s", pszFile);
-
-	HtmlHelp(NULL, str, HH_DISPLAY_TOPIC, 0);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameMain message handlers
@@ -502,7 +470,7 @@ void CFrameMain::OnCalculateMasalisting()
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
-	d1.m_location = gLastLocation;
+	d1.m_location = GCGlobal::lastLocation;
 	if (m_bJumpToFinalStep == TRUE)
 	{
 		m_bJumpToFinalStep = FALSE;
@@ -539,7 +507,7 @@ _step_final:
 
 void CFrameMain::OnExportEvents() 
 {
-	theFrameServer.CreateNewEventsFrame();
+	GCUserInterface::windowController.CreateNewEventsFrame();
 }
 
 void CFrameMain::OnExportLocationslist() 
@@ -550,7 +518,7 @@ void CFrameMain::OnExportLocationslist()
 		return;
 
 	// 0 = TXT, 1 = XML
-	theLocs.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
+	GCGlobal::locationsList.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
 }
 
 void CFrameMain::OnHelpAbout() 
@@ -563,7 +531,7 @@ void CFrameMain::OnHelpAbout()
 
 void CFrameMain::OnToolsFindMhd() 
 {
-	theFrameServer.CreateNewFindFrame();
+	GCUserInterface::windowController.CreateNewFindFrame();
 	return;
 }
 
@@ -611,7 +579,7 @@ void CFrameMain::OnEditSelectall()
 
 void CFrameMain::OnToolsNewwindow() 
 {
-	CFrameMain * newFrame = theFrameServer.CreateNewFrame();
+	CFrameMain * newFrame = GCUserInterface::windowController.CreateNewFrame();
 	
 	if (newFrame == NULL)
 	{
@@ -621,13 +589,13 @@ void CFrameMain::OnToolsNewwindow()
 
 void CFrameMain::OnClose() 
 {
-	GetWindowRect(theFrameServer.m_rectMain);
+	GetWindowRect(GCUserInterface::windowController.m_rectMain);
 
-	theFrameServer.ChangeMainWindow(this);
+	GCUserInterface::windowController.ChangeMainWindow(this);
 
 	CFrameWnd::OnClose();
 
-	theFrameServer.OnClose(this);
+	GCUserInterface::windowController.OnClose(this);
 }
 
 void CFrameMain::OnWindowClose() 
@@ -637,9 +605,9 @@ void CFrameMain::OnWindowClose()
 
 void CFrameMain::OnFileExit() 
 {
-	//theFrameServer.LockServer();
+	//GCUserInterface::windowController.LockServer();
 	
-	//theFrameServer.CloseAllWindows();
+	//GCUserInterface::windowController.CloseAllWindows();
 
 	//PostQuitMessage(0);
 	OnClose();
@@ -663,18 +631,18 @@ void CFrameMain::OnCalculateToday()
 
 	SYSTEMTIME st;
 	GetLocalTime(&st);
-	gTodayAct.day = st.wDay;
-	gTodayAct.month = st.wMonth;
-	gTodayAct.year = st.wYear;
-	gTodayAct.shour = 0.5;
-	gTodayAct.tzone = gMyLocation.m_fTimezone;
-	gToday = gTodayAct;
-	gTomorrow = gToday;
-	gTomorrow.NextDay();
-	gYesterday = gToday;
-	gYesterday.PreviousDay();
+	GCGlobal::dateTimeShown.day = st.wDay;
+	GCGlobal::dateTimeShown.month = st.wMonth;
+	GCGlobal::dateTimeShown.year = st.wYear;
+	GCGlobal::dateTimeShown.shour = 0.5;
+	GCGlobal::dateTimeShown.tzone = GCGlobal::myLocation.m_fTimezone;
+	GCGlobal::dateTimeToday = GCGlobal::dateTimeShown;
+	GCGlobal::dateTimeTomorrow = GCGlobal::dateTimeToday;
+	GCGlobal::dateTimeTomorrow.NextDay();
+	GCGlobal::dateTimeYesterday = GCGlobal::dateTimeToday;
+	GCGlobal::dateTimeYesterday.PreviousDay();
 
-	m_today.Calculate(gTodayAct, gMyLocation);
+	m_today.Calculate(GCGlobal::dateTimeShown, GCGlobal::myLocation);
 
 	if (GCUserInterface::ShowMode == 1)
 	{
@@ -685,7 +653,7 @@ void CFrameMain::OnCalculateToday()
 	else
 	{
 		m_today.formatPlain(str);
-		VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
+		VCTIME::GetDateTextWithTodayExt(info, GCGlobal::dateTimeShown);
 		SetInfoText(info, MW_MODE_TODAY);
 		m_textTXT.SetWindowText(str);
 		m_strTxt = str;
@@ -700,10 +668,10 @@ void CFrameMain::OnCalculatePreviousday()
 	if (m_nInfoType == MW_MODE_TODAY)
 	{
 		TString info;
-		gTodayAct.PreviousDay();
-		gTodayAct.tzone = gMyLocation.m_fTimezone;
+		GCGlobal::dateTimeShown.PreviousDay();
+		GCGlobal::dateTimeShown.tzone = GCGlobal::myLocation.m_fTimezone;
 
-		m_today.Calculate(gTodayAct, gMyLocation);
+		m_today.Calculate(GCGlobal::dateTimeShown, GCGlobal::myLocation);
 
 		if (GCUserInterface::ShowMode == 1)
 		{
@@ -714,7 +682,7 @@ void CFrameMain::OnCalculatePreviousday()
 		else
 		{
 			m_today.formatPlain(str);
-			VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
+			VCTIME::GetDateTextWithTodayExt(info, GCGlobal::dateTimeShown);
 			info.Insert(0, " ");
 			SetInfoText(info, MW_MODE_TODAY);
 			m_textTXT.SetWindowText(str);
@@ -731,10 +699,10 @@ void CFrameMain::OnCalculateNextday()
 	TString str, info;
 	if (m_nInfoType == MW_MODE_TODAY)
 	{
-		gTodayAct.NextDay();
-		gTodayAct.tzone = gMyLocation.m_fTimezone;
+		GCGlobal::dateTimeShown.NextDay();
+		GCGlobal::dateTimeShown.tzone = GCGlobal::myLocation.m_fTimezone;
 
-		m_today.Calculate(gTodayAct, gMyLocation);
+		m_today.Calculate(GCGlobal::dateTimeShown, GCGlobal::myLocation);
 
 		if (GCUserInterface::ShowMode == 1)
 		{
@@ -745,7 +713,7 @@ void CFrameMain::OnCalculateNextday()
 		else
 		{
 			m_today.formatPlain(str);
-			VCTIME::GetDateTextWithTodayExt(info, gTodayAct);
+			VCTIME::GetDateTextWithTodayExt(info, GCGlobal::dateTimeShown);
 			info.Insert(0, " ");
 			SetInfoText(info, MW_MODE_TODAY);
 			m_textTXT.SetWindowText(str);
@@ -763,7 +731,7 @@ void CFrameMain::OnSettingsMylocation()
 
 	if (d1.m_nNextStep == 1)
 	{
-		gMyLocation = d1.m_location;
+		GCGlobal::myLocation = d1.m_location;
 		if (m_nInfoType == 7)
 			OnCalculateToday();
 	}
@@ -800,7 +768,7 @@ void CFrameMain::OnSettingsCalendarlist()
 	{
 		RecalculateCurrentScreen();
 	}
-	theFrameServer.UpdateAllEventFrames();
+	GCUserInterface::windowController.UpdateAllEventFrames();
 }
 
 void CFrameMain::OnUpdateCalculatePreviousday(CCmdUI* pCmdUI) 
@@ -825,14 +793,14 @@ void CFrameMain::OnSettingsLanguageOutput()
 	{
 		if (d.m_pfi == NULL)
 		{
-			InitGlobalStrings(0);
-//			theApp.m_strLangFile.Empty();
+			GCStrings::InitGlobalStrings(0);
+//			GCGlobal::application.m_strLangFile.Empty();
 			AfxMessageBox("Language for Output set succesfully to default (English).", MB_OK);
 			RecalculateCurrentScreen();
 		}
 		else
 		{
-			if (theApp.InitLanguageOutputFromFile( d.m_pfi->m_strFile ) == FALSE)
+			if (GCGlobal::application.InitLanguageOutputFromFile( d.m_pfi->m_strFile ) == FALSE)
 			{
 				AfxMessageBox("Error opening file with Language for Output.", MB_OK | MB_ICONSTOP);
 			}
@@ -845,28 +813,28 @@ void CFrameMain::OnSettingsLanguageOutput()
 	}
 }
 
-int AvcOneStepBack(CFrameMain * pFrame)
+int CFrameMain::AvcOneStepBack()
 {
-	pFrame->m_bJumpToFinalStep = TRUE;
-	switch(pFrame->m_nInfoType)
+	this->m_bJumpToFinalStep = TRUE;
+	switch(this->m_nInfoType)
 	{
 	case 1:
-		pFrame->OnCalculateCalendar();
+		this->OnCalculateCalendar();
 		break;
 	case 2:
-		pFrame->OnCalculateEvents();
+		this->OnCalculateEvents();
 		break;
 	case 3:
-		pFrame->OnCalculateMasalisting();
+		this->OnCalculateMasalisting();
 		break;
 	case 6:
-		pFrame->OnCalculateAppearanceday();
+		this->OnCalculateAppearanceday();
 		break;
 	default:
 		break;
 	}
 
-	return pFrame->m_nInfoType;
+	return this->m_nInfoType;
 }
 
 void CFrameMain::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -892,7 +860,7 @@ void CFrameMain::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case VK_BACK:
 		if (m_bKeyControl == TRUE)
 		{
-			AvcOneStepBack(this);
+			this->AvcOneStepBack();
 		}
 		break;
 	case 'E':
@@ -963,7 +931,7 @@ void CFrameMain::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CFrameMain::OnSettingsLocations() 
 {
-	theFrameServer.CreateNewLocationFrame();
+	GCUserInterface::windowController.CreateNewLocationFrame();
 
 	//DlgGetLocationEx dex;
 	//dex.DoModal();
@@ -1205,15 +1173,8 @@ void CFrameMain::RecalculateCurrentScreen()
 	{
 	case MW_MODE_CAL:
 		{
-			DlgCalcProgress dcp;
+			GCUserInterface::CreateProgressWindow();
 
-			dcp.Create(IDD_CALC_PROGRESS, AfxGetMainWnd());
-			dcp.CenterWindow();
-			dcp.ShowWindow(SW_SHOW);
-			dcp.UpdateWindow();
-
-			m_calendar.m_pProgress = &(dcp.m_p1);
-			
 			if (GCUserInterface::ShowMode == 0)
 			{
 				m_calendar.formatPlainText(text);
@@ -1227,9 +1188,7 @@ void CFrameMain::RecalculateCurrentScreen()
 			}
 			//m_text.SetTextRtf(&text);
 
-			m_calendar.m_pProgress = NULL;
-
-			dcp.DestroyWindow();
+			GCUserInterface::CloseProgressWindow();
 		}
 		//AfxCalculateCalendar(m_calendar, earth.earth, calendar.date, calendar.count, earth.dst, calendar.locinfo, text);
 		//AddNote1(text);
@@ -1275,7 +1234,7 @@ void CFrameMain::RecalculateCurrentScreen()
 			}
 		break;
 	case MW_MODE_TODAY:
-		gTodayAct.NextDay();
+		GCGlobal::dateTimeShown.NextDay();
 		OnCalculatePreviousday();
 		break;
 	case 9://find-day
@@ -1728,7 +1687,7 @@ void CFrameMain::OnSetFocus(CWnd* pOldWnd)
 	CFrameWnd::OnSetFocus(pOldWnd);
 	
 
-	theApp.m_pMainWnd = this;
+	GCGlobal::application.m_pMainWnd = this;
 }
 
 void CFrameMain::OnSizing(UINT fwSide, LPRECT pRect) 
@@ -1763,7 +1722,7 @@ void CFrameMain::RecalculateTodayScreen()
 {
 	if (m_nInfoType == MW_MODE_TODAY)
 	{
-		gTodayAct.NextDay();
+		GCGlobal::dateTimeShown.NextDay();
 		OnCalculatePreviousday();
 	}
 }
@@ -1972,39 +1931,39 @@ void CFrameMain::OnHelpShowstartuptips()
 void CFrameMain::OnHelpOfflinehelp() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("index.htm");
+	GCUserInterface::ShowHelp("index.htm");
 }
 
 void CFrameMain::OnUpdateHelpOfflinehelp(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 }
 
 void CFrameMain::OnHelpHelptopicquickguide() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("quick-main.htm");	
+	GCUserInterface::ShowHelp("quick-main.htm");	
 }
 
 void CFrameMain::OnUpdateHelpHelptopicquickguide(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }
 
 void CFrameMain::OnHelpHelptopicthiswindow() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("ref-main.htm");
+	GCUserInterface::ShowHelp("ref-main.htm");
 	
 }
 
 void CFrameMain::OnUpdateHelpHelptopicthiswindow(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }
 

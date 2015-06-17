@@ -14,6 +14,6 @@ public:
 	static int GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &prevDate);
 	static double CalculateMidnightNaksatra(VCTIME date, EARTHDATA earth);
 	static int writeXml(FILE *, CLocationRef &loc, VCTIME, int);
-
+	static double GetEndHour(EARTHDATA earth, VCTIME yesterday, VCTIME today);
 };
 

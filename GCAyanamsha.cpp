@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GCAyanamsha.h"
 
-int gAyaType = 1;
+int GCAyanamsha::ayamashaType = 1;
 
 GCAyanamsha::GCAyanamsha(void)
 {
@@ -28,7 +28,7 @@ double GCAyanamsha::GetAyanamsa(double jdate)
 //1.3971948971667
 	t = (jdate - 2451545.0) / 36525.0;
 	d = (5028.796195 - 1.1054348*t)*t / 3600.0;
-	switch(gAyaType)
+	switch(GCAyanamsha::ayamashaType)
 	{
 		case 0: // Fagan-Bradley
 			a1 = 24.8361111111 -0.095268987143399+ d; 
@@ -76,7 +76,7 @@ const char * GCAyanamsha::GetAyanamsaName(int nType)
 
 int GCAyanamsha::GetAyanamsaType(void)
 {
-	return gAyaType;
+	return GCAyanamsha::ayamashaType;
 }
 
 //==================================================================
@@ -85,8 +85,8 @@ int GCAyanamsha::GetAyanamsaType(void)
 
 int GCAyanamsha::SetAyanamsaType(int i)
 {
-	int prev = gAyaType;
-	gAyaType = i;
+	int prev = GCAyanamsha::ayamashaType;
+	GCAyanamsha::ayamashaType = i;
 	return prev;
 }
 
@@ -106,7 +106,7 @@ int GCAyanamsha::SetAyanamsaType(int i)
 21.6.2050     24-33-29  2469979.000000 24,558055556
 14.6.2100     25-15-29  2488234.000000 25,258055556*/
 
-double GetLahiriAyanamsa(double d)
+double GCAyanamsha::GetLahiriAyanamsa(double d)
 {
 	double h[] = { 2415259.000000,22.475,
 		2433486.000000,23.16472,

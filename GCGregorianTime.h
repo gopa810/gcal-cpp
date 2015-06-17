@@ -39,6 +39,7 @@ public:
 	static int GetMonthMaxDays(int year, int month);
 	static void GetDateTextWithTodayExt(TString &, VCTIME date);
 	static double CalculateJulianDay(int, int, int);
+	const char * ToString(VCTIME vc);
 
 
 	int operator=(int i);

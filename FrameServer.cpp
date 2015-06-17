@@ -6,17 +6,8 @@
 #include "vcal5beta.h"
 #include "FrameServer.h"
 #include "GCStrings.h"
+#include "GCGlobal.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-#include "strings.h"
-
-extern GCalApp theApp;
-
-CFrameServer theFrameServer;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -56,7 +47,7 @@ CFrameMain * CFrameServer::CreateNewFrame()
 	CFrameMain * pMainFrame = new CFrameMain;
 
 	if (m_mainIcon == NULL)
-		m_mainIcon = theApp.LoadIcon(IDR_MAINFRAME);
+		m_mainIcon = GCGlobal::application.LoadIcon(IDR_MAINFRAME);
 
 	if ((m_Arr.GetCount() == 0) && (m_rectMain.Width() > 80) && (m_rectMain.left >= 0) && (m_rectMain.top >= 0))
 	{
@@ -105,7 +96,7 @@ void CFrameServer::OnClose(CFrameMain *pFrame)
 		CloseAllFinders();
 		CloseAllLocs();
 		CloseAllEventFrames();
-//		theApp.ExitInstance();
+//		GCGlobal::application.ExitInstance();
 		PostQuitMessage(0);
 	}
 
@@ -148,7 +139,7 @@ void CFrameServer::ChangeMainWindow(CFrameMain *pFrame)
 		p = m_Arr.GetAt(pos);
 		if (p != pFrame)
 		{
-			theApp.m_pMainWnd = p;
+			GCGlobal::application.m_pMainWnd = p;
 			return;
 		}
 		m_Arr.GetNext(pos);
@@ -197,7 +188,7 @@ void CFrameServer::RemoveFromFinders()
 	{
 		p = m_Arr.GetAt(pos);
 		p->SetFocus();
-		theApp.m_pMainWnd = p;
+		GCGlobal::application.m_pMainWnd = p;
 	}
 }
 
@@ -243,7 +234,7 @@ void CFrameServer::RemoveFromLocs()
 	{
 		p = m_Arr.GetAt(pos);
 		p->SetFocus();
-		theApp.m_pMainWnd = p;
+		GCGlobal::application.m_pMainWnd = p;
 	}
 }
 
@@ -292,7 +283,7 @@ void CFrameServer::RemoveFromEventFrames()
 	{
 		p = m_Arr.GetAt(pos);
 		p->SetFocus();
-		theApp.m_pMainWnd = p;
+		GCGlobal::application.m_pMainWnd = p;
 	}
 }
 

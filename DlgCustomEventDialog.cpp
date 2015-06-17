@@ -6,15 +6,8 @@
 #include "DlgCustomEventDialog.h"
 #include "DlgEditCustomEvent.h"
 #include "CustomEvent.h"
-
-#include "avc.h"
+#include "GCGlobal.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /*extern TString gCustomEventTexts[360];*/
 
@@ -67,7 +60,7 @@ BOOL DlgCustomEventDialog::OnInitDialog()
 	int n;
 
 
-	pos = gCustomEventList.list;
+	pos = GCGlobal::customEventList.list;
 	while(pos)
 	{
 		n = m_list.InsertItem(1000, GCStrings::GetTithiName(pos->nTithi));
@@ -203,7 +196,7 @@ void DlgCustomEventDialog::OnOK()
 {
 	int i, max, data;
 	// TODO: Add extra validation here
-	gCustomEventList.clear();
+	GCGlobal::customEventList.clear();
 	
 	CCustomEvent * pce;
 
@@ -218,7 +211,7 @@ void DlgCustomEventDialog::OnOK()
 
 	for(i = 0; i < max; i++)
 	{
-		pce = gCustomEventList.add();
+		pce = GCGlobal::customEventList.add();
 		if (pce)
 		{
 			data = m_list.GetItemData(i);
@@ -237,7 +230,7 @@ void DlgCustomEventDialog::OnOK()
 		}
 	}
 
-//	CustomEventListWriteFile(GCalApp_GetFileName(GSTR_CE_FILE));
+//	CCustomEventList::WriteFile(GCGlobal::getFileName(GSTR_CE_FILE));
 
 	CDialog::OnOK();
 }

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GCSunData.h"
-#include "gmath.h"
-#include "math.h"
+#include "GCMath.h"
 
 SUNDATA::SUNDATA(void)
 {
@@ -13,8 +12,8 @@ SUNDATA::SUNDATA(void)
 double SUNDATA::GetSunLongitude(VCTIME vct)
 {
 //	double mel = 0.0;
-	double DG = MATH_PI / 180;
-	double RAD = 180 / MATH_PI;
+	double DG = GCMath::PI / 180;
+	double RAD = 180 / GCMath::PI;
 
 	// mean ecliptic longitude of the sun 
 	double mel = SUNDATA::SunGetMeanLong(vct.year, vct.month, vct.day) + (360/365.25)*(vct.shour - 0.5 - vct.tzone/24.0);
@@ -57,7 +56,7 @@ double SUNDATA::GetSunLongitude(VCTIME vct)
 	// ecliptic longitude of perigee 
 	double elp = SunGetPerigee(date.year, date.month, date.day);
 
-	// mean anomaly of the sun in rads
+	// mean anomaly of the sun in GCMath::RADS
 	double mas = (mel - elp) * pi / 180.0;
 
 	// ecliptic longitude of the sun
@@ -334,8 +333,8 @@ double SUNDATA::SunGetPerigee(int year, int month, int day)
 
 void SUNDATA::SunPosition(VCTIME vct, EARTHDATA ed, double dayHours)
 {
-	double DG = MATH_PI / 180;
-	double RAD = 180 / MATH_PI;
+	double DG = GCMath::PI / 180;
+	double RAD = 180 / GCMath::PI;
 
 	double x;
 

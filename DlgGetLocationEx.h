@@ -22,6 +22,7 @@ public:
 	int InitCitiesForCountry(int nCurrentCountry, const char * pszCurrentCity = NULL);
 	CLocation * m_lc;
 	DlgGetLocationEx(CWnd* pParent = NULL);   // standard constructor
+	static int nCurrentCountry;
 
 // Dialog Data
 	//{{AFX_DATA(DlgGetLocationEx)

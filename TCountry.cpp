@@ -6,12 +6,6 @@
 #include "TCountry.h"
 #include "TFileRichList.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 // PORTABLE
 
 //////////////////////////////////////////////////////////////////////
@@ -44,7 +38,7 @@ TCountry TCountry::gcountries_int[] =
 	{"AR", 16722, "Argentina", 4 }, //Argentina/Buenos_Aires
 	{"AS", 16723, "American Samoa", 5 }, //Pago_Pago
 	{"AT", 16724, "Austria", 1 }, //Vienna
-	{"AU", 16725, "Australia" }, // Australia/Adelaide
+	{"GCMath::AU", 16725, "Australia" }, // Australia/Adelaide
 	{"AW", 16727, "Aruba", 4 }, //Aruba
 	{"AZ", 16730, "Azerbaijan", 2 }, //Baku
 	{"BA", 16961, "Bosnia and Herzegovina", 1 }, //Sarajevo

@@ -57,6 +57,7 @@ public:
 	TString m_evString[MAX_CONDS];
 
 	CFont m_comboFont;
+	int NaplnComboFestivalom(CComboBox * pc, int nClass);
 	int NaplnComboBox(CComboBox * pc, int nClass);
 	CComboBox m_c[MAX_CONDS][2];
 	int GetProperHeight();

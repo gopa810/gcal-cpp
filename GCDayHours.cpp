@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCDayHours.h"
-#include "gmath.h"
+#include "GCMath.h"
 
 void DAYTIME::SetDayTime(double d)
 {
@@ -158,7 +158,7 @@ void DAYTIME::SetDegTime(double time_deg)
 {
 	double time_hr = 0.0;
 
-	time_deg = put_in_360(time_deg);
+	time_deg = GCMath::putIn360(time_deg);
 
 	// hour
 	time_hr = time_deg / 360 * 24;

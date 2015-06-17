@@ -19,9 +19,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="avc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CommandLineVCal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,18 +55,6 @@
     <ClCompile Include="FrameServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gcal_evx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="globvar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gmath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="init_tips.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ListBoxClipboarded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -95,9 +80,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="strings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TCountry.cpp">
@@ -298,6 +280,27 @@
     <ClCompile Include="TFileXml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TLocation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCGlobal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCTextParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCWelcomeTips.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCStringPair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GCMutableStringPairArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VCal5beta.rc">
@@ -305,9 +308,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="avc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CommandLineVCal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -425,12 +425,6 @@
     <ClInclude Include="FrameServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gcal_evx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gmath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LangFileInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -471,9 +465,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="strings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TCountry.h">
@@ -597,6 +588,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TFileXml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCGlobal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCTextParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCWelcomeTips.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCStringPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMutableStringPairArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

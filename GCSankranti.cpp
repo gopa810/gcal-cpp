@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCSankranti.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCAyanamsha.h"
 #include "GCSunData.h"
 #include "TFileXml.h"
@@ -21,7 +21,7 @@ GCSankranti::~GCSankranti(void)
 //
 //==================================================================
 
-int gSanType = 2;
+int GCSankranti::sankrantiDetermineType = 2;
 
 
 //==================================================================
@@ -30,7 +30,7 @@ int gSanType = 2;
 
 int GCSankranti::GetSankrantiType(void)
 {
-	return gSanType;
+	return GCSankranti::sankrantiDetermineType;
 }
 
 //==================================================================
@@ -39,8 +39,8 @@ int GCSankranti::GetSankrantiType(void)
 
 int GCSankranti::SetSankrantiType(int i)
 {
-	int prev = gSanType;
-	gSanType = i;
+	int prev = GCSankranti::sankrantiDetermineType;
+	GCSankranti::sankrantiDetermineType = i;
 	return prev;
 }
 
@@ -83,7 +83,7 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 	//d.ChangeTimeZone(0.0);
 	//d.shour = 0.0;
 
-	prev = put_in_360( SUNDATA::GetSunLongitude(d) - GCAyanamsha::GetAyanamsa(d.GetJulian()));
+	prev = GCMath::putIn360( SUNDATA::GetSunLongitude(d) - GCAyanamsha::GetAyanamsa(d.GetJulian()));
 	prev_rasi = (int)floor(prev / 30.0);
 
 	while(count < 20)
@@ -96,7 +96,7 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 			d.NextDay();
 		}
 		
-		ld = put_in_360(SUNDATA::GetSunLongitude(d) - GCAyanamsha::GetAyanamsa(d.GetJulian()));
+		ld = GCMath::putIn360(SUNDATA::GetSunLongitude(d) - GCAyanamsha::GetAyanamsa(d.GetJulian()));
 		new_rasi = (int)floor(ld/30.0);
 
 		if (prev_rasi != new_rasi)

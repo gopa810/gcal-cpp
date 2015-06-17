@@ -6,21 +6,12 @@
 #include "DlgGetLocation.h"
 #include "DlgGetLocationEx.h"
 #include "level_0.h"
-
+#include "GCMath.h"
 #include "TTimeZone.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-extern CLocationRef gLastLocation;
-extern CLocationRef gMyLocation;
-extern int g_dstSelMethod;
-
-const char * AvcGetEarthPosFromString(const char * str, bool bNorth, double &Longitude);
+#include "GCGlobal.h"
+#include "GCUserInterface.h"
+#include "TLocation.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocation dialog
@@ -80,37 +71,18 @@ BEGIN_MESSAGE_MAP(DlgGetLocation, CDialog)
 	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
-int LocGetDeg(double d)
+int DlgGetLocation::LocGetDeg(double d)
 {
 	return int(floor(fabs(d)));
 }
 
-int LocGetArc(double d)
+int DlgGetLocation::LocGetArc(double d)
 {
 	double a = fabs(d);
 	return int((a - floor(a))* 60.0 + 0.5);
 }
 
-const char * LocGetTextLong(double d)
-{
-	if (d < 0.0)
-		return "West";
 
-	return "East";
-}
-
-const char * LocGetTextLati(double d)
-{
-	if (d < 0.0)
-		return "South";
-
-	return "North";
-}
-
-double sign(double b)
-{
-	return (b < 0.0) ? -1.0 : 1.0;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocation message handlers
@@ -140,10 +112,10 @@ void DlgGetLocation::OnSelectLocation()
 		SetDlgItemInt(IDC_LATI_ARC, LocGetArc(d.m_lc->m_fLatitude));
 		SetDlgItemInt(IDC_LONG_DEG, LocGetDeg(d.m_lc->m_fLongitude));
 		SetDlgItemInt(IDC_LONG_ARC, LocGetArc(d.m_lc->m_fLongitude));
-		cLatiSw.SetWindowText(LocGetTextLati(d.m_lc->m_fLatitude));
-		cLongSw.SetWindowText(LocGetTextLong(d.m_lc->m_fLongitude));
-		m_latiSign = sign(d.m_lc->m_fLatitude);
-		m_longSign = sign(d.m_lc->m_fLongitude);
+		cLatiSw.SetWindowText(GCStrings::getLatitudeDirectionName(d.m_lc->m_fLatitude));
+		cLongSw.SetWindowText(GCStrings::getLongitudeDirectionName(d.m_lc->m_fLongitude));
+		m_latiSign = GCMath::getSign(d.m_lc->m_fLatitude);
+		m_longSign = GCMath::getSign(d.m_lc->m_fLongitude);
 		b_upd = true;
 		//UpdateDstByTimezone(m_location.m_fTimezone);
 
@@ -190,10 +162,10 @@ void DlgGetLocation::OnButtonNext()
 	// TODO: Add your control notification handler code here
 	if (m_bMyLocation)
 	{
-		gMyLocation = m_location;
+		GCGlobal::myLocation = m_location;
 	}
 
-	gLastLocation = m_location;
+	GCGlobal::lastLocation = m_location;
 
 	m_nNextStep = 1;
 	CDialog::OnOK();
@@ -213,11 +185,11 @@ BOOL DlgGetLocation::OnInitDialog()
 
 	if (m_bMyLocation)
 	{
-		m_location = gMyLocation;
+		m_location = GCGlobal::myLocation;
 	}
 	else
 	{
-		m_location = gLastLocation;
+		m_location = GCGlobal::lastLocation;
 	}
 
 	CDialog::OnInitDialog();
@@ -257,8 +229,8 @@ void DlgGetLocation::LocationToDialog()
 	SetDlgItemInt(IDC_LATI_ARC, LocGetArc(m_location.m_fLatitude));
 	SetDlgItemInt(IDC_LONG_DEG, LocGetDeg(m_location.m_fLongitude));
 	SetDlgItemInt(IDC_LONG_ARC, LocGetArc(m_location.m_fLongitude));
-	cLatiSw.SetWindowText(LocGetTextLati(m_location.m_fLatitude));
-	cLongSw.SetWindowText(LocGetTextLong(m_location.m_fLongitude));
+	cLatiSw.SetWindowText(GCStrings::getLatitudeDirectionName(m_location.m_fLatitude));
+	cLongSw.SetWindowText(GCStrings::getLongitudeDirectionName(m_location.m_fLongitude));
 	b_upd = true;
 
 	SetCurSelDST(m_location.m_nDST);
@@ -397,28 +369,28 @@ void DlgGetLocation::OnDropdownComboDst()
 void DlgGetLocation::OnBtnLong() 
 {
 	m_longSign = -m_longSign;
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLongitude = m_longSign * (double(GetDlgItemInt(IDC_LONG_DEG)) + double(GetDlgItemInt(IDC_LONG_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);
 	}
-	SetDlgItemText(IDC_BTN_LONG, LocGetTextLong(m_longSign));
+	SetDlgItemText(IDC_BTN_LONG, GCStrings::getLongitudeDirectionName(m_longSign));
 }
 
 void DlgGetLocation::OnBtnLati() 
 {
 	m_latiSign = -m_latiSign;
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLatitude = m_latiSign * (double(GetDlgItemInt(IDC_LATI_DEG)) + double(GetDlgItemInt(IDC_LATI_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);
 	}
-	SetDlgItemText(IDC_BTN_LATI, LocGetTextLati(m_latiSign));
+	SetDlgItemText(IDC_BTN_LATI, GCStrings::getLatitudeDirectionName(m_latiSign));
 }
 
 void DlgGetLocation::OnChangeLatiArc() 
 {
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLatitude = m_latiSign * (double(GetDlgItemInt(IDC_LATI_DEG)) + double(GetDlgItemInt(IDC_LATI_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);
@@ -427,7 +399,7 @@ void DlgGetLocation::OnChangeLatiArc()
 
 void DlgGetLocation::OnChangeLatiDeg() 
 {
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLatitude = m_latiSign * (double(GetDlgItemInt(IDC_LATI_DEG)) + double(GetDlgItemInt(IDC_LATI_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);
@@ -436,7 +408,7 @@ void DlgGetLocation::OnChangeLatiDeg()
 
 void DlgGetLocation::OnChangeLongArc() 
 {
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLongitude = m_longSign * (double(GetDlgItemInt(IDC_LONG_DEG)) + double(GetDlgItemInt(IDC_LONG_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);
@@ -445,7 +417,7 @@ void DlgGetLocation::OnChangeLongArc()
 
 void DlgGetLocation::OnChangeLongDeg() 
 {
-	if (g_dstSelMethod == 2 && b_upd == true)
+	if (GCUserInterface::dstSelectionMethod == 2 && b_upd == true)
 	{
 		m_location.m_fLongitude = m_longSign * (double(GetDlgItemInt(IDC_LONG_DEG)) + double(GetDlgItemInt(IDC_LONG_ARC))/60.0);	
 		UpdateDstByTimezone(m_location.m_fTimezone);

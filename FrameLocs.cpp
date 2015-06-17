@@ -4,26 +4,18 @@
 
 #include "stdafx.h"
 #include "vcal5beta.h"
+#include "GCMath.h"
 #include "FrameLocs.h"
 #include "FrameServer.h"
 #include "TCountry.h"
 #include "TTimeZone.h"
 #include "DlgEditLocation.h"
 #include "TFile.h"
-#include "avc.h"
 #include "DNewCountry.h"
 #include "DlgRenameCountry.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-extern CLocationRef gMyLocation;
-extern CLocationRef gLastLocation;
-
-extern GCalApp theApp;
+#include "GCGlobal.h"
+#include "GCUserInterface.h"
+#include "DlgGetLocationEx.h"
 
 BEGIN_MESSAGE_MAP(CFrameLocs, CFrameWnd)
 	//{{AFX_MSG_MAP(CFrameLocs)
@@ -52,10 +44,6 @@ BEGIN_MESSAGE_MAP(CFrameLocs, CFrameWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-
-
-extern int g_nCurrentCountry;
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -80,8 +68,8 @@ BOOL CFrameLocs::OnCommand(WPARAM wParam, LPARAM lParam)
 	case 121:
 		if (HIWORD(wParam)==CBN_SELENDOK)
 		{
-			g_nCurrentCountry = GetCountrySelected();
-			InitCityByCountry(g_nCurrentCountry);
+			DlgGetLocationEx::nCurrentCountry = GetCountrySelected();
+			InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 		}
 		break;
 	case 120:
@@ -189,8 +177,8 @@ int CFrameLocs::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 
 	InitCountries();
-	SetCountrySelected(g_nCurrentCountry);
-	InitCityByCountry(g_nCurrentCountry);
+	SetCountrySelected(DlgGetLocationEx::nCurrentCountry);
+	InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 
 	return 0;
 }
@@ -209,7 +197,7 @@ void CFrameLocs::OnDestroy()
 	CFrameBase::OnDestroy();
 	
 	// TODO: Add your message handler code here
-	theFrameServer.RemoveFromLocs();
+	GCUserInterface::windowController.RemoveFromLocs();
 }
 
 
@@ -250,7 +238,7 @@ void CFrameLocs::SetCountrySelected(int nCode)
 
 void CFrameLocs::InitCityByCountry(int nCode)
 {
-	CLocation *L = theLocs.GetHeadPosition();
+	CLocation *L = GCGlobal::locationsList.GetHeadPosition();
 	TString sc;
 	if (nCode != 0)
 	{
@@ -318,9 +306,9 @@ void CFrameLocs::OnLocationCreatelocation()
 
 	if (dlg.DoModal() == IDOK)
 	{
-		theLocs.AddTail( dlg.m_loc );
+		GCGlobal::locationsList.AddTail( dlg.m_loc );
 //		m_wndList.ResetContent();
-		InitCityByCountry( g_nCurrentCountry);
+		InitCityByCountry( DlgGetLocationEx::nCurrentCountry);
 	}
 	else
 	{
@@ -360,8 +348,8 @@ void CFrameLocs::OnLocationDeletelocation()
 
 	if (AfxMessageBox(str, MB_YESNO) == IDYES)
 	{
-		theLocs.RemoveAt(loc);
-		InitCityByCountry(g_nCurrentCountry);
+		GCGlobal::locationsList.RemoveAt(loc);
+		InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 		delete loc;
 	}	
 }
@@ -392,12 +380,12 @@ void CFrameLocs::OnLocationEditlocation()
 	if (dlg.m_loc == NULL)
 		return;
 
-	if ((fabs(dlg.m_loc->m_fLatitude - gMyLocation.m_fLatitude)<0.001)
-		&& (fabs(dlg.m_loc->m_fLongitude - gMyLocation.m_fLongitude)<0.001))
+	if ((GCMath::Fabs(dlg.m_loc->m_fLatitude - GCGlobal::myLocation.m_fLatitude)<0.001)
+		&& (fabs(dlg.m_loc->m_fLongitude - GCGlobal::myLocation.m_fLongitude)<0.001))
 		bUpdMyLoc = true;
 
-	if ((fabs(dlg.m_loc->m_fLatitude - gLastLocation.m_fLatitude)<0.001)
-		&& (fabs(dlg.m_loc->m_fLongitude - gLastLocation.m_fLongitude)<0.001))
+	if ((GCMath::Fabs(dlg.m_loc->m_fLatitude - GCGlobal::lastLocation.m_fLatitude)<0.001)
+		&& (fabs(dlg.m_loc->m_fLongitude - GCGlobal::lastLocation.m_fLongitude)<0.001))
 		bUpdLastLoc = true;
 
 	if (dlg.DoModal() == IDOK)
@@ -407,35 +395,35 @@ void CFrameLocs::OnLocationEditlocation()
 		m_wndLocs.SetItemText(n, 2, EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude));
 		m_wndLocs.SetItemText(n, 3, EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude));
 		m_wndLocs.SetItemText(n, 4, TTimeZone::GetTimeZoneName(dlg.m_loc->m_nDST));
-		// check is this location is gMyLocation or gLastLocation
+		// check is this location is GCGlobal::myLocation or GCGlobal::lastLocation
 		// if yes then change coordinates and names also in these variables
 		if (bUpdLastLoc)
 		{
-			gLastLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
-			gLastLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
-			gLastLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
-			gLastLocation.m_nDST = dlg.m_loc->m_nDST;
-			gLastLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
+			GCGlobal::lastLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
+			GCGlobal::lastLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
+			GCGlobal::lastLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
+			GCGlobal::lastLocation.m_nDST = dlg.m_loc->m_nDST;
+			GCGlobal::lastLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
-			gLastLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
-			gLastLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
-			gLastLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
+			GCGlobal::lastLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
+			GCGlobal::lastLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
+			GCGlobal::lastLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
 		}
 
 		if (bUpdMyLoc)
 		{
-			gMyLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
-			gMyLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
-			gMyLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
-			gMyLocation.m_nDST = dlg.m_loc->m_nDST;
-			gMyLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
+			GCGlobal::myLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
+			GCGlobal::myLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
+			GCGlobal::myLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
+			GCGlobal::myLocation.m_nDST = dlg.m_loc->m_nDST;
+			GCGlobal::myLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
-			gMyLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
-			gMyLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
-			gMyLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
-			theFrameServer.RecalculateAllTodayScreens();
+			GCGlobal::myLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
+			GCGlobal::myLocation.m_strLongitude = EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude);
+			GCGlobal::myLocation.m_strTimeZone = TTimeZone::GetTimeZoneOffsetText(dlg.m_loc->m_fTimezone);
+			GCUserInterface::windowController.RecalculateAllTodayScreens();
 		}
-		//InitCityByCountry( g_nCurrentCountry );
+		//InitCityByCountry( DlgGetLocationEx::nCurrentCountry );
 		//m_wndLocs.SetCurSel(n);
 	}	
 }
@@ -472,7 +460,7 @@ void CFrameLocs::OnListImport()
 		return;
 
 	// vklada
-	if (theLocs.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
+	if (GCGlobal::locationsList.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
 	{
 		MessageBox("Importing of file was not succesful.", "Importing progress");
 		return;
@@ -484,9 +472,9 @@ void CFrameLocs::OnListImport()
 
 	// setting the current country
 	InitCountries();
-	m_wndCountry.SetCurSel(g_nCurrentCountry = 0);
+	m_wndCountry.SetCurSel(DlgGetLocationEx::nCurrentCountry = 0);
 
-	InitCityByCountry(g_nCurrentCountry);
+	InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 
 }
 
@@ -501,13 +489,13 @@ void CFrameLocs::OnListReset()
 	// TODO: Add your command handler code here
 	if (AfxMessageBox("Are you sure to revert list of locations to the internal build-in list of locations?", MB_YESNO) == IDYES)
 	{
-		theLocs.RemoveAll();
-		theLocs.InitInternal();
+		GCGlobal::locationsList.RemoveAll();
+		GCGlobal::locationsList.InitInternal();
 //		InitCountries();
 		// setting the current country
-//		m_countries.SetCurSel(g_nCurrentCountry = 0);
+//		m_countries.SetCurSel(DlgGetLocationEx::nCurrentCountry = 0);
 
-		InitCityByCountry(g_nCurrentCountry);
+		InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 	}	
 }
 
@@ -530,7 +518,7 @@ void CFrameLocs::OnGoogleShowlocation()
 						   "\"></head><body></body><html>", loc->m_fLatitude, loc->m_fLongitude);
 			TFile file;
 			TString fileName;
-			fileName = GCalApp_GetFileName(GSTR_TEMFOLDER);
+			fileName = GCGlobal::getFileName(GSTR_TEMFOLDER);
 			fileName += "temp.html";
 			if (file.Open(fileName, "w") == TRUE)
 			{
@@ -560,7 +548,7 @@ void CFrameLocs::OnFileExportlist()
 		return;
 
 	// 0 = TXT, 1 = XML
-	theLocs.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
+	GCGlobal::locationsList.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
 	
 }
 
@@ -568,7 +556,7 @@ void CFrameLocs::OnFileClosewindow()
 {
 	// TODO: Add your command handler code here
 	DestroyWindow();
-//	theFrameServer.m_pLocs = NULL;	
+//	GCUserInterface::windowController.m_pLocs = NULL;	
 }
 
 void CFrameLocs::OnUpdateGoogleShowlocation(CCmdUI* pCmdUI) 
@@ -660,35 +648,35 @@ void CFrameLocs::OnCountryRenamecountry()
 	if (drc.DoModal() == IDOK)
 	{
 		InitCountries();
-		SetCountrySelected(g_nCurrentCountry);
-		InitCityByCountry(g_nCurrentCountry);
+		SetCountrySelected(DlgGetLocationEx::nCurrentCountry);
+		InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 	}
 }
 
 void CFrameLocs::OnHelpHelp() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("index.htm");
+	GCUserInterface::ShowHelp("index.htm");
 	
 }
 
 void CFrameLocs::OnUpdateHelpHelp(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }
 
 void CFrameLocs::OnHelpHelptopicthiswindow() 
 {
 	// TODO: Add your command handler code here
-	GCalShowHelp("ref-locman.htm");
+	GCUserInterface::ShowHelp("ref-locman.htm");
 	
 }
 
 void CFrameLocs::OnUpdateHelpHelptopicthiswindow(CCmdUI* pCmdUI) 
 {
 	// TODO: Add your command update UI handler code here
-	pCmdUI->Enable(theApp.m_bHelpAvailable);	
+	pCmdUI->Enable(GCGlobal::application.m_bHelpAvailable);	
 	
 }

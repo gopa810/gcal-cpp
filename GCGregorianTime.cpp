@@ -16,6 +16,16 @@ VCTIME::~VCTIME(void)
 {
 }
 
+
+const char * VCTIME::ToString(VCTIME vc)
+{
+	static TCHAR ts[32];
+
+	sprintf(ts, "%d %s %04d", vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year);
+
+	return ts;
+}
+
 bool VCTIME::operator<(VCTIME &date)
 {
 	int y1, y2, m1, m2, d1, d2;

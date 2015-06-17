@@ -2,8 +2,6 @@
 #define _VCAL_SE_LEVEL_0
 // PORTABLE
 
-#include "math.h"
-#include "gmath.h"
 #include "platform.h"
 #include "enums.h"
 

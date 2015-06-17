@@ -278,14 +278,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="avc.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="CommandLineVCal.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -598,14 +590,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="gcal_evx.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="GCAyanamsha.cpp" />
     <ClCompile Include="GCCalendar.cpp" />
     <ClCompile Include="GCConjunction.cpp" />
@@ -613,45 +597,28 @@
     <ClCompile Include="GCDayHours.cpp" />
     <ClCompile Include="GCDisplaySettings.cpp" />
     <ClCompile Include="GCEarthData.cpp" />
+    <ClCompile Include="GCGlobal.cpp" />
     <ClCompile Include="GCGregorianTime.cpp" />
     <ClCompile Include="GCLayoutData.cpp" />
+    <ClCompile Include="GCMath.cpp" />
     <ClCompile Include="GCMoonData.cpp" />
     <ClCompile Include="GCMutableArray.cpp" />
     <ClCompile Include="GCMutableDictionary.cpp" />
+    <ClCompile Include="GCMutableStringPairArray.cpp" />
     <ClCompile Include="GCNaksatra.cpp" />
     <ClCompile Include="GCRasi.cpp" />
     <ClCompile Include="GCSankranti.cpp" />
     <ClCompile Include="GCStringBuilder.cpp" />
+    <ClCompile Include="GCStringPair.cpp" />
     <ClCompile Include="GCStrings.cpp" />
     <ClCompile Include="GCSunData.cpp" />
+    <ClCompile Include="GCTextParser.cpp" />
     <ClCompile Include="GCTithi.cpp" />
     <ClCompile Include="GCUserInterface.cpp" />
     <ClCompile Include="GCVaisnavaDay.cpp" />
     <ClCompile Include="GCVedicTime.cpp" />
-    <ClCompile Include="globvar.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="gmath.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="init_tips.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile Include="GCWelcomeTips.cpp" />
+    <ClCompile Include="TLocation.cpp" />
     <ClCompile Include="TResultCalendar.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -736,14 +703,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="strings.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="TCountry.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -861,7 +820,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="avc.h" />
     <ClInclude Include="CommandLineVCal.h" />
     <ClInclude Include="ConditionsView.h" />
     <ClInclude Include="CustomEvent.h" />
@@ -902,7 +860,6 @@
     <ClInclude Include="FrameLocs.h" />
     <ClInclude Include="FrameMain.h" />
     <ClInclude Include="FrameServer.h" />
-    <ClInclude Include="gcal_evx.h" />
     <ClInclude Include="GCAyanamsha.h" />
     <ClInclude Include="GCCalendar.h" />
     <ClInclude Include="GCConjunction.h" />
@@ -910,22 +867,27 @@
     <ClInclude Include="GCDayHours.h" />
     <ClInclude Include="GCDisplaySettings.h" />
     <ClInclude Include="GCEarthData.h" />
+    <ClInclude Include="GCGlobal.h" />
     <ClInclude Include="GCGregorianTime.h" />
     <ClInclude Include="GCLayoutData.h" />
+    <ClInclude Include="GCMath.h" />
     <ClInclude Include="GCMoonData.h" />
     <ClInclude Include="GCMutableArray.h" />
     <ClInclude Include="GCMutableDictionary.h" />
+    <ClInclude Include="GCMutableStringPairArray.h" />
     <ClInclude Include="GCNaksatra.h" />
     <ClInclude Include="GCRasi.h" />
     <ClInclude Include="GCSankranti.h" />
     <ClInclude Include="GCStringBuilder.h" />
+    <ClInclude Include="GCStringPair.h" />
     <ClInclude Include="GCStrings.h" />
     <ClInclude Include="GCSunData.h" />
+    <ClInclude Include="GCTextParser.h" />
     <ClInclude Include="GCTithi.h" />
     <ClInclude Include="GCUserInterface.h" />
     <ClInclude Include="GCVaisnavaDay.h" />
     <ClInclude Include="GCVedicTime.h" />
-    <ClInclude Include="gmath.h" />
+    <ClInclude Include="GCWelcomeTips.h" />
     <ClInclude Include="LangFileInfo.h" />
     <ClInclude Include="level_0.h" />
     <ClInclude Include="TResultCalendar.h" />
@@ -942,7 +904,6 @@
     <ClInclude Include="StaticHeader1.h" />
     <ClInclude Include="StaticHeader3.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="strings.h" />
     <ClInclude Include="TCountry.h" />
     <ClInclude Include="TextEditWnd.h" />
     <ClInclude Include="TFile.h" />

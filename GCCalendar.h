@@ -18,5 +18,6 @@ public:
 	static int ComboMasaToMasa(int nComboMasa);
 	static int MasaToComboMasa(int nComboMasa);
 	static int writeFirstDayXml(FILE * fout, CLocationRef & loc, VCTIME vcStart);
+	static const char * FormatDate(VCTIME vc, VATIME va);
 };
 

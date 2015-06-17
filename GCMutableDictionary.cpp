@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCMutableDictionary.h"
-
+#include "GCStringPair.h"
 
 GCMutableDictionary::GCMutableDictionary(void)
 {
@@ -16,7 +16,7 @@ int GCMutableDictionary::findRecordIndex(const char * key)
 {
 	for(int i = 0; i < data.Count(); i++)
 	{
-		GCMDBase * p = (GCMDBase *)data.ObjectAtIndex(i);
+		GCStringPair * p = data.ObjectAtIndex(i);
 		if (strcmp(key, p->getKey()) == 0)
 		{
 			return i;
@@ -52,7 +52,7 @@ void GCMutableDictionary::setStringForKey(const char * key, const char * value)
 	{
 		if (value != NULL)
 		{
-			GCMDBase * p = new GCMDBase();
+			GCStringPair * p = new GCStringPair();
 			p->setKey(key);
 			p->setValue(value);
 			data.AddObject(p);
@@ -62,7 +62,7 @@ void GCMutableDictionary::setStringForKey(const char * key, const char * value)
 	{
 		if (value != NULL)
 		{
-			GCMDBase * p = (GCMDBase *)data.ObjectAtIndex(i);
+			GCStringPair * p = data.ObjectAtIndex(i);
 			p->setValue(value);
 		}
 		else
@@ -77,7 +77,7 @@ const char * GCMutableDictionary::stringForKey(const char * key)
 	int i = findRecordIndex(key);
 	if (i >= 0)
 	{
-		GCMDBase * p = (GCMDBase *)data.ObjectAtIndex(i);
+		GCStringPair * p = data.ObjectAtIndex(i);
 		return p->getValue();
 	}
 

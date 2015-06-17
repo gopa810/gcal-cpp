@@ -41,7 +41,6 @@ public:
 	VAISNAVADAY();
 	~VAISNAVADAY();
 	void Clear();
-	int GetLineCount();
 	bool GetTithiTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to);
 	bool GetNaksatraTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to);
 	void GetTextEP(TString &str);
@@ -53,7 +52,7 @@ public:
 	GCMutableDictionary * AddEvent(int priority, int dispItem, const char * text);
 	bool AddSpecFestival(int nSpecialFestival, int nFestClass);
 	TString & GetFullTithiName(void);
-
-
+	bool ConditionEvaluate(int nClass, int nValue, TString &strText, bool defaultRet);
+	int GetTextLineCount();
 };
 

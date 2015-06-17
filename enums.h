@@ -170,6 +170,34 @@ enum KalaType {
 	KT_VISHAGATI = 4
 };
 
+enum GlobalStringsEnum {
+	GSTR_APPFOLDER = 1,
+	GSTR_CONFOLDER = 2,
+	GSTR_LANFOLDER = 3,
+	GSTR_TEMFOLDER = 4,
+	GSTR_CE_FILE   = 5,
+	GSTR_CONF_FILE = 6,
+	GSTR_LOC_FILE  = 7,
+	GSTR_SSET_FILE = 8,
+	GSTR_LOCX_FILE  = 9, /*GCAL 3.0*/
+	GSTR_CEX_FILE   = 10, /*GCAL 3.0*/
+	GSTR_CONFX_FILE = 11, /*GCAL 3.0*/ 
+	GSTR_TZ_FILE    = 12, /*GCAL 3.0*/ 
+	GSTR_COUNTRY_FILE = 13, /*GCAL 3.0*/ 
+	GSTR_TEXT_FILE = 14, /*GCAL 4.1*/
+	GSTR_TIPS_FILE = 15, /*GCAL 4.3*/
+	GSTR_HELP_FILE = 16 /*GCAL 5.0*/
+
+};
+
+enum MainFrameContentType {
+	MW_MODE_CAL      = 1,
+	MW_MODE_EVENTS   = 2,
+	MW_MODE_MASALIST = 3,
+	MW_MODE_APPDAY   = 6,
+	MW_MODE_TODAY    = 7
+};
+
 #endif
 
 

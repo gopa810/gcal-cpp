@@ -3,6 +3,7 @@
 #include "GCDisplaySettings.h"
 #include "resource.h"
 #include "DlgCalcProgress.h"
+#include "FrameServer.h"
 
 GCUserInterface::GCUserInterface(void)
 {
@@ -13,7 +14,22 @@ GCUserInterface::~GCUserInterface(void)
 {
 }
 
+int GCUserInterface::dstSelectionMethod = 2;
+
 int GCUserInterface::ShowMode = 1; // 0=text,1=rtf
+
+CFrameServer GCUserInterface::windowController;
+
+////////////////////////////////////////////////////////
+
+void GCUserInterface::ShowHelp(LPCTSTR pszFile)
+{
+	CString str;
+
+	str.Format("gcal.chm::/%s", pszFile);
+
+	HtmlHelp(NULL, str, HH_DISPLAY_TOPIC, 0);
+}
 
 int GCUserInterface::CalculateCalendar(TResultCalendar &daybuff, CLocationRef & loc, VCTIME date, int nDaysCount) 
 {
@@ -24,54 +40,61 @@ int GCUserInterface::CalculateCalendar(TResultCalendar &daybuff, CLocationRef & 
 	int lastmonth = -1;
 	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 
-	DlgCalcProgress dcp;
-
-	dcp.Create(IDD_CALC_PROGRESS, AfxGetMainWnd());
-	dcp.CenterWindow();
-	dcp.ShowWindow(SW_SHOW);
-	dcp.UpdateWindow();
-
-	daybuff.m_pProgress = &(dcp.m_p1);
+	GCUserInterface::CreateProgressWindow();
 
 	if (daybuff.CalculateCalendar(loc, date, nDaysCount) == 0)
 		return 0;
 
-	daybuff.m_pProgress = NULL;
-
-	dcp.DestroyWindow();
+	GCUserInterface::CloseProgressWindow();
 
 	return 1;
 }
 
-DlgCalcProgress dcp;
+DlgCalcProgress * GCUserInterface::dcp = NULL;
 
 int GCUserInterface::CreateProgressWindow()
 {
-	dcp.Create(IDD_CALC_PROGRESS, AfxGetMainWnd());
-	dcp.CenterWindow();
-	dcp.ShowWindow(SW_SHOW);
-	dcp.UpdateWindow();
+	if (dcp == NULL)
+	{
+		GCUserInterface::dcp = new DlgCalcProgress();
+		GCUserInterface::dcp->Create(IDD_CALC_PROGRESS, AfxGetMainWnd());
+	}
+
+	GCUserInterface::dcp->CenterWindow();
+	GCUserInterface::dcp->ShowWindow(SW_SHOW);
+	GCUserInterface::dcp->UpdateWindow();
 
 	return 0;
 }
 
 int GCUserInterface::SetProgressWindowRange(int nMin, int nMax)
 {
-	dcp.m_p1.SetRange32(nMin, nMax);
+	if (GCUserInterface::dcp != NULL)
+	{
+		GCUserInterface::dcp->m_p1.SetRange32(nMin, nMax);
+	}
 
 	return 0;
 }
 
-int GCUserInterface::SetProgressWindowPos(int nPos)
+int GCUserInterface::SetProgressWindowPos(double nPos)
 {
-	dcp.m_p1.SetPos(nPos);
+	if (GCUserInterface::dcp != NULL)
+	{
+		GCUserInterface::dcp->m_p1.SetPos((int)nPos);
+	}
 
 	return 0;
 }
 
 int GCUserInterface::CloseProgressWindow()
 {
-	dcp.DestroyWindow();
+	if (dcp != NULL)
+	{
+		GCUserInterface::dcp->DestroyWindow();
+		delete GCUserInterface::dcp;
+		GCUserInterface::dcp = NULL;
+	}
 
 	return 0;
 }

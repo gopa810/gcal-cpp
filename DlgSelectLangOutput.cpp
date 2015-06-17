@@ -4,14 +4,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgSelectLangOutput.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-extern GCalApp theApp;
+#include "GCGlobal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgSelectLangOutput dialog
@@ -40,8 +33,6 @@ BEGIN_MESSAGE_MAP(DlgSelectLangOutput, CDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-extern TLangFileList gLangList;
-
 /////////////////////////////////////////////////////////////////////////////
 // DlgSelectLangOutput message handlers
 
@@ -50,7 +41,7 @@ BOOL DlgSelectLangOutput::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	int i;
-	TLangFileInfo * p = gLangList.list;
+	TLangFileInfo * p = GCGlobal::languagesList.list;
 	i = m_list.AddString("<default>");
 	m_list.SetItemDataPtr(i, NULL);
 	while(p)

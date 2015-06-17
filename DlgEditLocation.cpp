@@ -9,16 +9,9 @@
 #include "TTimeZone.h"
 #include "TCountry.h"
 #include "TLocation.h"
-#include "strings.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-const char * AvcGetEarthPosFromString(const char * str, bool bNorth, double &Longitude);
+#include "GCGlobal.h"
+#include "TLocation.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditLocation dialog
@@ -227,8 +220,6 @@ void DlgEditLocation::OnEditchangeComboCountry()
 
 }
 
-extern int g_dstSelMethod;
-
 int DlgEditLocation::UpdateDstByTimezone(double tzone)
 {
 	return 1;
@@ -335,7 +326,7 @@ void DlgEditLocation::OnChangeEdit1()
 	double d;
 	CString str;
 	cLat.GetWindowText(str);
-	lastLatiAnalyse = AvcGetEarthPosFromString(str, false, d);
+	lastLatiAnalyse = TLocation::ParseDegreesFromString(str, false, d);
 	if (lastLatiAnalyse == NULL)
 	{
 		m_loc->m_fLatitude = d;
@@ -373,7 +364,7 @@ void DlgEditLocation::OnChangeEdit3()
 	double d;
 	CString str;
 	cLong.GetWindowText(str);
-	lastLongAnalyse = AvcGetEarthPosFromString(str, true, d);
+	lastLongAnalyse = TLocation::ParseDegreesFromString(str, true, d);
 	if (lastLongAnalyse == NULL)
 	{
 		m_loc->m_fLongitude = d;

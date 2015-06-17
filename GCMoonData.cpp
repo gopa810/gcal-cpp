@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCMoonData.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "GCAyanamsha.h"
 
 MOONDATA::MOONDATA(void)
@@ -361,7 +361,7 @@ void MOONDATA::Calculate(double jdate, EARTHDATA earth)
 	sr =0;
 	for(i = 0; i < 60; i++)
 	{
-		temp =sigma_r[i]*cos_d( arg_lr[i][0]*d
+		temp =sigma_r[i]*GCMath::cosDeg( arg_lr[i][0]*d
 							   +arg_lr[i][1]*m
 							   +arg_lr[i][2]*ms
 							   +arg_lr[i][3]*f);
@@ -373,7 +373,7 @@ void MOONDATA::Calculate(double jdate, EARTHDATA earth)
 	sl =0;
 	for(i =0; i < 60; i++)
 	{
-		temp =sigma_l[i]*sin_d( arg_lr[i][0]*d
+		temp =sigma_l[i]*GCMath::sinDeg( arg_lr[i][0]*d
 							   +arg_lr[i][1]*m
 							   +arg_lr[i][2]*ms
 							   +arg_lr[i][3]*f);
@@ -383,13 +383,13 @@ void MOONDATA::Calculate(double jdate, EARTHDATA earth)
 	}
 
 	//(* correction terms  
-	sl =sl +3958*sin_d(a1)
-		+1962*sin_d(ls-f)
-		+318*sin_d(a2);
+	sl =sl +3958*GCMath::sinDeg(a1)
+		+1962*GCMath::sinDeg(ls-f)
+		+318*GCMath::sinDeg(a2);
 	sb =0;
 	for(i=0; i < 60; i++)
 	{
-		temp = sigma_b[i]*sin_d( arg_b[i][0]*d
+		temp = sigma_b[i]*GCMath::sinDeg( arg_b[i][0]*d
 							   +arg_b[i][1]*m
 							   +arg_b[i][2]*ms
 							   +arg_b[i][3]*f);
@@ -399,12 +399,12 @@ void MOONDATA::Calculate(double jdate, EARTHDATA earth)
 	}
 
 	//(* correction terms  
-	sb =sb -2235*sin_d(ls)
-		  +382*sin_d(a3)
-		  +175*sin_d(a1-f)
-		  +175*sin_d(a1+f)
-		  +127*sin_d(ls-ms)
-		  -115*sin_d(ls+ms);
+	sb =sb -2235*GCMath::sinDeg(ls)
+		  +382*GCMath::sinDeg(a3)
+		  +175*GCMath::sinDeg(a1-f)
+		  +175*GCMath::sinDeg(a1+f)
+		  +127*GCMath::sinDeg(ls-ms)
+		  -115*GCMath::sinDeg(ls+ms);
 
 	lambda=ls+sl/1000000;
 	beta=sb/1000000;
@@ -511,7 +511,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	VCTIME xd;
 
 	moon.Calculate(jday, ed);
-	l1 = put_in_360(moon.longitude_deg - ayanamsa);
+	l1 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 	prev_naks = int(floor(l1 / phi));
 
 	int counter = 0;
@@ -529,7 +529,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 		}
 
 		moon.Calculate(jday, ed);
-		l2 = put_in_360(moon.longitude_deg - ayanamsa);
+		l2 = GCMath::putIn360(moon.longitude_deg - ayanamsa);
 		new_naks = int(floor(l2/phi));
 		if (prev_naks != new_naks)
 		{
@@ -611,14 +611,14 @@ void MOONDATA::calc_horizontal(double date, double longitude, double latitude)
 {
 	double h;
 
-	h = put_in_360(EARTHDATA::star_time(date) - this->rektaszension+longitude);
+	h = GCMath::putIn360(EARTHDATA::star_time(date) - this->rektaszension+longitude);
 	
-	this->azimuth = rad2deg( atan2(sin_d(h),
-                           cos_d(h)*sin_d(latitude)-
-                           tan_d(this->declination)*cos_d(latitude) ));
+	this->azimuth = GCMath::rad2deg( atan2(GCMath::sinDeg(h),
+                           GCMath::cosDeg(h)*GCMath::sinDeg(latitude)-
+                           GCMath::tanDeg(this->declination)*GCMath::cosDeg(latitude) ));
 	
-	this->elevation = rad2deg(asin(sin_d(latitude)*sin_d(this->declination) +
-                            cos_d(latitude)*cos_d(this->declination)*cos_d(h)));
+	this->elevation = GCMath::rad2deg(asin(GCMath::sinDeg(latitude)*GCMath::sinDeg(this->declination) +
+                            GCMath::cosDeg(latitude)*GCMath::cosDeg(this->declination)*GCMath::cosDeg(h)));
 }
 
 void MOONDATA::correct_position(double jdate, double latitude, double longitude, double height)
@@ -627,23 +627,23 @@ void MOONDATA::correct_position(double jdate, double latitude, double longitude,
 	double rho_sin, rho_cos;
 	const double b_a=0.99664719;
 
-	u =arctan_d(b_a*b_a*tan_d(latitude));
-	rho_sin =b_a*sin_d(u)+height/6378140.0*sin_d(latitude);
-	rho_cos =cos_d(u)+height/6378140.0*cos_d(latitude);
+	u =GCMath::arcTanDeg(b_a*b_a*GCMath::tanDeg(latitude));
+	rho_sin =b_a*GCMath::sinDeg(u)+height/6378140.0*GCMath::sinDeg(latitude);
+	rho_cos =GCMath::cosDeg(u)+height/6378140.0*GCMath::cosDeg(latitude);
 
-	this->parallax = arcsin_d(sin_d(8.794/3600)/(MOONDATA::MoonDistance(jdate) / AU));
+	this->parallax = GCMath::arcSinDeg(GCMath::sinDeg(8.794/3600)/(MOONDATA::MoonDistance(jdate) / GCMath::AU));
 
 	h = EARTHDATA::star_time(jdate) - longitude - this->rektaszension;
-	delta_alpha = arctan_d(
-                (-rho_cos*sin_d(this->parallax)*sin_d(h))/
-                (cos_d(this->declination) -
-                  rho_cos*sin_d(this->parallax)*cos_d(h)));
+	delta_alpha = GCMath::arcTanDeg(
+                (-rho_cos*GCMath::sinDeg(this->parallax)*GCMath::sinDeg(h))/
+                (GCMath::cosDeg(this->declination) -
+                  rho_cos*GCMath::sinDeg(this->parallax)*GCMath::cosDeg(h)));
 	this->rektaszension = this->rektaszension+delta_alpha;
-	this->declination =arctan_d(
-      (( sin_d(this->declination)
-        -rho_sin*sin_d(this->parallax))*cos_d(delta_alpha))/
-      ( cos_d(this->declination)
-       -rho_cos*sin_d(this->parallax)*cos_d(h)));
+	this->declination =GCMath::arcTanDeg(
+      (( GCMath::sinDeg(this->declination)
+        -rho_sin*GCMath::sinDeg(this->parallax))*GCMath::cosDeg(delta_alpha))/
+      ( GCMath::cosDeg(this->declination)
+       -rho_cos*GCMath::sinDeg(this->parallax)*GCMath::cosDeg(h)));
 }
 
 double MOONDATA::MoonDistance(double jdate)
@@ -702,7 +702,7 @@ double MOONDATA::MoonDistance(double jdate)
 	int i;
 	for(i = 0; i < 60; i++)
 	{
-		temp =sigma_r[i]*cos_d( arg_lr[i][0]*d
+		temp =sigma_r[i]*GCMath::cosDeg( arg_lr[i][0]*d
 							   +arg_lr[i][1]*m
 							   +arg_lr[i][2]*ms
 							   +arg_lr[i][3]*f);

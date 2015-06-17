@@ -5,15 +5,8 @@
 #include "vcal5beta.h"
 #include "DPageGeneral.h"
 #include "showset.h"
-#include "strings.h"
 #include "GCStrings.h"
 #include "GCDisplaySettings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DPageGeneral property page

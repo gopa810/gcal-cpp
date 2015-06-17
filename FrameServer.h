@@ -2,12 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_FRAMESERVER_H__1908525A_74D7_4FE7_BD75_E456E76DCA06__INCLUDED_)
-#define AFX_FRAMESERVER_H__1908525A_74D7_4FE7_BD75_E456E76DCA06__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "FrameMain.h"
 #include "FrameFind.h"
@@ -49,6 +44,3 @@ public:
 
 };
 
-extern CFrameServer theFrameServer;
-
-#endif // !defined(AFX_FRAMESERVER_H__1908525A_74D7_4FE7_BD75_E456E76DCA06__INCLUDED_)

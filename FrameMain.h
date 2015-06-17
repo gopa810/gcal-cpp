@@ -82,6 +82,7 @@ public:
 	HICON m_hIcon;
 	CEdit m_textTXT;
 	CRichEditResults m_textRTF;
+	int AvcOneStepBack();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

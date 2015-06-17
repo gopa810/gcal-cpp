@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "GCMath.h"
 #include "TResultEvents.h"
 #include "GCDisplaySettings.h"
 #include "TTimeZone.h"
@@ -224,8 +225,8 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			double a, b;
 			double jd = vcAdd.GetJulianComplete();
 			double ayan = GCAyanamsha::GetAyanamsa(jd);
-			r1 = put_in_360(previousLongitude - ayan) / 30;
-			r2 = put_in_360(todayLongitude - ayan) / 30;
+			r1 = GCMath::putIn360(previousLongitude - ayan) / 30;
+			r2 = GCMath::putIn360(todayLongitude - ayan) / 30;
 
 			while(r2 > r1 + 13)
 			{

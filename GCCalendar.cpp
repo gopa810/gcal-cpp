@@ -24,6 +24,17 @@ int	GCCalendar::GetGaurabdaYear(VCTIME vc, EARTHDATA earth)
 	return day.nGaurabdaYear;
 }
 
+const char * GCCalendar::FormatDate(VCTIME vc, VATIME va)
+{
+	static char sz[128];
+
+	sprintf(sz, "%d %s %d\r\n%s, %s Paksa, %s Masa, %d",
+		vc.day, GCStrings::GetMonthAbreviation(vc.month), vc.year,
+		GCStrings::GetTithiName(va.tithi%15), GCStrings::GetPaksaName(va.tithi/15), GCStrings::GetMasaName(va.masa), va.gyear);
+
+	return sz;
+}
+
 //===========================================================================
 //
 //===========================================================================

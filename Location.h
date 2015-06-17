@@ -3,12 +3,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LOCATION_H__4C2C6D9B_8587_4411_8EA4_C61FD11888BD__INCLUDED_)
-#define AFX_LOCATION_H__4C2C6D9B_8587_4411_8EA4_C61FD11888BD__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+
 class CLocation  
 {
 public:
@@ -51,6 +49,4 @@ public:
 	virtual ~CLocationList();
 };
 
-extern CLocationList theLocs;
 
-#endif // !defined(AFX_LOCATION_H__4C2C6D9B_8587_4411_8EA4_C61FD11888BD__INCLUDED_)

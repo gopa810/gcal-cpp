@@ -6,16 +6,6 @@
 #include "DlgGetEndDate.h"
 #include "GCCalendar.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-
-const char * FormatDate(VCTIME vc, VATIME va);
-
-
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetEndDate dialog
 
@@ -184,7 +174,7 @@ BOOL DlgGetEndDate::OnInitDialog()
 	default: break;
 	}
 
-	SetDlgItemText(IDC_EDIT2, FormatDate(vc_start, va_start));
+	SetDlgItemText(IDC_EDIT2, GCCalendar::FormatDate(vc_start, va_start));
 	Recalc();
 
 	
@@ -225,7 +215,7 @@ void DlgGetEndDate::Recalc()
 		break;
 	}
 	GCCalendar::CalcEndDate(m_earth, vc_start, va_start, vc_end, va_end, m_type, m_count);
-	SetDlgItemText(IDC_EDIT3, FormatDate(vc_end, va_end));
+	SetDlgItemText(IDC_EDIT3, GCCalendar::FormatDate(vc_end, va_end));
 }
 
 void DlgGetEndDate::OnOK() 

@@ -3,7 +3,7 @@
 #include "GCMoonData.h"
 #include "GCSunData.h"
 #include "GCDayData.h"
-#include "gmath.h"
+#include "GCMath.h"
 #include "TFileXml.h"
 #include "GCStrings.h"
 
@@ -42,7 +42,7 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	moon.Calculate(jday, ed);
 	sunl = SUNDATA::GetSunLongitude(d);
 //	SunPosition(d, ed, sun, d.shour - 0.5 + d.tzone/24.0);
-	l1 = put_in_360(moon.longitude_deg - sunl - 180.0);
+	l1 = GCMath::putIn360(moon.longitude_deg - sunl - 180.0);
 	prev_tit = int(floor(l1/phi));
 
 	int counter = 0;
@@ -61,9 +61,9 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 
 		moon.Calculate(jday, ed);
 		//SunPosition(d, ed, sun, d.shour - 0.5 + d.tzone/24.0);
-		//l2 = put_in_360(moon.longitude_deg - sun.longitude_deg - 180.0);
+		//l2 = GCMath::putIn360(moon.longitude_deg - sun.longitude_deg - 180.0);
 		sunl = SUNDATA::GetSunLongitude(d);
-		l2 = put_in_360(moon.longitude_deg - sunl - 180.0);
+		l2 = GCMath::putIn360(moon.longitude_deg - sunl - 180.0);
 		new_tit = int(floor(l2/phi));
 
 		if (prev_tit != new_tit)
@@ -110,7 +110,7 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 
 	moon.Calculate(jday, ed);
 	sunl = SUNDATA::GetSunLongitude(d);
-	l1 = put_in_360(moon.longitude_deg - sunl - 180.0);
+	l1 = GCMath::putIn360(moon.longitude_deg - sunl - 180.0);
 	prev_tit = int(floor(l1/phi));
 
 	int counter = 0;
@@ -129,7 +129,7 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 
 		moon.Calculate(jday, ed);
 		sunl = SUNDATA::GetSunLongitude(d);
-		l2 = put_in_360(moon.longitude_deg - sunl - 180.0);
+		l2 = GCMath::putIn360(moon.longitude_deg - sunl - 180.0);
 		new_tit = int(floor(l2/phi));
 
 		if (prev_tit != new_tit)

@@ -7,17 +7,7 @@
 #include "showset.h"
 #include "CustomEvent.h"
 #include "GCDisplaySettings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-
-int g_set_oldstylefast = 0;
-
-extern int gCustomEventList_Modified;
+#include "GCGlobal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DPageFest property page
@@ -79,7 +69,7 @@ BOOL DPageFest::OnSetActive()
 	int chks[10][2];
 	for(i=0;i<10;i++)
 		chks[i][0] = chks[i][1] = 0;
-	CCustomEvent * p = gCustomEventList.list;
+	CCustomEvent * p = GCGlobal::customEventList.list;
 	while(p)
 	{
 		chks[p->nClass][p->nVisible]++;
@@ -162,24 +152,24 @@ BOOL DPageFest::OnKillActive()
 		GCDisplaySettings::setValue(13 + (i + 2)%3, 0);
 	}
 	
-	CCustomEvent * p = gCustomEventList.list;
+	CCustomEvent * p = GCGlobal::customEventList.list;
 	while(p)
 	{
 		i = p->nClass;
 		if (GCDisplaySettings::getValue(22+i) == 0)
 		{
 			p->nVisible = 0;
-			gCustomEventList_Modified = 1;
+			GCGlobal::customEventListModified = 1;
 		}
 		else if (GCDisplaySettings::getValue(22+i) == 1)
 		{
 			p->nVisible = 1;
-			gCustomEventList_Modified = 1;
+			GCGlobal::customEventListModified = 1;
 		}
 		p = p->next;
 	}
 
-	gCustomEventList_Modified = (gCustomEventList.setOldStyleFast(GCDisplaySettings::getValue(42)) ? 1 : gCustomEventList_Modified);
+	GCGlobal::customEventListModified = (GCGlobal::customEventList.setOldStyleFast(GCDisplaySettings::getValue(42)) ? 1 : GCGlobal::customEventListModified);
 
 	return CPropertyPage::OnKillActive();
 }

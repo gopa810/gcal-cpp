@@ -10,9 +10,6 @@
 typedef unsigned int UInt32;
 typedef int SInt32;
 
-char * AvcGetTextBufferBig(void);
-
-
 class TString
 {
 	char * m_pData;
@@ -411,9 +408,12 @@ public:
 		sprintf(pp, format, arg1, arg2, arg3);
 		(*this) = pp;
 	}*/
+
+	static char szBuffer[2048];
+
 	void Format(const char *cMessageFormat, ...)
 	{
-		char * pp = AvcGetTextBufferBig();
+		char * pp = szBuffer;
 		va_list argp;
 		// obtain formatted message with arguments and push them into buffer
 		va_start(argp, cMessageFormat);
@@ -449,9 +449,5 @@ public:
 		return stricmp(m_pData, src);
 	}
 };
-
-void LogStart(char *pLogFile);
-void LogClose();
-void Log(char *fmt, ...);
 
 #endif 

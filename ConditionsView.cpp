@@ -5,19 +5,11 @@
 #include "platform.h"
 #include "vcal5beta.h"
 #include "ConditionsView.h"
-
-#include "strings.h"
-
 #include "locationref.h"
 #include "dlggetlocation.h"
-
+#include "CustomEvent.h"
 #include "GCStrings.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "GCGlobal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CConditionsView
@@ -50,10 +42,6 @@ BEGIN_MESSAGE_MAP(CConditionsView, CWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-int AvcGetNextPartHash(TString &str, TString &strLine, int & i);
-int AvcGetFestivalClass(TString &str);
-int AvcClearStringFromTags(TString &str);
-
 /////////////////////////////////////////////////////////////////////////////
 // CConditionsView message handlers
 
@@ -82,7 +70,6 @@ CConditionsView::EventClass CConditionsView::m_eventClassList[] =
 	{15,"Bengal-specific Holidays"}
 };
 
-extern CLocationRef gLastLocation;
 
 int CConditionsView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
@@ -152,13 +139,13 @@ int CConditionsView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_edits[0].Create(WS_VISIBLE | WS_CHILD | ES_READONLY, cr, this, 132);
 	m_edits[0].SetFont(&m_infoFont);
 	str.Format("%s (%s, %s, %s: %s)"
-		, gLastLocation.m_strName.c_str()
-		, gLastLocation.m_strLatitude.c_str()
-		, gLastLocation.m_strLongitude.c_str()
+		, GCGlobal::lastLocation.m_strName.c_str()
+		, GCGlobal::lastLocation.m_strLatitude.c_str()
+		, GCGlobal::lastLocation.m_strLongitude.c_str()
 		, GCStrings::getString(12).c_str()
-		, gLastLocation.m_strTimeZone.c_str());
-	m_earth = (EARTHDATA)gLastLocation;
-	m_dst = gLastLocation.m_nDST;
+		, GCGlobal::lastLocation.m_strTimeZone.c_str());
+	m_earth = (EARTHDATA)GCGlobal::lastLocation;
+	m_dst = GCGlobal::lastLocation.m_nDST;
 
 	m_edits[0].SetWindowText(str);
 
@@ -205,25 +192,25 @@ int CConditionsView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-int NaplnComboFestivalom(CComboBox * pc, int nClass)
+int CConditionsView::NaplnComboFestivalom(CComboBox * pc, int nClass)
 {
 	int i, j, n;
 	TString s1;
 
-	for(i = 200; i < 560; i++)
+	CCustomEvent * p;
+
+	p = GCGlobal::customEventList.list;
+
+	while (p != NULL)
 	{
-		j = 0;
-		while(AvcGetNextPartHash(GCStrings::getString(i), s1, j))
+		if (p->nClass == (nClass - 10))
 		{
-			n = AvcGetFestivalClass(s1);
-			if (n == (nClass - 10))
-			{
-				AvcClearStringFromTags(s1);
-				n = pc->AddString(s1);
-				pc->SetItemData(n, i);
-			}
+			n = pc->AddString(p->strText);
+			pc->SetItemData(n, i);
 		}
+		p = p->next;
 	}
+
 	n = pc->InsertString(0, "<all events>");
 	pc->SetItemData(n, 0xffff);
 
@@ -451,13 +438,13 @@ BOOL CConditionsView::OnCommand(WPARAM wParam, LPARAM lParam)
 			if (dlg.DoModal() == IDOK)
 			{
 				str.Format("%s (%s, %s, %s: %s)"
-					, gLastLocation.m_strName.c_str()
-					, gLastLocation.m_strLatitude.c_str()
-					, gLastLocation.m_strLongitude.c_str()
+					, GCGlobal::lastLocation.m_strName.c_str()
+					, GCGlobal::lastLocation.m_strLatitude.c_str()
+					, GCGlobal::lastLocation.m_strLongitude.c_str()
 					, GCStrings::getString(12).c_str()
-					, gLastLocation.m_strTimeZone.c_str());
-				m_earth = (EARTHDATA)gLastLocation;
-				m_dst = gLastLocation.m_nDST;
+					, GCGlobal::lastLocation.m_strTimeZone.c_str());
+				m_earth = (EARTHDATA)GCGlobal::lastLocation;
+				m_dst = GCGlobal::lastLocation.m_nDST;
 				m_edits[0].SetWindowText(str);
 			}
 		}
