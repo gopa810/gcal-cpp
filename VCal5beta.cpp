@@ -310,14 +310,9 @@ void GCalApp::InitInstanceData()
 	//
 	// inicializacia miest a kontinentov
 	//
-	if (f.Open(GCGlobal::getFileName(GSTR_LOC_FILE), "r")==TRUE)
+	if (f.Open(GCGlobal::getFileName(GSTR_LOCX_FILE), "r")==TRUE)
 	{
 		f.Close();
-		GCGlobal::locationsList.InitList(GCGlobal::getFileName(GSTR_LOC_FILE));
-		::DeleteFile(GCGlobal::getFileName(GSTR_LOC_FILE));
-	}
-	else
-	{
 		GCGlobal::locationsList.InitListX(GCGlobal::getFileName(GSTR_LOCX_FILE));
 	}
 
@@ -329,13 +324,10 @@ void GCalApp::InitInstanceData()
 	{
 		f.Close();
 	}
-	else
+	else if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "w")==TRUE)
 	{
-		if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "w")==TRUE)
-		{
-			GCWelcomeTips::initializeFile(f.m_fHandle);
-			f.Close();
-		}
+		GCWelcomeTips::initializeFile(f.m_fHandle);
+		f.Close();
 	}
 
 	////////////////////////////////////////////////////////

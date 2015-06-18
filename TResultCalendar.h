@@ -25,6 +25,7 @@ public:
 	CLocationRef m_Location;
 	VCTIME m_vcStart;
 	int m_vcCount;
+	bool updateCalculationProgress;
 public:
 	void ResolveFestivalsFasting(int i);
 	int CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &begin, double &end, EARTHDATA earth);

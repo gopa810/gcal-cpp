@@ -28,9 +28,6 @@
     <ClCompile Include="CustomEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DayFindBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EditClipboarded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -315,9 +312,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DayFindBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DlgAskLimitation.h">
@@ -654,5 +648,10 @@
     </None>
     <None Include="dst.xml" />
     <None Include="ReadMe.txt" />
+    <None Include="res\events.rl" />
+    <None Include="res\locations.rl" />
+    <None Include="res\countries.rl" />
+    <None Include="res\timezones.rl" />
+    <None Include="res\strings.rl" />
   </ItemGroup>
 </Project>

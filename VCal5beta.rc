@@ -1584,6 +1584,17 @@ IDB_LIGHTBULB           BITMAP                  "res\\litebulb.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// TEXT
+//
+
+IDR_FILE_EVENTS         TEXT                    "res\\events.rl"
+IDR_FILE_LOCATIONS      TEXT                    "res\\locations.rl"
+IDR_FILE_COUNTRY        TEXT                    "res\\countries.rl"
+IDR_FILE_TIMEZONES      TEXT                    "res\\timezones.rl"
+IDR_FILE_STRINGS        TEXT                    "res\\strings.rl"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 

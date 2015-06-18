@@ -302,14 +302,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="DayFindBuffer.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Beta|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release Bhanu Swami|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="DlgAskLimitation.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -823,7 +815,6 @@
     <ClInclude Include="CommandLineVCal.h" />
     <ClInclude Include="ConditionsView.h" />
     <ClInclude Include="CustomEvent.h" />
-    <ClInclude Include="DayFindBuffer.h" />
     <ClInclude Include="DlgAskLimitation.h" />
     <ClInclude Include="DlgCalcProgress.h" />
     <ClInclude Include="DlgCustomEventDialog.h" />
@@ -924,6 +915,8 @@
   <ItemGroup>
     <None Include="res\bitmap1.bmp" />
     <None Include="res\bitmap2.bmp" />
+    <None Include="res\countries.rl" />
+    <None Include="res\events.rl" />
     <None Include="res\ico00001.ico" />
     <None Include="res\ico00002.ico" />
     <None Include="res\ico00003.ico" />
@@ -932,6 +925,9 @@
     <None Include="res\icon2.ico" />
     <None Include="res\litebulb.bmp" />
     <None Include="doc-specs\textual.bmp" />
+    <None Include="res\locations.rl" />
+    <None Include="res\strings.rl" />
+    <None Include="res\timezones.rl" />
     <None Include="res\toolbar1.bmp" />
     <None Include="res\VCal5beta.ico" />
     <None Include="res\VCal5beta.rc2" />

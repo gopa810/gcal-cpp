@@ -41,6 +41,7 @@ TResultCalendar::TResultCalendar()
 	m_pData = NULL;
 	m_PureCount = 0;
 	m_nCount = 0;
+	updateCalculationProgress = true;
 }
 
 TResultCalendar::~TResultCalendar()
@@ -239,7 +240,10 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	{
 		for(i = 0; i < nTotalCount; i++)
 		{
-			GCUserInterface::SetProgressWindowPos( (0 + 85 * i / (iCount + 1)) * 0.908 );
+			if (updateCalculationProgress)
+			{
+				GCUserInterface::SetProgressWindowPos( (0 + 85 * i / (iCount + 1)) * 0.908 );
+			}
 
 			MOONDATA::CalcMoonTimes(earth, m_pData[i].date, double(m_pData[i].nDST), m_pData[i].moonrise, m_pData[i].moonset);
 
@@ -263,13 +267,16 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	// init of astro data
 	for(i = 0; i < nTotalCount; i++)
 	{
-		if (bCalcMoon)
+		if (updateCalculationProgress)
 		{
-			GCUserInterface::SetProgressWindowPos( (85 + 2 * i / nTotalCount) * 0.908);
-		}
-		else
-		{
-			GCUserInterface::SetProgressWindowPos( 0.588 * 14.8 * i / nTotalCount );
+			if (bCalcMoon)
+			{
+				GCUserInterface::SetProgressWindowPos( (85 + 2 * i / nTotalCount) * 0.908);
+			}
+			else
+			{
+				GCUserInterface::SetProgressWindowPos( 0.588 * 14.8 * i / nTotalCount );
+			}
 		}
 		m_pData[i].astrodata.DayCalc(m_pData[i].date, earth);
 
@@ -286,13 +293,16 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		calc_masa = (m_pData[i].astrodata.nPaksa != prev_paksa);
 		prev_paksa = m_pData[i].astrodata.nPaksa;
 		
-		if (bCalcMoon)
+		if (updateCalculationProgress)
 		{
-			GCUserInterface::SetProgressWindowPos( (87 + 2 * i / nTotalCount) * 0.908 );
-		}
-		else
-		{
-			GCUserInterface::SetProgressWindowPos( 0.588 * (14.8 + 32.2 * i / nTotalCount));
+			if (bCalcMoon)
+			{
+				GCUserInterface::SetProgressWindowPos( (87 + 2 * i / nTotalCount) * 0.908 );
+			}
+			else
+			{
+				GCUserInterface::SetProgressWindowPos( 0.588 * (14.8 + 32.2 * i / nTotalCount));
+			}
 		}
 
 		if (i == 0)
@@ -410,13 +420,16 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	// init for Ekadasis
 	for(i = 3; i < m_PureCount + BEFORE_DAYS + 3; i++)
 	{
-		if (bCalcMoon)
+		if (updateCalculationProgress)
 		{
-			GCUserInterface::SetProgressWindowPos( (89 + 5 * i / nTotalCount) * 0.908 );
-		}
-		else
-		{
-			GCUserInterface::SetProgressWindowPos( 0.588 * (47.0 + 39.5 * i / nTotalCount));
+			if (bCalcMoon)
+			{
+				GCUserInterface::SetProgressWindowPos( (89 + 5 * i / nTotalCount) * 0.908 );
+			}
+			else
+			{
+				GCUserInterface::SetProgressWindowPos( 0.588 * (47.0 + 39.5 * i / nTotalCount));
+			}
 		}
 		EkadasiCalc(i, earth);
 	}
@@ -578,14 +591,18 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	// init of second day of vriddhi
 	for(i = BEFORE_DAYS; i < m_PureCount + BEFORE_DAYS; i++)
 	{
-		if (bCalcMoon)
+		if (updateCalculationProgress)
 		{
-			GCUserInterface::SetProgressWindowPos( (94 + 6 * i / nTotalCount) * 0.908 );
+			if (bCalcMoon)
+			{
+				GCUserInterface::SetProgressWindowPos( (94 + 6 * i / nTotalCount) * 0.908 );
+			}
+			else
+			{
+				GCUserInterface::SetProgressWindowPos( 0.588 * (86.5 + 13.5 * i / nTotalCount));
+			}
 		}
-		else
-		{
-			GCUserInterface::SetProgressWindowPos( 0.588 * (86.5 + 13.5 * i / nTotalCount));
-		}
+
 		if (m_pData[i].astrodata.nTithi == m_pData[i-1].astrodata.nTithi)
 		{
 			if (GCDisplaySettings::getValue(CAL_VRDDHI))
@@ -2311,14 +2328,17 @@ int TResultCalendar::formatPlainText(TString &m_text)
 		pvd = daybuff.GetDay(k);
 		nextd = daybuff.GetDay(k + 1);
 
-		if (bCalcMoon)
+		if (updateCalculationProgress)
 		{
-			GCUserInterface::SetProgressWindowPos(int(90.8 + 9.2 * k / daybuff.m_vcCount));
-		}
-		else
-		{
-			rate = double(k) / daybuff.m_vcCount;
-			GCUserInterface::SetProgressWindowPos(int(58.8 + 41.2 * rate * rate));
+			if (bCalcMoon)
+			{
+				GCUserInterface::SetProgressWindowPos(int(90.8 + 9.2 * k / daybuff.m_vcCount));
+			}
+			else
+			{
+				rate = double(k) / daybuff.m_vcCount;
+				GCUserInterface::SetProgressWindowPos(int(58.8 + 41.2 * rate * rate));
+			}
 		}
 
 		if (pvd)

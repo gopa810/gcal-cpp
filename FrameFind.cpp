@@ -6,8 +6,6 @@
 #include "FrameFind.h"
 #include "DlgSetPrintStyle.h"
 
-#include "DayFindBuffer.h"
-
 #include "FrameServer.h"
 #include "TFile.h"
 #include "GCUserInterface.h"
@@ -234,25 +232,29 @@ void CFrameFind::OnEventFind()
 {
 	int i, j, k, n, c;
 	int year1, ycount;
-	TFinderBuffer buf;
+	TResultCalendar buf;
 	TString str, s1;
 	VAISNAVADAY * pd;
 	VCTIME vcFrom, vcTo;
 	Boolean next_day = false;
 	Boolean succ = false;
 	DWORD dwDateNote;
+	CString plainText;
+	CString findText;
 
 	// update data
-
-	if (m_viewCond.m_evClass[0] == m_viewCond.m_evClass[1] 
-		&& m_viewCond.m_evClass[1] == m_viewCond.m_evClass[2] 
-		&& m_viewCond.m_evClass[2] == 0)
+	m_viewCond.m_edits[3].GetWindowTextA(findText);
+	findText.Trim();
+	findText.MakeLower();
+	
+	if (findText.GetLength() == 0)
 	{
-		MessageBox("Please specify at least one condition for day.", "Uncomplete Specification", MB_OK | MB_ICONSTOP);
+		MessageBox("Please specify text for find operation.", "Uncomplete Specification", MB_OK | MB_ICONSTOP);
 		return;
 	}
 
 	m_wndList.ResetContent();
+	buf.updateCalculationProgress = false;
 
 	year1 = m_viewCond.GetStartYear();
 	ycount = m_viewCond.GetCountYear();
@@ -266,35 +268,26 @@ void CFrameFind::OnEventFind()
 	{
 		for(j = 1; j < 13; j++)
 		{
-
+			vcFrom.year = i;
+			vcFrom.month = j;
+			vcFrom.day = 1;
 			// vypocet dni pre datum
-			buf.CalculateFindCalendar(i, j, m_viewCond.m_earth, m_viewCond.m_dst);
+			buf.CalculateCalendar(m_viewCond.m_earth, vcFrom, VCTIME::GetMonthMaxDays(i, j));
 			GCUserInterface::SetProgressWindowPos(c++);
 			//m_progress.UpdateWindow();
 
 			// prechadzanie cez datumy
-			for(k = buf.GetStartIndex(); k <= buf.GetUpperBound(); k++)
+			for(k = 0; k <= buf.m_PureCount; k++)
 			{
-				pd = &(buf.m_rData[k]);
-
+				pd = buf.GetDay(k);
 				if (pd->date.month != j)
 					continue;
 
-				succ = false;
-				if (m_viewCond.m_bMethodAnd)
-				{
-					succ = (pd->ConditionEvaluate(m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
-						&& pd->ConditionEvaluate(m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
-						&& pd->ConditionEvaluate(m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
-				}
-				else
-				{
-					succ = (pd->ConditionEvaluate(m_viewCond.m_evClass[0], m_viewCond.m_evValue[0], m_viewCond.m_evString[0], m_viewCond.m_bMethodAnd)
-						|| pd->ConditionEvaluate(m_viewCond.m_evClass[1], m_viewCond.m_evValue[1], m_viewCond.m_evString[1], m_viewCond.m_bMethodAnd)
-						|| pd->ConditionEvaluate(m_viewCond.m_evClass[2], m_viewCond.m_evValue[2], m_viewCond.m_evString[2], m_viewCond.m_bMethodAnd));
-				}
+				TResultCalendar::formatPlainTextDay(pd, str);
+				plainText.SetString(str.c_str());
+				plainText.MakeLower();
 
-				if (succ)
+				if (plainText.Find(findText) >= 0)
 				{
 					TResultCalendar::formatPlainTextDay(pd, str);
 					dwDateNote = MAKELONG(MAKEWORD(pd->date.day, pd->date.month), pd->date.year);
@@ -627,7 +620,11 @@ void CFrameFind::OnFileSave()
 		return;
 
 	file.WriteString("--------------------------------- Event Finder ---------------------------------\n\n");
-	for(i = 0; i < 3; i++)
+	m_viewCond.m_edits[3].GetWindowTextA(strA);
+	str.Format(" Finding text '%s'\n", (LPCTSTR)strA);
+	file.WriteString(str);
+
+	/*for(i = 0; i < 3; i++)
 	{
 		if (m_viewCond.m_c[i][0].GetCurSel() != 0)
 		{
@@ -638,7 +635,7 @@ void CFrameFind::OnFileSave()
 			str.Format(" Condition %c : %s / %s\n", 'A' + i, str1.c_str(), str2.c_str());
 			file.WriteString(str);
 		}
-	}
+	}*/
 	file.WriteString("\n Location : ");
 	m_viewCond.m_edits[0].GetWindowText(strA);
 	str = strA;
