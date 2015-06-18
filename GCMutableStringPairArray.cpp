@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GCMutableStringPairArray.h"
-
+#include "GCStringPair.h"
 
 GCMutableStringPairArray::GCMutableStringPairArray(void)
 {
@@ -14,7 +14,11 @@ GCMutableStringPairArray::GCMutableStringPairArray(void)
 
 GCMutableStringPairArray::~GCMutableStringPairArray(void)
 {
-	RemoveAllObjects();
+	if (count > 0)
+	{
+		RemoveAllObjects();
+	}
+
 
 	delete arr;
 }

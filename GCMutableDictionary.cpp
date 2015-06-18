@@ -9,7 +9,6 @@ GCMutableDictionary::GCMutableDictionary(void)
 
 GCMutableDictionary::~GCMutableDictionary(void)
 {
-	data.RemoveAllObjects();
 }
 
 int GCMutableDictionary::findRecordIndex(const char * key)

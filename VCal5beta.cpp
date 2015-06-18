@@ -164,6 +164,9 @@ BOOL GCalApp::InitInstance()
 
 		ShowTipAtStartup();
 		
+		/*VAISNAVADAY * pd = new VAISNAVADAY();
+		pd->AddEvent(1, 1, "ABCDEF");
+		delete pd;*/
 	}
 
 	// Since the dialog has been closed, return FALSE so that we exit the

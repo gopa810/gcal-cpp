@@ -1,13 +1,6 @@
-// LocationRef.h: interface for the CLocationRef class.
-//
-//////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LOCATIONREF_H__029EEF44_2BAC_4D6B_BAF7_E6EDC1530A98__INCLUDED_)
-#define AFX_LOCATIONREF_H__029EEF44_2BAC_4D6B_BAF7_E6EDC1530A98__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 #include "level_0.h"
 // PORTABLE
 
@@ -43,4 +36,3 @@ public:
 
 };
 
-#endif // !defined(AFX_LOCATIONREF_H__029EEF44_2BAC_4D6B_BAF7_E6EDC1530A98__INCLUDED_)
