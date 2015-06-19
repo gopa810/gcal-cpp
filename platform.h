@@ -7,7 +7,6 @@ typedef unsigned int UInt32;
 typedef char SInt8;
 typedef short SInt16;
 typedef int SInt32;
-typedef bool Boolean;
 
 #include "TString.h"
 

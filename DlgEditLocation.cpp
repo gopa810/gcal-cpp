@@ -91,7 +91,7 @@ BOOL DlgEditLocation::OnInitDialog()
 	for(n = 0; n < m; n++)
 	{
 		c = cCountry.AddString(TCountry::GetCountryNameByIndex(n));
-		cCountry.SetItemData(c, TCountry::gcountries_var[n].code);
+		cCountry.SetItemData(c, TCountry::GetCountryCode(n));
 	}
 
 	if (m_loc->m_strCountry.IsEmpty() == FALSE)
@@ -116,8 +116,8 @@ void DlgEditLocation::OnOK()
 	cCountry.GetWindowText(str);
 	m_loc->m_strCountry = str;
 
-	m_loc->m_nDST = cDst.GetItemData(cDst.GetCurSel());
-	m_loc->m_fTimezone = TTimeZone::GetTimeZoneOffset(m_loc->m_nDST);
+	m_loc->m_nTimezoneId = cDst.GetItemData(cDst.GetCurSel());
+	m_loc->m_fTimezone = TTimeZone::GetTimeZoneOffset(m_loc->m_nTimezoneId);
 	
 	CDialog::OnOK();
 }
@@ -311,7 +311,7 @@ void DlgEditLocation::LocationToDialog()
 	}
 
 	cDst.SetCurSel(sel < 0 ? null : sel);*/
-	cDst.SetCurSel(TTimeZone::ID2INDEX(m_loc->m_nDST));
+	cDst.SetCurSel(TTimeZone::ID2INDEX(m_loc->m_nTimezoneId));
 	UpdateDSTInfo();
 }
 

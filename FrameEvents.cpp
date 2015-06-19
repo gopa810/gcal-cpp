@@ -272,12 +272,11 @@ void CFrameEvents::FillListView()
 	int i;
 	CCustomEvent * p;
 
-	p = GCGlobal::customEventList.list;
-
 	m_wndList.DeleteAllItems();
 
-	while(p)
+	for(int n = 0; n < CCustomEventList::Count(); n++)
 	{
+		p = CCustomEventList::EventAtIndex(n);
 		if (p->nMasa>=0 && p->nMasa<12 && p->nClass>=0 && p->nClass<10 && b_class[p->nClass] && b_masa[p->nMasa] && p->nDeleted==0)
 		{
 			i = m_wndList.InsertItem(0, p->strText.c_str());
@@ -299,7 +298,6 @@ void CFrameEvents::FillListView()
 			m_wndList.SetItemData(i, DWORD(p));
 			m_wndList.SetCheck(i, p->nVisible);
 		}
-		p = p->next;
 	}
 }
 
@@ -488,7 +486,15 @@ void CFrameEvents::UpdateItemsFasting()
 
 void CFrameEvents::OnFileSave() 
 {
-	CCustomEventList::Export();	
+	CFileDialog d(FALSE, "txt", "events", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST, "Text file (*.txt)|*.txt|XML File (*.xml)|*.xml||");
+	CString strc;
+	CCustomEvent * pce = NULL;
+
+	if (d.DoModal() == IDOK)
+	{
+		CCustomEventList::Export(d.GetPathName(), d.m_ofn.nFilterIndex);	
+	}
+
 }
 
 void CFrameEvents::OnHelpHelp() 

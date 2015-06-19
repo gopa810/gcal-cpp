@@ -32,7 +32,7 @@ TResultMasaList::~TResultMasaList()
 	}
 }
 
-Boolean TResultMasaList::alloc(int nCountYears)
+bool TResultMasaList::alloc(int nCountYears)
 {
 	if (n_allocated < nCountYears)
 	{

@@ -30,15 +30,15 @@ public:
 	void ResolveFestivalsFasting(int i);
 	int CalculateEParana(VAISNAVADAY &s, VAISNAVADAY &t, double &begin, double &end, EARTHDATA earth);
 	int FindDate(VCTIME vc);
-	Boolean IsFestivalDay(VAISNAVADAY &yesterday, VAISNAVADAY &today, int nTithi);
+	bool IsFestivalDay(VAISNAVADAY &yesterday, VAISNAVADAY &today, int nTithi);
 	VAISNAVADAY * GetDay(int nIndex);
 	int MahadvadasiCalc(int nIndex, EARTHDATA earth);
 	int CompleteCalc(int nIndex, EARTHDATA earth);
 	int EkadasiCalc(int nIndex, EARTHDATA earth);
 	int ExtendedCalc(int nIndex, EARTHDATA earth);
 	int CalculateCalendar(CLocationRef & loc, VCTIME begDate, int iCount);
-	Boolean IsMhd58(int nIndex, int &nMahaType);
-	Boolean NextNewFullIsVriddhi(int nIndex, EARTHDATA earth);
+	bool IsMhd58(int nIndex, int &nMahaType);
+	bool NextNewFullIsVriddhi(int nIndex, EARTHDATA earth);
 	int writeXml(FILE * fout);
 	static int formatPlainTextDay(VAISNAVADAY * pvd, TString &dayText);
 	int formatPlainText(TString &m_text);

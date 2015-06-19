@@ -57,54 +57,29 @@ BOOL GCalApp::InitInstance()
 	//AddDocTemplate(pDocTemplate);
 	GCUserInterface::windowController.Initialize();
 
-	//TTimeZone::ExportDB();
-/*	TFileRichList tf;
-
-	tf.Open("C:\\test.rl", "wt");
-	if (tf.m_fHandle)
-	{
-		for(int i=1;i<100;i++)
-		{
-			tf.Clear();
-			tf.AddTag(i);
-			tf.AddText("InLine|| Text");
-			tf.AddReal(1.078);
-			tf.AddInt(567);
-			tf.AddText("Second \\tag");
-			tf.WriteLine();
-		}
-		fclose(tf.m_fHandle);
-	}
-
-	FILE * tt=fopen("C:\\test.txt", "wt");
-	tf.Open("c:\\test.rl", "rt");
-	while(tf.ReadLine())
-	{
-		fprintf(tt, "Tag=%s\n  f1=%s\n  f2=%s\n  f3=%s\n  f4=%s\n\n",
-			tf.GetTag(), tf.GetField(0), tf.GetField(1), tf.GetField(2), tf.GetField(3));
-	}
-	fclose(tt);
-	return FALSE;*/
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
-	GCStrings::InitGlobalStrings(0);
-
 	//MessageBox(NULL, getenv("QUERY_STRING"), "a", MB_OK);
 	//MessageBox(NULL, getenv("Path"), "a", MB_OK);
 	m_bWindowless = TRUE;
 
+	SetRegistryKey(_T("GCAL"));
+
 	// initialization for AppDir
 	GCGlobal::initFolders();
 
-	SetRegistryKey(_T("GCAL"));
-	
-	GCUserInterface::ShowMode = GetProfileInt("ui", "show_mode", 1);
-	GCLayoutData::textSizeNote = GetProfileInt("ui", "note_size", 16);
-	GCLayoutData::textSizeText = GetProfileInt("ui", "text_size", 24);
-	GCLayoutData::textSizeH1 = GetProfileInt("ui", "hdr_size", 36);
-	GCLayoutData::textSizeH2 = GetProfileInt("ui", "hdr2_size", 32);
+	// initialization of global strings
+	GCStrings::readFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
+
+	// inicializacia countries
+	TCountry::InitWithFile(GCGlobal::getFileName(GSTR_COUNTRY_FILE));
+
+	// inicializacia miest a kontinentov
+	CLocationList::OpenFile(GCGlobal::getFileName(GSTR_LOCX_FILE));
+
+	// inicializacia zobrazovanych nastaveni
+	GCDisplaySettings::readFile(GCGlobal::getFileName(GSTR_SSET_FILE));
+
+	// inicializacia custom events
+	CCustomEventList::OpenFile(GCGlobal::getFileName(GSTR_CEX_FILE));
 
 #ifdef _AFXDLL
 	Enable3dControls();			// Call this when using MFC in a shared DLL
@@ -122,36 +97,13 @@ BOOL GCalApp::InitInstance()
 	m_bWindowless = ParseCommandArguments(&cmdInfo);
 
 	//if (cmdInfo.GetCount())
-	if (m_bWindowless)
+	if (!m_bWindowless)
 	{
-		// processing arguments
-		// is done in last calling ParseParam
-		//TRACE1("CmdLine = %s\n", m_lpCmdLine);
-	}
-	else
-	{
-		m_bWindowless = FALSE;
-		NONCLIENTMETRICS ncm;
+		//m_bWindowless = FALSE;
+		/*NONCLIENTMETRICS ncm;
 		ncm.cbSize = sizeof(NONCLIENTMETRICS);
 
-		SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
-
-		// shows dialog window
-/*#ifdef GCAL_BETA
-		SYSTEMTIME st;
-		GetLocalTime(&st);
-		if (GetJulianDay( st.wYear, st.wMonth, st.wDay) >= GetJulianDay(2009, 7, 15))
-		{
-			DlgAskLimitation dal;
-
-			if (dal.DoModal() == IDOK)
-			{
-				ShellExecute(NULL, "open", "http://www.krishnadays.com", NULL, NULL, SW_SHOW);
-				return FALSE;
-			}
-
-		}
-#endif*/
+		SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);*/
 
 		InitInstanceData();
 
@@ -163,10 +115,6 @@ BOOL GCalApp::InitInstance()
 		m_pMainWnd = pMainFrame;
 
 		ShowTipAtStartup();
-		
-		/*VAISNAVADAY * pd = new VAISNAVADAY();
-		pd->AddEvent(1, 1, "ABCDEF");
-		delete pd;*/
 	}
 
 	// Since the dialog has been closed, return FALSE so that we exit the
@@ -178,6 +126,13 @@ BOOL GCalApp::InitInstance()
 
 void GCalApp::InitInstanceData()
 {
+	TString strFile;
+	TFile f;
+	TString str, strA, strB;
+	TLangFileInfo * pl;
+
+
+	// initialization of global variables
 	GCGlobal::myLocation.m_fLongitude = 77.73;
 	GCGlobal::myLocation.m_fLatitude = 27.583;
 	GCGlobal::myLocation.m_fTimezone = 5.5;
@@ -195,160 +150,22 @@ void GCalApp::InitInstanceData()
 	GCGlobal::lastLocation.m_strTimeZone = "+5:30";
 	GCGlobal::lastLocation.m_nDST = 188;
 
-	TString strFile;
-	TFile f;
-	TString str, strA, strB;
-	TLangFileInfo * pl;
+	GCGlobal::OpenFile(GCGlobal::getFileName(GSTR_CONFX_FILE));
+	// refresh fasting style after loading user settings
+	CCustomEventList::SetOldStyleFasting(GCDisplaySettings::getValue(42));
 
-	/*GCAL 3.0*/
-	if ( f.Open(GCGlobal::getFileName(GSTR_CONF_FILE), "r") != 0)
-	{
-		// nacitava
-		while(f.ReadString2(strA, strB))
-		{
-			switch(atoi(strA.c_str()))
-			{
-			case 1: GCGlobal::myLocation.m_fLongitude = atof(strB); break;
-			case 2: GCGlobal::myLocation.m_fLatitude = atof(strB); break;
-			case 3: GCGlobal::myLocation.m_fTimezone = atof(strB); break;
-			case 4: GCGlobal::myLocation.m_strLatitude = strB; break;
-			case 5: GCGlobal::myLocation.m_strLongitude = strB; break;
-			case 6: GCGlobal::myLocation.m_strName = strB; break;
-			case 7: GCGlobal::myLocation.m_strTimeZone = strB; break;
-			case 8: GCGlobal::myLocation.m_nDST = atoi(strB); 
-				GCGlobal::myLocation.m_strTimeZone = TTimeZone::GetTimeZoneName(GCGlobal::myLocation.m_nDST);
-				break;
-			case 11: GCGlobal::lastLocation.m_fLongitude = atof(strB); break;
-			case 12: GCGlobal::lastLocation.m_fLatitude = atof(strB); break;
-			case 13: GCGlobal::lastLocation.m_fTimezone = atof(strB); break;
-			case 14: GCGlobal::lastLocation.m_strLatitude = strB; break;
-			case 15: GCGlobal::lastLocation.m_strLongitude = strB; break;
-			case 16: GCGlobal::lastLocation.m_strName = strB; break;
-			case 17: GCGlobal::lastLocation.m_strTimeZone = strB; break;
-			case 18: GCGlobal::lastLocation.m_nDST = atoi(strB); 
-				GCGlobal::lastLocation.m_strTimeZone = TTimeZone::GetTimeZoneName(GCGlobal::lastLocation.m_nDST);
-				break;
-			case 20: // meno subora s jazykom
-				pl = GCGlobal::languagesList.add();
-				if (pl) pl->decode(strB.c_str());
-				break;
-			case 21: GCUserInterface::windowController.m_rectMain.left = atoi(strB); break;
-			case 22: GCUserInterface::windowController.m_rectMain.top = atoi(strB); break;
-			case 23: GCUserInterface::windowController.m_rectMain.right = atoi(strB); break;
-			case 24: GCUserInterface::windowController.m_rectMain.bottom = atoi(strB); break;
-			default: break;
-			}
-		}
-		
-		f.Close();
-		DeleteFile(GCGlobal::getFileName(GSTR_CONF_FILE));
-	}
-
-
-	int tagn;
-	TFileRichList rf;
-	if ( rf.Open(GCGlobal::getFileName(GSTR_CONFX_FILE), "r") != 0)
-	{
-		// nacitava
-		while(rf.ReadLine())
-		{
-			tagn = atoi(rf.GetTag());
-			switch(tagn)
-			{
-			case 12701:
-				GCGlobal::myLocation.m_strName     = rf.GetField(0);
-				GCGlobal::myLocation.m_fLongitude  = atof(rf.GetField(1));
-				GCGlobal::myLocation.m_fLatitude   = atof(rf.GetField(2));
-				GCGlobal::myLocation.m_fTimezone   = atof(rf.GetField(3));
-				GCGlobal::myLocation.m_strLatitude = rf.GetField(2);
-				GCGlobal::myLocation.m_strLongitude = rf.GetField(1);
-				GCGlobal::myLocation.m_strTimeZone = rf.GetField(4);
-				GCGlobal::myLocation.m_nDST = TTimeZone::GetID(rf.GetField(4));
-				break;
-			case 12702:
-				GCGlobal::lastLocation.m_strName     = rf.GetField(0);
-				GCGlobal::lastLocation.m_fLongitude  = atof(rf.GetField(1));
-				GCGlobal::lastLocation.m_fLatitude   = atof(rf.GetField(2));
-				GCGlobal::lastLocation.m_fTimezone   = atof(rf.GetField(3));
-				GCGlobal::lastLocation.m_strLatitude = rf.GetField(2);
-				GCGlobal::lastLocation.m_strLongitude = rf.GetField(1);
-				GCGlobal::lastLocation.m_strTimeZone = rf.GetField(4);
-				GCGlobal::lastLocation.m_nDST = TTimeZone::GetID(rf.GetField(4));
-				break;
-			case 12710:
-				GCUserInterface::windowController.m_rectMain.left = atoi(rf.GetField(0));
-				GCUserInterface::windowController.m_rectMain.top = atoi(rf.GetField(1));
-				GCUserInterface::windowController.m_rectMain.right = atoi(rf.GetField(2));
-				GCUserInterface::windowController.m_rectMain.bottom = atoi(rf.GetField(3));
-				break;
-			case 12711:
-				GCDisplaySettings::setValue(atoi(rf.GetField(0)), atoi(rf.GetField(1)));
-				break;
-			default:
-				break;
-			}
-		}
-		rf.Close();
-	}
-
-	////////////////////////////////////////////////////////
-	//
-	// strings
-	//
-	GCStrings::readFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
-
-	// inicializacia jazyka
-//	InitLanguageOutputFromFile("d:\\work\\gcal-debug\\lang\\czech.lng");
-
-	////////////////////////////////////////////////////////
-	//
-	// inicializacia countries
-	//
-	TCountry::InitWithFile(GCGlobal::getFileName(GSTR_COUNTRY_FILE));
-
-	////////////////////////////////////////////////////////
-	//
-	// inicializacia miest a kontinentov
-	//
-	if (f.Open(GCGlobal::getFileName(GSTR_LOCX_FILE), "r")==TRUE)
-	{
-		f.Close();
-		GCGlobal::locationsList.InitListX(GCGlobal::getFileName(GSTR_LOCX_FILE));
-	}
-
-	////////////////////////////////////////////////////////
-	//
 	// inicializacia tipov dna
-	//
-	if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "r")==TRUE)
+	if (TFile::FileExists(GCGlobal::getFileName(GSTR_TIPS_FILE)))
 	{
-		f.Close();
-	}
-	else if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "w")==TRUE)
-	{
-		GCWelcomeTips::initializeFile(f.m_fHandle);
-		f.Close();
+		if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "w")==TRUE)
+		{
+			GCWelcomeTips::initializeFile(f.m_fHandle);
+			f.Close();
+		}
 	}
 
-	////////////////////////////////////////////////////////
-	//
-	// inicializacia zobrazovanych nastaveni
-	//
-	GCDisplaySettings::readFile(GCGlobal::getFileName(GSTR_SSET_FILE));
-
-
-	////////////////////////////////////////////////////////
-	//
-	// inicializacia custom events
-	//
-	CCustomEventList::ReadFile(GCGlobal::getFileName(GSTR_CE_FILE));
-	CCustomEventList::ReadFileRL(GCGlobal::getFileName(GSTR_CEX_FILE));
-
-	GCGlobal::customEventList.setOldStyleFast(GCDisplaySettings::getValue(42));
-
-	if (f.Open(GCGlobal::getFileName(GSTR_HELP_FILE), "r")==TRUE)
+	if (TFile::FileExists(GCGlobal::getFileName(GSTR_HELP_FILE)))
 	{
-		f.Close();
 		m_bHelpAvailable = TRUE;
 	}
 }
@@ -360,76 +177,17 @@ DWORD GCalApp::GetDWordFromString(const char * psz)
 
 int GCalApp::ExitInstance() 
 {
-	TString str;
-//	TLangFileInfo * p;
-
-	WriteProfileInt("ui", "show_mode", GCUserInterface::ShowMode);
-	WriteProfileInt("ui", "note_size", GCLayoutData::textSizeNote);
-	WriteProfileInt("ui", "text_size", GCLayoutData::textSizeText);
-	WriteProfileInt("ui", "hdr_size", GCLayoutData::textSizeH1);
-	WriteProfileInt("ui", "hdr2_size", GCLayoutData::textSizeH2);
-
 	if (m_bWindowless == FALSE)
 	{
-		TString strFile;
-		TFile f;
-		
-/*		if (f.Open(GCGlobal::getFileName(GSTR_CONF_FILE), "w") == FALSE)
-			goto _next_file_to_save;
-
-		f.WriteString2( 1, GCGlobal::myLocation.m_fLongitude);
-		f.WriteString2( 2, GCGlobal::myLocation.m_fLatitude);
-		f.WriteString2( 3, GCGlobal::myLocation.m_fTimezone);
-		f.WriteString2( 4, GCGlobal::myLocation.m_strLatitude);
-		f.WriteString2( 5, GCGlobal::myLocation.m_strLongitude);
-		f.WriteString2( 6, GCGlobal::myLocation.m_strName);
-		f.WriteString2( 7, GCGlobal::myLocation.m_strTimeZone);
-		f.WriteString2( 8, GCGlobal::myLocation.m_nDST);
-		f.WriteString2(11, GCGlobal::lastLocation.m_fLongitude);
-		f.WriteString2(12, GCGlobal::lastLocation.m_fLatitude);
-		f.WriteString2(13, GCGlobal::lastLocation.m_fTimezone);
-		f.WriteString2(14, GCGlobal::lastLocation.m_strLatitude);
-		f.WriteString2(15, GCGlobal::lastLocation.m_strLongitude);
-		f.WriteString2(16, GCGlobal::lastLocation.m_strName);
-		f.WriteString2(17, GCGlobal::lastLocation.m_strTimeZone);
-		f.WriteString2(18, GCGlobal::lastLocation.m_nDST);
-		for(p = GCGlobal::languagesList.list; p != NULL; p = p->next)
-		{
-			p->encode(str);
-			f.WriteString2(20, str);
-		}
-		f.WriteString2(21, GCUserInterface::windowController.m_rectMain.left);
-		f.WriteString2(22, GCUserInterface::windowController.m_rectMain.top);
-		f.WriteString2(23, GCUserInterface::windowController.m_rectMain.right);
-		f.WriteString2(24, GCUserInterface::windowController.m_rectMain.bottom);
-		f.Close();*/
-		if (f.Open(GCGlobal::getFileName(GSTR_CONFX_FILE),"w")==TRUE)
-		{
-			str.Format("12701 %s|%f|%f|%f|%s\n", GCGlobal::myLocation.m_strName.c_str(), GCGlobal::myLocation.m_fLongitude, GCGlobal::myLocation.m_fLatitude,
-				GCGlobal::myLocation.m_fTimezone, TTimeZone::GetTimeZoneName(GCGlobal::myLocation.m_nDST));
-			f.WriteString(str.c_str());
-			str.Format("12702 %s|%f|%f|%f|%s\n", GCGlobal::lastLocation.m_strName.c_str(), GCGlobal::lastLocation.m_fLongitude, GCGlobal::lastLocation.m_fLatitude,
-				GCGlobal::lastLocation.m_fTimezone, TTimeZone::GetTimeZoneName(GCGlobal::lastLocation.m_nDST));
-			f.WriteString(str.c_str());
-			str.Format("12710 %d|%d|%d|%d\n", GCUserInterface::windowController.m_rectMain.left, GCUserInterface::windowController.m_rectMain.top,
-				GCUserInterface::windowController.m_rectMain.right, GCUserInterface::windowController.m_rectMain.bottom );
-			f.WriteString(str.c_str());
-			for(int y=0; y < GCDisplaySettings::getCount(); y++)
-			{
-				str.Format("12711 %d|%d\n", y, GCDisplaySettings::getValue(y));
-				f.WriteString(str.c_str());
-			}
-
-			f.Close();
-		}
+		GCGlobal::SaveFile(GCGlobal::getFileName(GSTR_CONFX_FILE));
 	}
 
-	if (GCGlobal::locationsList.m_bModified)
+	if (CLocationList::IsModified())
 	{
-		GCGlobal::locationsList.SaveAs(GCGlobal::getFileName(GSTR_LOCX_FILE),4);//GCAL 3.0
+		CLocationList::SaveAs(GCGlobal::getFileName(GSTR_LOCX_FILE),4);//GCAL 3.0
 	}
 
-	if (TCountry::_modified)
+	if (TCountry::IsModified())
 	{
 		TCountry::SaveToFile(GCGlobal::getFileName(GSTR_COUNTRY_FILE));
 	}
@@ -439,91 +197,8 @@ int GCalApp::ExitInstance()
 		GCStrings::writeFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
 	}
 
-	CCustomEventList::WriteFileRL(GCGlobal::getFileName(GSTR_CEX_FILE));
+	CCustomEventList::SaveFile(GCGlobal::getFileName(GSTR_CEX_FILE));
 
-	TFile f;
-
-/*	if (f.Open("C:\\tz.cpp", "w")==TRUE)
-	{
-		for(int i = 0; i < TTimeZone::GetTimeZoneCount(); i++)
-		{
-			str.Format("{\"%s %s\", %.2fF, %2d, 0x%08x, %.2fF, %.2fF, %.2fF, %.2fF, %d}\n", 
-				TTimeZone::GetTimeZoneOffsetText(TTimeZone::gzone[i].tzone),
-				TTimeZone::gzone[i].name,
-				TTimeZone::gzone[i].tzone,
-				TTimeZone::gzone[i].bias,
-				TTimeZone::gzone[i].val,
-				TTimeZone::gzone[i].latA,
-				TTimeZone::gzone[i].latB,
-				TTimeZone::gzone[i].lonA,
-				TTimeZone::gzone[i].lonB,
-				i);
-				//TTimeZone::gzone[i].name);
-			f.WriteString(str.c_str());
-		}
-		f.Close();
-	}*/
-	/*if (f.Open(GCGlobal::getFileName(GSTR_TZ_FILE), "w")==TRUE)
-	{
-		for(int i = 0; i < TTimeZone::GetTimeZoneCount(); i++)
-		{
-			str.Format("11950 %d|%x|%s|%f|%f|%f|%f\n", TTimeZone::gzone[i].bias,
-				TTimeZone::gzone[i].val, TTimeZone::gzone[i].name,
-				TTimeZone::gzone[i].tzone, TTimeZone::gzone[i].latA, TTimeZone::gzone[i].latB,
-				TTimeZone::gzone[i].lonA, TTimeZone::gzone[i].lonB);
-			f.WriteString(str.c_str());
-		}
-		f.Close();
-	}*/
-
-/*	if (f.Open(GCGlobal::getFileName(GSTR_COUNTRY_FILE), "w")==TRUE)
-	{
-		for(int i = 0; i < TCountry::GetCountryCount(); i++)
-		{
-			str.Format("11960 %s|%d|%s|%d\n", TCountry::gcountries[i].pszAcr,
-				TCountry::gcountries[i].code, TCountry::gcountries[i].pszName,
-				TCountry::gcountries[i].continent);
-			f.WriteString(str.c_str());
-		}
-		f.Close();
-	}*/
-	//AvcShowSetWriteFile(GCGlobal::getFileName(GSTR_SSET_FILE));
-
-/*	CString tt;
-	TString te;
-	CString str2;
-	int fn, fp;
-	VAISNAVADAY vd;
-	int oClass;
-	int oo;
-
-	CStdioFile ff;
-	ff.Open("D:\\work\\gcal\\evx.rl", CFile::modeWrite|CFile::modeCreate);
-	for(int i=200; i < 560; i++)
-	{
-		tt = GCStrings::getString(i).c_str();
-		if (fp=0, fn = tt.Find('#', fp), fn>=0)
-		{
-			vd.festivals = tt;
-			vd.GetHeadFestival();
-			oo = 0;
-			while(vd.GetNextFestival(oo, te))
-			{
-				oClass = vd.GetFestivalClass(te);
-				str2.Format("16500 %d|%d|%d|%d|%s\n", (i-200)/30, (i-200)%30, oClass, 1, te.c_str());
-				ff.WriteString(str2);
-			}
-		}
-		else if (tt.GetLength()>0)
-		{
-			vd.festivals = tt;
-			te = (LPCTSTR)tt;
-			oClass = vd.GetFestivalClass(te);
-			str2.Format("16500 %d|%d|%d|%d|%s\n", (i-200)/30, (i-200)%30, oClass, 1, te.c_str());
-			ff.WriteString(str2);
-		}
-	}
-	ff.Close();*/
 	return CWinApp::ExitInstance();
 }
 

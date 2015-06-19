@@ -256,9 +256,6 @@
     <ClCompile Include="GCLayoutData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NSMutableArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GCMutableDictionary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -296,6 +293,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GCMutableStringPairArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LocationList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

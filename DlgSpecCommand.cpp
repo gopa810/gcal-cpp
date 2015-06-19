@@ -83,17 +83,16 @@ void DlgSpecCommand::ExportLocsCocoa()
 
 		if (std.Open(cfd.GetPathName(), CFile::modeWrite|CFile::modeCreate))
 		{
-			CLocation * p = GCGlobal::locationsList.GetHeadPosition();
-			while(p)
+			for(int i = 0; i < CLocationList::LocationCount(); i++)
 			{
+				CLocation * p = CLocationList::LocationAtIndex(i);
 				str.Format("%s|%s|%s|%s|%s#",
 					p->m_strCity.c_str(),
 					p->m_strCountry.c_str(),
 					EARTHDATA::GetTextLatitude(p->m_fLatitude),
 					EARTHDATA::GetTextLongitude(p->m_fLongitude),
-					TTimeZone::GetTimeZoneName(p->m_nDST));
+					TTimeZone::GetTimeZoneName(p->m_nTimezoneId));
 				std.WriteString(str);
-				p = p->next;
 			}
 			std.Close();
 		}
@@ -184,9 +183,9 @@ void DlgSpecCommand::ExportEventsCocoa()
 
 		if (std.Open(cfd.GetPathName(), CFile::modeWrite|CFile::modeCreate))
 		{
-			CCustomEvent * p = GCGlobal::customEventList.list;
-			while(p)
+			for(int n = 0; n < CCustomEventList::Count(); n++)
 			{
+				CCustomEvent * p = CCustomEventList::EventAtIndex(n);
 				str.Format("%s|%d|%d|%d|%d|%s|%d|%d|%d~",
 					p->strText.c_str(),
 					p->nTithi,
@@ -198,7 +197,6 @@ void DlgSpecCommand::ExportEventsCocoa()
 					p->nVisible,
 					p->nUsed);
 				std.WriteString(str);
-				p = p->next;
 			}
 			std.Close();
 		}

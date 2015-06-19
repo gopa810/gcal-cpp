@@ -610,6 +610,7 @@
     <ClCompile Include="GCVaisnavaDay.cpp" />
     <ClCompile Include="GCVedicTime.cpp" />
     <ClCompile Include="GCWelcomeTips.cpp" />
+    <ClCompile Include="LocationList.cpp" />
     <ClCompile Include="TLocation.cpp" />
     <ClCompile Include="TResultCalendar.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -651,7 +652,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="NSMutableArray.cpp" />
     <ClCompile Include="outcities.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>

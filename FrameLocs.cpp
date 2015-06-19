@@ -211,13 +211,7 @@ void CFrameLocs::InitCountries()
 	for(i = 0; i < m; i++)
 	{
 		a = m_wndCountry.AddString(TCountry::GetCountryNameByIndex(i));
-		m_wndCountry.SetItemData(a, TCountry::gcountries_var[i].code);
-
-/*		d = m_wndCtrs.InsertItem(0, TCountry::gcountries_var[i].pszName);
-		m_wndCtrs.SetItemText(d, 1, TCountry::gcountries_var[i].pszAcr);
-		m_wndCtrs.SetItemText(d, 2, TCountry::gcontinents[TCountry::gcountries_var[i].continent]);
-		m_wndCtrs.SetItemData(d, TCountry::gcountries_var[i].code);
-*/
+		m_wndCountry.SetItemData(a, TCountry::GetCountryCode(i));
 	}
 	m_wndCountry.InsertString(0, "<all countries>");
 }
@@ -238,7 +232,7 @@ void CFrameLocs::SetCountrySelected(int nCode)
 
 void CFrameLocs::InitCityByCountry(int nCode)
 {
-	CLocation *L = GCGlobal::locationsList.GetHeadPosition();
+	CLocation * L;
 	TString sc;
 	if (nCode != 0)
 	{
@@ -247,21 +241,21 @@ void CFrameLocs::InitCityByCountry(int nCode)
 
 	m_wndLocs.DeleteAllItems();
 
-	while(L)
+	for(int i = 0; i < CLocationList::LocationCount(); i++)
 	{
+		L = CLocationList::LocationAtIndex(i);
 		if (nCode == 0)
 		{
-			AddLocationStr(L);
+			AddLocationStr(L, i);
 		}
 		else if (sc.CompareNoCase(L->m_strCountry)==0)
 		{
-			AddLocationStr(L);
+			AddLocationStr(L, i);
 		}
-		L = L->next;
 	}
 }
 
-void CFrameLocs::AddLocationStr(CLocation *L)
+void CFrameLocs::AddLocationStr(CLocation *L, int locIdx)
 {
 //	static char st_str[256];
 	int i;
@@ -276,8 +270,8 @@ void CFrameLocs::AddLocationStr(CLocation *L)
 		m_wndLocs.SetItemText(i, 1, L->m_strCountry.c_str());
 		m_wndLocs.SetItemText(i, 2, EARTHDATA::GetTextLatitude(L->m_fLatitude));
 		m_wndLocs.SetItemText(i, 3, EARTHDATA::GetTextLongitude(L->m_fLongitude));
-		m_wndLocs.SetItemText(i, 4, TTimeZone::GetTimeZoneName(L->m_nDST));
-		m_wndLocs.SetItemData(i, (DWORD)L);
+		m_wndLocs.SetItemText(i, 4, TTimeZone::GetTimeZoneName(L->m_nTimezoneId));
+		m_wndLocs.SetItemData(i, (DWORD)locIdx);
 //		m_wndList.SetItemDataPtr(i, L);
 	}
 }
@@ -306,7 +300,7 @@ void CFrameLocs::OnLocationCreatelocation()
 
 	if (dlg.DoModal() == IDOK)
 	{
-		GCGlobal::locationsList.AddTail( dlg.m_loc );
+		CLocationList::Add( dlg.m_loc );
 //		m_wndList.ResetContent();
 		InitCityByCountry( DlgGetLocationEx::nCurrentCountry);
 	}
@@ -326,7 +320,7 @@ void CFrameLocs::OnUpdateLocationCreatelocation(CCmdUI* pCmdUI)
 void CFrameLocs::OnLocationDeletelocation() 
 {
 	// TODO: Add your control notification handler code here
-	int n;
+	int n, locIndex;
 	TString str;
 	CLocation * loc;
 	POSITION pos = m_wndLocs.GetFirstSelectedItemPosition();
@@ -338,17 +332,17 @@ void CFrameLocs::OnLocationDeletelocation()
 	if (n < 0)
 		return;
 
-	loc = (CLocation *)(m_wndLocs.GetItemData(n));
+	locIndex = m_wndLocs.GetItemData(n);
+	loc = CLocationList::LocationAtIndex(locIndex);
 	if (loc == NULL)
 		return;
 
-	loc->SetTextB(str);
-	str.Insert(0, "Do you want to remove location:\r\n\r\n");
+	str.Format("Do you want to remove location:\r\n\r\n%s [%s] %s", loc->m_strCity.c_str(), loc->m_strCountry.c_str(), TTimeZone::GetTimeZoneName(loc->m_nTimezoneId));
 	str += "\r\n\r\nfrom your list of locations?";
 
 	if (AfxMessageBox(str, MB_YESNO) == IDYES)
 	{
-		GCGlobal::locationsList.RemoveAt(loc);
+		CLocationList::RemoveAt(locIndex);
 		InitCityByCountry(DlgGetLocationEx::nCurrentCountry);
 		delete loc;
 	}	
@@ -364,7 +358,7 @@ void CFrameLocs::OnLocationEditlocation()
 {
 	// TODO: Add your command handler code here
 	// TODO: Add your control notification handler code here
-	int n;
+	int n, locIdx;
 	bool bUpdLastLoc = false;
 	bool bUpdMyLoc = false;
 
@@ -375,8 +369,8 @@ void CFrameLocs::OnLocationEditlocation()
 	
 	if (pos ==NULL || (n = m_wndLocs.GetNextSelectedItem(pos), n <0))
 		return;
-
-	dlg.m_loc = (CLocation *)(m_wndLocs.GetItemData(n));
+	locIdx = m_wndLocs.GetItemData(n);
+	dlg.m_loc = CLocationList::LocationAtIndex(locIdx);
 	if (dlg.m_loc == NULL)
 		return;
 
@@ -394,7 +388,7 @@ void CFrameLocs::OnLocationEditlocation()
 		m_wndLocs.SetItemText(n, 1, dlg.m_loc->m_strCountry.c_str());
 		m_wndLocs.SetItemText(n, 2, EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude));
 		m_wndLocs.SetItemText(n, 3, EARTHDATA::GetTextLongitude(dlg.m_loc->m_fLongitude));
-		m_wndLocs.SetItemText(n, 4, TTimeZone::GetTimeZoneName(dlg.m_loc->m_nDST));
+		m_wndLocs.SetItemText(n, 4, TTimeZone::GetTimeZoneName(dlg.m_loc->m_nTimezoneId));
 		// check is this location is GCGlobal::myLocation or GCGlobal::lastLocation
 		// if yes then change coordinates and names also in these variables
 		if (bUpdLastLoc)
@@ -402,7 +396,7 @@ void CFrameLocs::OnLocationEditlocation()
 			GCGlobal::lastLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
 			GCGlobal::lastLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
 			GCGlobal::lastLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
-			GCGlobal::lastLocation.m_nDST = dlg.m_loc->m_nDST;
+			GCGlobal::lastLocation.m_nDST = dlg.m_loc->m_nTimezoneId;
 			GCGlobal::lastLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
 			GCGlobal::lastLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
@@ -415,7 +409,7 @@ void CFrameLocs::OnLocationEditlocation()
 			GCGlobal::myLocation.m_fLatitude = dlg.m_loc->m_fLatitude;
 			GCGlobal::myLocation.m_fLongitude = dlg.m_loc->m_fLongitude;
 			GCGlobal::myLocation.m_fTimezone = dlg.m_loc->m_fTimezone;
-			GCGlobal::myLocation.m_nDST = dlg.m_loc->m_nDST;
+			GCGlobal::myLocation.m_nDST = dlg.m_loc->m_nTimezoneId;
 			GCGlobal::myLocation.m_strName.Format("%s [%s]", dlg.m_loc->m_strCity.c_str(),
 				dlg.m_loc->m_strCountry.c_str());
 			GCGlobal::myLocation.m_strLatitude = EARTHDATA::GetTextLatitude(dlg.m_loc->m_fLatitude);
@@ -460,7 +454,7 @@ void CFrameLocs::OnListImport()
 		return;
 
 	// vklada
-	if (GCGlobal::locationsList.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
+	if (CLocationList::ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
 	{
 		MessageBox("Importing of file was not succesful.", "Importing progress");
 		return;
@@ -489,8 +483,9 @@ void CFrameLocs::OnListReset()
 	// TODO: Add your command handler code here
 	if (AfxMessageBox("Are you sure to revert list of locations to the internal build-in list of locations?", MB_YESNO) == IDYES)
 	{
-		GCGlobal::locationsList.RemoveAll();
-		GCGlobal::locationsList.InitInternal();
+		const char * fileName = GCGlobal::getFileName(GSTR_LOCX_FILE);
+		CLocationList::RemoveAll();
+		CLocationList::InitInternal(fileName);
 //		InitCountries();
 		// setting the current country
 //		m_countries.SetCurSel(DlgGetLocationEx::nCurrentCountry = 0);
@@ -505,13 +500,15 @@ void CFrameLocs::OnGoogleShowlocation()
 	TString str;
 
 	int n;
+	int locIdx;
 	CLocation * loc = NULL;
 	POSITION pos;
 	
 	pos = m_wndLocs.GetFirstSelectedItemPosition();
 	if (pos != NULL && (n = m_wndLocs.GetNextSelectedItem(pos),n>=0))
 	{
-		loc = (CLocation *)m_wndLocs.GetItemData(n);
+		locIdx = m_wndLocs.GetItemData(n);
+		loc = CLocationList::LocationAtIndex(locIdx);
 		if (loc != NULL)
 		{
 			str.Format("<html><head><meta http-equiv=\"REFRESH\" content=\"0;url=http://maps.google.com/?ie=UTF8&ll=%f,%f&spn=0.774196,1.235962&z=10"
@@ -548,7 +545,7 @@ void CFrameLocs::OnFileExportlist()
 		return;
 
 	// 0 = TXT, 1 = XML
-	GCGlobal::locationsList.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
+	CLocationList::SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
 	
 }
 

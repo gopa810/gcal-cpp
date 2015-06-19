@@ -2,14 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CUSTOMEVENT_H__BDEA8D48_FABB_4E56_BB2C_F21F3C2FB071__INCLUDED_)
-#define AFX_CUSTOMEVENT_H__BDEA8D48_FABB_4E56_BB2C_F21F3C2FB071__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "platform.h"
+#include "NSMutableArray.h"
 // PORTABLE
 
 //==============================================================
@@ -19,9 +15,6 @@
 class CCustomEvent  
 {
 public:
-	CCustomEvent * findMasa(int nMasa);
-	CCustomEvent * findNextMasa();
-	CCustomEvent * findNextInMasa();
 	CCustomEvent();
 	virtual ~CCustomEvent();
 
@@ -36,32 +29,26 @@ public:
 	short int nSpec;
 	TString strFastSubject;
 	TString strText;
-	CCustomEvent * next;
-	CCustomEvent * next_in_masa;
-	CCustomEvent * next_masa;
 };
 
 class CCustomEventList
 {
 public:
-	void addEvent(int inClass, int inMasa, int inTithi, int inVisible, const char * pszFastSubject, const char *  pszText, int inFastType, int inUsed, int inStartYear);
-	int setOldStyleFast(int i);
-	void clear();
-	CCustomEvent * list;
+	static void Export(const char * pszFile, int format);
+	static int OpenFile(const char * pszFile);
+	static int SaveFile(const char * pszFile);
+	static int Count(void);
+	static CCustomEvent * EventAtIndex(int index);
+	static int SetOldStyleFasting(int i);
 
-	CCustomEventList() { list = NULL; }
+	static NSMutableArray<CCustomEvent> list;
+
+public:
+	CCustomEventList() { }
 	~CCustomEventList() { clear(); };
+
 	CCustomEvent * add(void);
-
-	static void Export();
-	static int ReadFile(const char * pszFile);
-	static int ReadFileRL(const char * pszFile);
-	static int WriteFile(const char * pszFile);
-	static int WriteFileRL(const char * pszFile);
-	static void RefreshLinks();
-	static int InitDefault();
-
+	void clear();
 };
 
 
-#endif // !defined(AFX_CUSTOMEVENT_H__BDEA8D48_FABB_4E56_BB2C_F21F3C2FB071__INCLUDED_)

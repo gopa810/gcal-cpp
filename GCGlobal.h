@@ -6,7 +6,6 @@
 #include "CustomEvent.h"
 
 class GCalApp;
-class CLocationList;
 
 class GCGlobal
 {
@@ -24,9 +23,10 @@ public:
 	static CCustomEventList customEventList;
 	static int customEventListModified;
 	static GCalApp application;
-	static CLocationList locationsList;
 
 	static const char * getFileName(int n);
 	static int initFolders();
+	static void OpenFile(const char * fileName);
+	static void SaveFile(const char * fileName);
 };
 

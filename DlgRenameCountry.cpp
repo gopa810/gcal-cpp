@@ -59,12 +59,12 @@ void DlgRenameCountry::OnSaveEdit()
 		strOld = TCountry::GetCountryNameByIndex(idx);
 		TCountry::SetCountryName(idx, (LPCTSTR)str);
 		str2.Format("%s [%s]", str, TCountry::GetCountryAcronymByIndex(idx));
-		w = TCountry::gcountries_var[idx].code;
+		w = TCountry::GetCountryCode(idx);
 		m_List.InsertString(nSelected, str2);
 		m_List.DeleteString(nSelected + 1);
 		m_List.SetItemData(nSelected, idx);
 		m_List.SetCurSel(nSelected);
-		GCGlobal::locationsList.RenameCountry((LPCTSTR)strOld, str);
+		CLocationList::RenameCountry((LPCTSTR)strOld, str);
 	}
 }
 

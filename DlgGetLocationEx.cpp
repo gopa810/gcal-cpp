@@ -9,6 +9,7 @@
 #include "TFile.h"
 #include "enums.h"
 #include "GCGlobal.h"
+#include "TTimeZone.h"
 
 #define ID_MENU_CREATELOC 0x100
 #define ID_MENU_EDITLOC   0x101
@@ -115,7 +116,7 @@ void DlgGetLocationEx::OnCreateLocation()
 
 	if (dlg.DoModal() == IDOK)
 	{
-		GCGlobal::locationsList.AddTail( dlg.m_loc );
+		CLocationList::Add( dlg.m_loc );
 		m_countries.ResetContent();
 		m_cities.ResetContent();
 		n = InitCountries( dlg.m_loc->m_strCountry );
@@ -137,7 +138,7 @@ void DlgGetLocationEx::OnCreateLocation()
 void DlgGetLocationEx::OnEditLocation() 
 {
 	// TODO: Add your control notification handler code here
-	int n, m;
+	int n, m, locIdx;
 	DlgEditLocation dlg;
 
 	dlg.m_bEdit = TRUE;
@@ -145,8 +146,8 @@ void DlgGetLocationEx::OnEditLocation()
 	n = m_cities.GetCurSel();
 	if (n == LB_ERR)
 		return;
-
-	dlg.m_loc = (CLocation *)(m_cities.GetItemData(n));
+	locIdx = m_cities.GetItemData(n);
+	dlg.m_loc = CLocationList::LocationAtIndex(locIdx);
 	if (dlg.m_loc == NULL)
 		return;
 
@@ -174,7 +175,7 @@ void DlgGetLocationEx::OnEditLocation()
 void DlgGetLocationEx::OnDeleteLocation() 
 {
 	// TODO: Add your control notification handler code here
-	int n, m;
+	int n, locIdx, m;
 	TString str;
 	CLocation * loc;
 	
@@ -182,17 +183,27 @@ void DlgGetLocationEx::OnDeleteLocation()
 	if (n == LB_ERR)
 		return;
 
-	loc = (CLocation *)(m_cities.GetItemData(n));
+	locIdx = m_cities.GetItemData(n);
+	loc = CLocationList::LocationAtIndex(locIdx);
 	if (loc == NULL)
 		return;
 
-	loc->SetTextB(str);
-	str.Insert(0, "Do you want to remove location:\r\n\r\n");
+	str.Format("Do you want to remove location:\r\n\r\n");
+	str = loc->m_strCity;
+	str += " [";
+	str += loc->m_strCountry;
+	str += "]\t";
+
+	str += EARTHDATA::GetTextLatitude(loc->m_fLatitude);
+	str += "\t";
+	str += EARTHDATA::GetTextLongitude(loc->m_fLongitude);
+	str += "\t";
+	str += TTimeZone::GetTimeZoneOffsetText(loc->m_fTimezone);
 	str += "\r\n\r\nfrom your list of locations?";
 
 	if (AfxMessageBox(str, MB_YESNO) == IDYES)
 	{
-		GCGlobal::locationsList.RemoveAt(loc);
+		CLocationList::RemoveAt(locIdx);
 		m_countries.ResetContent();
 		m_cities.ResetContent();
 		n = InitCountries( loc->m_strCountry );
@@ -217,11 +228,13 @@ void DlgGetLocationEx::OnChangeEdit1()
 	m_edit.GetWindowText(str);
 
 	int n = m_cities.FindString(-1, str);
+	int locIdx;
 
 	if (n != LB_ERR)
 	{
 		m_cities.SetCurSel(n);
-		m_lc = (CLocation *)(m_cities.GetItemData(n));
+		locIdx = (m_cities.GetItemData(n));
+		m_lc = CLocationList::LocationAtIndex(locIdx);
 	}
 }
 
@@ -235,13 +248,16 @@ void DlgGetLocationEx::OnSelendokCombo1()
 
 void DlgGetLocationEx::OnSelchangeList1() 
 {
-	int n;
+	int n, locIdx;
 	TString str;
 	
 	n = m_cities.GetCurSel();
-	m_lc = (CLocation *)(m_cities.GetItemData(n));
+	locIdx = m_cities.GetItemData(n);
+	m_lc = CLocationList::LocationAtIndex(locIdx);
 
-	m_lc->SetTextA(str);
+	str.Format("%s [%s]   %s %s %s", m_lc->m_strCity.c_str(), m_lc->m_strCountry.c_str(),
+		EARTHDATA::GetTextLatitude(m_lc->m_fLatitude), EARTHDATA::GetTextLongitude(m_lc->m_fLongitude),
+		TTimeZone::GetTimeZoneOffsetText(m_lc->m_fTimezone));
 
 	m_edit.SetWindowText(str);
 }
@@ -251,7 +267,7 @@ int  DlgGetLocationEx::InitCitiesForCountry(int nCurrentCountry, const char * ps
 	int h, retVal = 0;
 	TString city;
 	CString country, str;
-	CLocation * pos, * pos_old;
+	CLocation * loc;
 
 	m_cities.ResetContent();
 
@@ -261,37 +277,35 @@ int  DlgGetLocationEx::InitCitiesForCountry(int nCurrentCountry, const char * ps
 		m_countries.GetLBText(nCurrentCountry, country);
 	}
 
-	pos = GCGlobal::locationsList.GetHeadPosition();
-	while(pos)
+	for(int i = 0; i < CLocationList::LocationCount(); i++)
 	{
-		pos_old = pos;
-		CLocation &loc = *pos;
-		loc.SetTextB( city );
+		loc = CLocationList::LocationAtIndex(i);
+		city.Format("%s [%s]\t%s\t%s\t%s", loc->m_strCity, loc->m_strCountry, EARTHDATA::GetTextLatitude(loc->m_fLatitude),
+			EARTHDATA::GetTextLongitude(loc->m_fLongitude), TTimeZone::GetTimeZoneOffsetText(loc->m_fTimezone));
 		if (nCurrentCountry == 0)
 		{
 			h = m_cities.AddString( city );
 			if (pszCurrentCity != NULL)
 			{
-				if (loc.m_strCity.CompareNoCase( pszCurrentCity) == 0)
+				if (loc->m_strCity.CompareNoCase( pszCurrentCity) == 0)
 				{
 					retVal = h;
 				}
 			}
-			m_cities.SetItemDataPtr(h, pos_old);
+			m_cities.SetItemData(h, i);
 		}
-		else if ((loc.m_strCountry.IsEmpty() == FALSE) && (country == loc.m_strCountry.c_str()))
+		else if ((loc->m_strCountry.IsEmpty() == FALSE) && (country == loc->m_strCountry.c_str()))
 		{
 			h = m_cities.AddString( city );
 			if (pszCurrentCity != NULL)
 			{
-				if (loc.m_strCity.CompareNoCase( pszCurrentCity) == 0)
+				if (loc->m_strCity.CompareNoCase( pszCurrentCity) == 0)
 				{
 					retVal = h;
 				}
 			}
-			m_cities.SetItemDataPtr(h, pos_old);
+			m_cities.SetItemData(h, i);
 		}
-		pos = pos->next;
 	}
 
 	m_edit.SetWindowText("");
@@ -307,24 +321,23 @@ int DlgGetLocationEx::InitCountries(const char * pszCurrentCountry)
 	int n, retVal = -1;
 	
 	TString city, country;
-	CLocation * pos, * pos_old;
-	pos = GCGlobal::locationsList.GetHeadPosition();
+	CLocation * loc;
+
 	//
 	// initializes list of countries
 	m_countries.AddString("< all cities >");
-	while(pos)
+
+	for(int i = 0; i < CLocationList::LocationCount(); i++)
 	{
-		pos_old = pos;
-		CLocation & loc = *pos;
-		if (loc.m_strCountry.IsEmpty() == FALSE)
+		loc = CLocationList::LocationAtIndex(i);
+		if (loc->m_strCountry.IsEmpty() == FALSE)
 		{
-			if (map.Lookup(loc.m_strCountry, ptr) == FALSE)
+			if (map.Lookup(loc->m_strCountry, ptr) == FALSE)
 			{
-				n = m_countries.AddString(loc.m_strCountry);
-				map.SetAt(loc.m_strCountry, pbase);
+				n = m_countries.AddString(loc->m_strCountry);
+				map.SetAt(loc->m_strCountry, pbase);
 			}
 		}
-		pos = pos->next;
 	}
 	if (pszCurrentCountry != NULL)
 	{
@@ -337,7 +350,7 @@ int DlgGetLocationEx::InitCountries(const char * pszCurrentCountry)
 void DlgGetLocationEx::OnSetCountryByCity() 
 {
 	// TODO: Add your control notification handler code here
-	int n;
+	int n, locIdx;
 	CLocation * pos;
 	TString str;
 	
@@ -345,7 +358,8 @@ void DlgGetLocationEx::OnSetCountryByCity()
 	if (n == LB_ERR)
 		return;
 
-	pos = (CLocation *)(m_cities.GetItemData(n));
+	locIdx = m_cities.GetItemData(n);
+	pos = CLocationList::LocationAtIndex(locIdx);
 	if (pos == NULL)
 		return;
 
@@ -366,14 +380,15 @@ void DlgGetLocationEx::OnSetCountryByCity()
 void DlgGetLocationEx::OnAllCities() 
 {
 	// TODO: Add your control notification handler code here
-	int n;
+	int n, locIdx;
 	TString str;
 	CLocation * loc = NULL;
 	
 	n = m_cities.GetCurSel();
 	if (n != LB_ERR)
 	{
-		loc = (CLocation *)(m_cities.GetItemData(n));
+		locIdx = m_cities.GetItemData(n);
+		loc = CLocationList::LocationAtIndex(locIdx);
 	}
 
 
@@ -397,8 +412,9 @@ void DlgGetLocationEx::OnResetList()
 {
 	if (AfxMessageBox("Are you sure to revert list of locations to the internal build-in list of locations?", MB_YESNO) == IDYES)
 	{
-		GCGlobal::locationsList.RemoveAll();
-		GCGlobal::locationsList.InitInternal();
+		const char * fileName = GCGlobal::getFileName(GSTR_LOCX_FILE);
+		CLocationList::RemoveAll();
+		CLocationList::InitInternal(fileName);
 		InitCountries();
 
 		// setting the current country
@@ -484,7 +500,7 @@ void DlgGetLocationEx::OnImportList()
 		return;
 
 	// vklada
-	if (GCGlobal::locationsList.ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
+	if (CLocationList::ImportFile(fd.GetPathName(), (nResult == IDNO)) == FALSE)
 	{
 		MessageBox("Importing of file was not succesful.", "Importing progress");
 		return;

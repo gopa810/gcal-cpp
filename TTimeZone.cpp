@@ -489,7 +489,7 @@ int TTimeZone::GetTimeZoneCount()
 	return sizeof(gzone)/sizeof(TTimeZone);
 }
 
-Boolean TTimeZone::GetXMLString(TString &str, int nIndex)
+bool TTimeZone::GetXMLString(TString &str, int nIndex)
 {
 	static int DSTtable[8];
 	int bias = 60;

@@ -30,6 +30,9 @@ public:
 	TFile();
 	virtual ~TFile();
 
+	static bool FileExists(const char * fileName);
+	static void CreateFileFromResource(int resourceId, const char * fileName);
+	static void DeleteFile(const char * fileName);
 };
 
 #endif // !defined(AFX_SIMPLEDATAFILE_H__00F7817C_BBDC_488E_A2C9_EC9846776216__INCLUDED_)

@@ -69,11 +69,10 @@ BOOL DPageFest::OnSetActive()
 	int chks[10][2];
 	for(i=0;i<10;i++)
 		chks[i][0] = chks[i][1] = 0;
-	CCustomEvent * p = GCGlobal::customEventList.list;
-	while(p)
+	for(int nk = 0; nk < CCustomEventList::Count(); nk++)
 	{
+		CCustomEvent * p = CCustomEventList::EventAtIndex(nk);
 		chks[p->nClass][p->nVisible]++;
-		p = p->next;
 	}
 	for(i=0;i<6;i++)
 	{
@@ -152,9 +151,9 @@ BOOL DPageFest::OnKillActive()
 		GCDisplaySettings::setValue(13 + (i + 2)%3, 0);
 	}
 	
-	CCustomEvent * p = GCGlobal::customEventList.list;
-	while(p)
+	for(int nk = 0; nk < CCustomEventList::Count(); nk++)
 	{
+		CCustomEvent * p = CCustomEventList::EventAtIndex(nk);
 		i = p->nClass;
 		if (GCDisplaySettings::getValue(22+i) == 0)
 		{
@@ -166,10 +165,9 @@ BOOL DPageFest::OnKillActive()
 			p->nVisible = 1;
 			GCGlobal::customEventListModified = 1;
 		}
-		p = p->next;
 	}
 
-	GCGlobal::customEventListModified = (GCGlobal::customEventList.setOldStyleFast(GCDisplaySettings::getValue(42)) ? 1 : GCGlobal::customEventListModified);
+	GCGlobal::customEventListModified = (GCGlobal::customEventList.SetOldStyleFasting(GCDisplaySettings::getValue(42)) ? 1 : GCGlobal::customEventListModified);
 
 	return CPropertyPage::OnKillActive();
 }

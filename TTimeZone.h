@@ -23,7 +23,7 @@ public:
 	static int GetTimeZoneBias(int ndst);
 	static void ExportDB();
 	static void ExpandVal(UInt32 dw, int a[]);
-	static Boolean GetXMLString(TString &str, int nIndex);
+	static bool GetXMLString(TString &str, int nIndex);
 	static int GetTimeZoneCount();
 	static double GetTimeZoneOffset(int nIndex);
 	static int GetTimeZoneOffsetInteger(int nIndex);

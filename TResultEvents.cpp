@@ -38,7 +38,8 @@ TResultEvents::~TResultEvents()
 		e_ptr = NULL;
 	}
 }
-Boolean TResultEvents::AddEvent(VCTIME inTime, int inType, int inData, int inDst)
+
+bool TResultEvents::AddEvent(VCTIME inTime, int inType, int inData, int inDst)
 {
 	if (p_events == NULL)
 	{
@@ -102,7 +103,7 @@ Boolean TResultEvents::AddEvent(VCTIME inTime, int inType, int inData, int inDst
 	return true;
 }
 
-void TResultEvents::Sort(Boolean inSort)
+void TResultEvents::Sort(bool inSort)
 {
 	unsigned int i, j;
 	TDayEvent * p;

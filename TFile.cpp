@@ -150,3 +150,31 @@ int TFile::WriteString(const char *str)
 {
 	return fputs(str, m_fHandle);
 }
+
+
+bool TFile::FileExists(const char * fileName)
+{
+	return PathFileExists(fileName) ? true : false;
+}
+
+
+void TFile::CreateFileFromResource(int resourceId, const char * fileName)
+{
+	HRSRC hsrc = FindResource(NULL, MAKEINTRESOURCE(resourceId), "TEXT");
+	HGLOBAL hfile = LoadResource(NULL, hsrc);
+	LPVOID data = LockResource(hfile);
+	DWORD sizerc = SizeofResource(NULL, hsrc);
+
+	FILE * fileToWrite = fopen(fileName, "wb");
+	if (fileToWrite != NULL)
+	{
+		fwrite(data, 1, sizerc, fileToWrite);
+		fclose(fileToWrite);
+	}
+}
+
+
+void TFile::DeleteFile(const char * fileName)
+{
+	DeleteFile(fileName);
+}

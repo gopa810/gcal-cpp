@@ -6,21 +6,19 @@
 
 #pragma once
 
+#include "NSMutableArray.h"
+#include "TString.h"
 
 class CLocation  
 {
 public:
-	void SetTextB(TString &str);
-	void SetTextA(TString &str);
 	void Empty();
 	TString m_strCountry;
 	TString m_strCity;
 	double m_fLongitude;
 	double m_fLatitude;
 	double m_fTimezone;
-	int m_nDST;
-	CLocation * next;
-	CLocation * prev;
+	int m_nTimezoneId;
 
 	CLocation();
 	virtual ~CLocation();
@@ -29,24 +27,25 @@ public:
 
 class CLocationList
 {
-	CLocation * list;
+	static NSMutableArray<CLocation> locationList;
+	static bool m_bModified;
 
 public:
-	int RenameCountry(const char * pszOld, const char * pszNew);
-	BOOL InitList(const char * pszList);
-	BOOL InitListX(const char * pszList);
-	BOOL m_bModified;
-	void AddTail(CLocation * lc);
-	void RemoveAll();
-	void RemoveAt(CLocation * rem);
-	BOOL SaveAs(const char * lpszFileName, int nType);
-	CLocation * GetHeadPosition();
-	CMapStringToString m_mapCC;
-	BOOL Analyze(const char * psz, CLocation &lc);
-	BOOL ImportFile(const char * pszFile, BOOL bDeleteCurrent);
-	void InitInternal();
+	static bool OpenFile(const char * pszList);
+	static bool SaveAs(const char * lpszFileName, int nType);
+	static bool ImportFile(const char * pszFile, bool bDeleteCurrent);
+	static void RemoveAll();
+	static void Add(CLocation * loc);
+	static void RemoveAt(int index);
+	static void InitInternal(const char *);
+	static bool IsModified(void);
+	static int RenameCountry(const char * pszOld, const char * pszNew);
+
 	CLocationList();
 	virtual ~CLocationList();
+
+	static int LocationCount(void);
+	static CLocation * LocationAtIndex(int index);
 };
 
 

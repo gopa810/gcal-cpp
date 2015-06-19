@@ -236,8 +236,8 @@ void CFrameFind::OnEventFind()
 	TString str, s1;
 	VAISNAVADAY * pd;
 	VCTIME vcFrom, vcTo;
-	Boolean next_day = false;
-	Boolean succ = false;
+	bool next_day = false;
+	bool succ = false;
 	DWORD dwDateNote;
 	CString plainText;
 	CString findText;

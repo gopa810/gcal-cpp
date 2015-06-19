@@ -87,7 +87,7 @@ int TResultCalendar::Push(VAISNAVADAY &day)
 	return nWrite;
 }
 
-Boolean TResultCalendar::NextNewFullIsVriddhi(int nIndex, EARTHDATA earth)
+bool TResultCalendar::NextNewFullIsVriddhi(int nIndex, EARTHDATA earth)
 {
 	int i = 0;
 	int nTithi;
@@ -109,7 +109,7 @@ Boolean TResultCalendar::NextNewFullIsVriddhi(int nIndex, EARTHDATA earth)
 
 // test for MAHADVADASI 5 TO 8
 
-Boolean TResultCalendar::IsMhd58(int nIndex, int &nMahaType)
+bool TResultCalendar::IsMhd58(int nIndex, int &nMahaType)
 {
 	VAISNAVADAY & t = m_pData[nIndex];
 	VAISNAVADAY & u = m_pData[nIndex + 1];
@@ -178,7 +178,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	int lastGYear = 0;
 	TString tempStr;
 	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
-	Boolean bCalcMasa[] = 
+	bool bCalcMasa[] = 
 		{ TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, 
 		TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE };
 
@@ -282,7 +282,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 
 	}
 
-	Boolean calc_masa;
+	bool calc_masa;
 
 	// 5
 	// init of masa
@@ -1105,158 +1105,83 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 
 	int currFestTop = 0;
 	GCMutableDictionary * md = NULL;
-	pEvx = GCGlobal::customEventList.list;
-	//pEvx = pEvx->findMasa(_masa_from);
-	while(s2==true && pEvx)
-	{
-		if (pEvx->nMasa==_masa_from && pEvx->nTithi == _tithi_from && pEvx->nUsed && pEvx->nVisible)
-		{
-			md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
-				pEvx->strText.c_str());
-			currFestTop += 5;
-			if (pEvx->nFastType > 0)
-			{
-				md->setIntForKey("fasttype", pEvx->nFastType);
-				md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
-			}
-
-			if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
-			{
-				TString ss1;
-				int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
-				char * appx = "th";
-				if (years % 10 == 1) appx = "st";
-				else if (years % 10 == 2) appx = "nd";
-				else if (years % 10 == 3) appx = "rd";
-				if (GCDisplaySettings::getValue(51) == 0)
-				{
-					ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
-				}
-				else
-				{
-					ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
-				}
-				md->setStringForKey("text", ss1.c_str());
-			}
-
-		}
-
-		pEvx = pEvx->next;
-		//pEvx = pEvx->next_in_masa;
-	}
-
-	pEvx = GCGlobal::customEventList.list;
-	//pEvx = pEvx->findMasa(_masa_to);
-	while(pEvx && s1==true)
-	{
-		if (pEvx->nMasa==_masa_to && pEvx->nTithi==_tithi_to && pEvx->nUsed && pEvx->nVisible)
-		{
-			md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
-				pEvx->strText.c_str());
-			currFestTop += 5;
-			if (pEvx->nFastType > 0)
-			{
-				md->setIntForKey("fasttype", pEvx->nFastType);
-				md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
-			}
-
-			if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
-			{
-				TString ss1;
-				int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
-				char * appx = "th";
-				if (years % 10 == 1) appx = "st";
-				else if (years % 10 == 2) appx = "nd";
-				else if (years % 10 == 3) appx = "rd";
-				if (GCDisplaySettings::getValue(51) == 0)
-				{
-					ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
-				}
-				else
-				{
-					ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
-				}
-				md->setStringForKey("text", ss1.c_str());
-			}
-		}
-
-		pEvx = pEvx->next;
-//		pEvx = pEvx->next_in_masa;
-	}
-
-//	TRACE1("Festivals string: %s\n", t.festivals.c_str());
-/*	if (GCStrings::getString(200 + n].IsEmpty() == FALSE)
-	{
-		s1 = true;
-	}
-
-	// test for ksaya tithi at this date
-	if ((t.astrodata.nTithi != s.astrodata.nTithi) && 
-		(t.astrodata.nTithi != (s.astrodata.nTithi + 1)%30))
-	{
-		// we have to add also festivals which was
-		// tithi before
-		if (GCStrings::getString(200 + n2].IsEmpty() == FALSE)
-		{
-			s2 = true;
-		}
-	}
-
-	// if this is second day of vriddhi, then No festivals
-	if (s.astrodata.nTithi == t.astrodata.nTithi)
-		s1 = false;
 
 	if (s2)
 	{
-		if (t.festivals.IsEmpty() == FALSE)
-			t.festivals += "#";
-		t.festivals += GCStrings::getString(200 + n2];
-	}
-
-	if (s1)
-	{
-		if (t.festivals.IsEmpty() == FALSE)
-			t.festivals += "#";
-		t.festivals += GCStrings::getString(200 + n];
-	}
-*/
-	//-----------------------------------
-	// custom events
-/*	if (gCustomEventTexts[n].IsEmpty() == FALSE)
-	{
-		s1 = true;
-	}
-
-	// test for ksaya tithi at this date
-	if ((t.astrodata.nTithi != s.astrodata.nTithi) && 
-		(t.astrodata.nTithi != (s.astrodata.nTithi + 1)%30))
-	{
-		// we have to add also festivals which was
-		// tithi before
-		if (gCustomEventTexts[n2].IsEmpty() == FALSE)
+		for(int kn = 0; kn < CCustomEventList::Count(); kn ++)
 		{
-			s2 = true;
+			pEvx = CCustomEventList::EventAtIndex(kn);
+			if (pEvx->nMasa==_masa_from && pEvx->nTithi == _tithi_from && pEvx->nUsed && pEvx->nVisible)
+			{
+				md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
+					pEvx->strText.c_str());
+				currFestTop += 5;
+				if (pEvx->nFastType > 0)
+				{
+					md->setIntForKey("fasttype", pEvx->nFastType);
+					md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
+				}
+
+				if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
+				{
+					TString ss1;
+					int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
+					char * appx = "th";
+					if (years % 10 == 1) appx = "st";
+					else if (years % 10 == 2) appx = "nd";
+					else if (years % 10 == 3) appx = "rd";
+					if (GCDisplaySettings::getValue(51) == 0)
+					{
+						ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
+					}
+					else
+					{
+						ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
+					}
+					md->setStringForKey("text", ss1.c_str());
+				}
+
+			}
 		}
 	}
 
-	// if this is second day of vriddhi, then No festivals
-	if (s.astrodata.nTithi == t.astrodata.nTithi)
-		s1 = false;
-
-	if (s2)
+	if(s1)
 	{
-		if (t.festivals.IsEmpty() == FALSE)
-			t.festivals += "#";
-		t.festivals += gCustomEventTexts[n2];
-	}
+		for(int kn = 0; kn < CCustomEventList::Count(); kn++)
+		{
+			pEvx = CCustomEventList::EventAtIndex(kn);
+			if (pEvx->nMasa==_masa_to && pEvx->nTithi==_tithi_to && pEvx->nUsed && pEvx->nVisible)
+			{
+				md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
+					pEvx->strText.c_str());
+				currFestTop += 5;
+				if (pEvx->nFastType > 0)
+				{
+					md->setIntForKey("fasttype", pEvx->nFastType);
+					md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
+				}
 
-	if (s1)
-	{
-		if (t.festivals.IsEmpty() == FALSE)
-			t.festivals += "#";
-		t.festivals += gCustomEventTexts[n];
+				if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
+				{
+					TString ss1;
+					int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
+					char * appx = "th";
+					if (years % 10 == 1) appx = "st";
+					else if (years % 10 == 2) appx = "nd";
+					else if (years % 10 == 3) appx = "rd";
+					if (GCDisplaySettings::getValue(51) == 0)
+					{
+						ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
+					}
+					else
+					{
+						ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
+					}
+					md->setStringForKey("text", ss1.c_str());
+				}
+			}
+		}
 	}
-*/
 
 other_fest:
 	// ---------------------------
@@ -1660,7 +1585,7 @@ int TResultCalendar::ExtendedCalc(int nIndex, EARTHDATA earth)
 /*                                                                                        */
 /******************************************************************************************/
 
-Boolean TResultCalendar::IsFestivalDay(VAISNAVADAY &yesterday, VAISNAVADAY &today, int nTithi)
+bool TResultCalendar::IsFestivalDay(VAISNAVADAY &yesterday, VAISNAVADAY &today, int nTithi)
 {
 	return ((today.astrodata.nTithi == nTithi) && GCTithi::TITHI_LESS_THAN(yesterday.astrodata.nTithi, nTithi))
 			|| (GCTithi::TITHI_LESS_THAN(yesterday.astrodata.nTithi, nTithi) && GCTithi::TITHI_GREAT_THAN(today.astrodata.nTithi, nTithi));

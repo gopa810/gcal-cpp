@@ -518,7 +518,7 @@ void CFrameMain::OnExportLocationslist()
 		return;
 
 	// 0 = TXT, 1 = XML
-	GCGlobal::locationsList.SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
+	CLocationList::SaveAs( cfd.GetPathName(), cfd.m_ofn.nFilterIndex);	
 }
 
 void CFrameMain::OnHelpAbout() 
@@ -793,8 +793,9 @@ void CFrameMain::OnSettingsLanguageOutput()
 	{
 		if (d.m_pfi == NULL)
 		{
-			GCStrings::InitGlobalStrings(0);
-//			GCGlobal::application.m_strLangFile.Empty();
+			TFile::DeleteFileA(GCGlobal::getFileName(GSTR_TEXT_FILE));
+			GCStrings::readFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
+
 			AfxMessageBox("Language for Output set succesfully to default (English).", MB_OK);
 			RecalculateCurrentScreen();
 		}

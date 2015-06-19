@@ -60,15 +60,14 @@ BOOL DlgCustomEventDialog::OnInitDialog()
 	int n;
 
 
-	pos = GCGlobal::customEventList.list;
-	while(pos)
+	for(int k = 0; k < CCustomEventList::Count(); k++)
 	{
+		pos = CCustomEventList::EventAtIndex(k);
 		n = m_list.InsertItem(1000, GCStrings::GetTithiName(pos->nTithi));
 		m_list.SetItemText(n, 1, GCStrings::GetPaksaName(pos->nTithi / 15));
 		m_list.SetItemText(n, 2, GCStrings::GetMasaName(pos->nMasa));
 		m_list.SetItemText(n, 3, pos->strText);
 		m_list.SetItemData(n, pos->nTithi + pos->nMasa*30);
-		pos = pos->next;
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control

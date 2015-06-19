@@ -20,7 +20,7 @@ class DlgGetLocation : public CDialog
 public:
 	int m_nLastDst;
 	int SetCurSelDST(int nID);
-	Boolean b_upd;
+	bool b_upd;
 	double m_longSign;
 	double m_latiSign;
 	CLocationRef m_location;

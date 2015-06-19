@@ -8,6 +8,7 @@
 #include "GCStrings.h"
 #include "GCUserInterface.h"
 #include "GCGlobal.h"
+#include "TFile.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgStringManager dialog
@@ -159,7 +160,8 @@ void DlgStringManager::OnExport()
 
 void DlgStringManager::OnButton4() 
 {
-	GCStrings::InitGlobalStrings(1);
+	TFile::DeleteFileA(GCGlobal::getFileName(GSTR_TEXT_FILE));
+	GCStrings::readFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
 	InitListWithStrings();
 }
 

@@ -28,33 +28,16 @@ const char * TCountry::gcontinents[] =
 
 int TCountry::_modified = 0;
 
-TCountry TCountry::gcountries_var[512];
-
-TStringStorage TCountry::gcountstr;
-
-int TCountry::g_countries_var_count = 0;
+NSMutableArray<TCountry> TCountry::gcountries;
 
 int TCountry::InitWithFile(const char * strFile)
 {
-	int i, j;
-	int retVal = 0;
 	const char * pCode = NULL;
-	int opened = 0;
 	TFileRichList F;
 
-	if (!PathFileExists(strFile))
+	if (!TFile::FileExists(strFile))
 	{
-		HRSRC hsrc = FindResource(NULL, MAKEINTRESOURCE(IDR_FILE_COUNTRY), "TEXT");
-		HGLOBAL hfile = LoadResource(NULL, hsrc);
-		LPVOID data = LockResource(hfile);
-		DWORD sizerc = SizeofResource(NULL, hsrc);
-
-		FILE * fileToWrite = fopen(strFile, "wb");
-		if (fileToWrite != NULL)
-		{
-			fwrite(data, 1, sizerc, fileToWrite);
-			fclose(fileToWrite);
-		}
+		TFile::CreateFileFromResource(IDR_FILE_COUNTRY, strFile);
 	}
 
 	if (F.Open(strFile, "rt"))
@@ -62,39 +45,25 @@ int TCountry::InitWithFile(const char * strFile)
 		//
 		// init from file
 		//
-		retVal = 1;
-		i = 0;
-		while(F.ReadLine() && i <512)
+		while(F.ReadLine())
 		{
 			if (atoi(F.GetTag()) == 77)
 			{
-				pCode = F.GetField(0);
-				gcountries_var[i].pszAcr = gcountstr.add(pCode);
-				gcountries_var[i].code = ((unsigned char)(pCode[0]))*256 + (unsigned char)pCode[1];
-				gcountries_var[i].pszName = gcountstr.add(F.GetField(1));
-				gcountries_var[i].continent = atoi(F.GetField(2));
-				i++;
+				AddCountry(F.GetField(0), F.GetField(1), atoi(F.GetField(2)));
 			}
 		}
-		opened = 1;
-		g_countries_var_count = i;
 		F.Close();
 	}
 
-	return retVal;
+	return gcountries.Count();
 }
 
 const char * TCountry::GetCountryName(WORD w)
 {
-	int i, j;
-
-	i = 0;
-	j = g_countries_var_count;
-
-	for(i = 0; i < j; i++)
+	for(int i = 0; i < gcountries.Count(); i++)
 	{
-		if (gcountries_var[i].code == w)
-			return gcountries_var[i].pszName;
+		if (gcountries.ObjectAtIndex(i)->code == w)
+			return gcountries.ObjectAtIndex(i)->name.c_str();
 	}
 
 	return "";
@@ -102,14 +71,10 @@ const char * TCountry::GetCountryName(WORD w)
 
 const char * TCountry::GetCountryContinentName(WORD w)
 {
-	int i, j;
-
-	j = g_countries_var_count;
-
-	for(i = 0; i < j; i++)
+	for(int i = 0; i < gcountries.Count(); i++)
 	{
-		if (gcountries_var[i].code == w)
-			return gcontinents[gcountries_var[i].continent];
+		if (gcountries.ObjectAtIndex(i)->code == w)
+			return gcontinents[gcountries.ObjectAtIndex(i)->continent];
 	}
 
 	return "";
@@ -117,22 +82,22 @@ const char * TCountry::GetCountryContinentName(WORD w)
 
 int TCountry::GetCountryCount()
 {
-	return g_countries_var_count;
+	return gcountries.Count();
 }
 
 const char * TCountry::GetCountryNameByIndex(int nIndex)
 {
-	return gcountries_var[nIndex].pszName;
+	return gcountries.ObjectAtIndex(nIndex)->name.c_str();
 }
 
 const char * TCountry::GetCountryContinentNameByIndex(int nIndex)
 {
-	return gcontinents[gcountries_var[nIndex].continent];
+	return gcontinents[gcountries.ObjectAtIndex(nIndex)->continent];
 }
 
 const char * TCountry::GetCountryAcronymByIndex(int nIndex)
 {
-	return gcountries_var[nIndex].pszAcr;
+	return gcountries.ObjectAtIndex(nIndex)->abbreviatedName.c_str();
 }
 
 int TCountry::SaveToFile(const char *szFile)
@@ -144,13 +109,13 @@ int TCountry::SaveToFile(const char *szFile)
 		return 0;
 
 	int i;
-	for(i = 0 ; i < g_countries_var_count; i++)
+	for(i = 0 ; i < gcountries.Count(); i++)
 	{
 		F.Clear();
 		F.AddTag(77);
-		F.AddText(gcountries_var[i].pszAcr);
-		F.AddText(gcountries_var[i].pszName);
-		F.AddInt(gcountries_var[i].continent);
+		F.AddText(gcountries.ObjectAtIndex(i)->abbreviatedName.c_str());
+		F.AddText(gcountries.ObjectAtIndex(i)->name.c_str());
+		F.AddInt(gcountries.ObjectAtIndex(i)->continent);
 		F.WriteLine();
 	}
 
@@ -159,20 +124,33 @@ int TCountry::SaveToFile(const char *szFile)
 
 int TCountry::AddCountry(LPCTSTR pszCode, LPCTSTR pszName, int nContinent)
 {
-	if(g_countries_var_count <512)
-	{
-		gcountries_var[g_countries_var_count].pszAcr = gcountstr.add(pszCode);
-		gcountries_var[g_countries_var_count].code = ((unsigned char)(pszCode[0]))*256 + (unsigned char)pszCode[1];
-		gcountries_var[g_countries_var_count].pszName = gcountstr.add(pszName);
-		gcountries_var[g_countries_var_count].continent = nContinent;
-		g_countries_var_count++;
-	}
+	TCountry * country = new TCountry();
 
-	return g_countries_var_count;
+	country->abbreviatedName = pszCode;
+	country->code = ((unsigned char)(pszCode[0]))*256 + (unsigned char)pszCode[1];
+	country->name = pszName;
+	country->continent = nContinent;
+
+	gcountries.AddObject(country);
+
+	return gcountries.Count();
 }
 
 int TCountry::SetCountryName(int nSelected, const char *psz)
 {
-	gcountries_var[nSelected].pszName = gcountstr.add(psz);
+	gcountries.ObjectAtIndex(nSelected)->name = psz;
+	_modified = 1;
 	return 1;
+}
+
+
+unsigned short int TCountry::GetCountryCode(int nIndex)
+{
+	return gcountries.ObjectAtIndex(nIndex)->code;
+}
+
+
+bool TCountry::IsModified(void)
+{
+	return _modified;
 }

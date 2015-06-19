@@ -33,7 +33,7 @@ public:
 	virtual ~TResultMasaList();
 	
 	int CalculateMasaList(CLocationRef &loc, int nYear, int nCount);
-	Boolean alloc(int nCountYears);
+	bool alloc(int nCountYears);
 	int formatText(TString &str);
 	int formatRtf(TString &str);
 	int writeHtml(FILE * f);

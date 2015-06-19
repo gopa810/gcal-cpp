@@ -103,7 +103,7 @@ void DlgGetLocation::OnSelectLocation()
 		m_location.m_strName += " [";
 		m_location.m_strName += d.m_lc->m_strCountry;
 		m_location.m_strName += "]";
-		m_location.m_nDST = d.m_lc->m_nDST;
+		m_location.m_nDST = d.m_lc->m_nTimezoneId;
 
 		// this is part: LOCATION TO DIALOG
 		cLocName.SetWindowText(m_location.m_strName);
@@ -122,7 +122,7 @@ void DlgGetLocation::OnSelectLocation()
 		//cLat.SetWindowText(EARTHDATA::GetTextLatitude());
 		//cLong.SetWindowText(EARTHDATA::GetTextLongitude());
 		//cTimezone.SetCurSel(AvcGetNearestTimeZone(d.m_lc->m_fTimezone));
-		SetCurSelDST(d.m_lc->m_nDST);
+		SetCurSelDST(d.m_lc->m_nTimezoneId);
 	}
 
 }

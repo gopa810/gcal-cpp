@@ -14,7 +14,7 @@ public:
 	CLocationRef location;
 	VCTIME  event;
 	DAYDATA details;
-	Boolean b_adhika;
+	bool b_adhika;
 	int celeb_gy[TRESULT_APP_CELEBS];
 	VCTIME celeb_date[TRESULT_APP_CELEBS];
 

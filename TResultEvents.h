@@ -45,9 +45,9 @@ public:
 	TDayEvent * p_events;
 	UInt32      n_count;
 	UInt32      n_size;
-	Boolean     b_sorted;
-	Boolean AddEvent(VCTIME inTime, int inType, int inData, int inDst);
-	void Sort(Boolean inSort);
+	bool     b_sorted;
+	bool AddEvent(VCTIME inTime, int inType, int inData, int inDst);
+	void Sort(bool inSort);
 	TDayEvent &operator[](int i)
 	{
 		if (b_sorted) return *(e_ptr[i]);

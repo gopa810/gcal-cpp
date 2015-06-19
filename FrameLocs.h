@@ -20,7 +20,7 @@ class CFrameLocs : public CFrameBase
 public:
 	void ShowControlsForTab(int nTab);
 	unsigned short int GetCountrySelected();
-	void AddLocationStr(CLocation *L);
+	void AddLocationStr(CLocation *L, int locIdx);
 	void InitCityByCountry(int nCode);
 	void SetCountrySelected(int nCode);
 	void InitCountries();
