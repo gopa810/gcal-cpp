@@ -1,14 +1,8 @@
-#if !defined(AFX_DLGGETENDDATE_H__0439CFCA_9EA4_4A26_A0C1_6773200915B7__INCLUDED_)
-#define AFX_DLGGETENDDATE_H__0439CFCA_9EA4_4A26_A0C1_6773200915B7__INCLUDED_
-
-#include "level_0.h"	// Added by ClassView
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgGetEndDate.h : header file
-//
 
 #include "staticheader1.h"
+#include "GCEarthData.h"
+#include "GCVedicTime.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetEndDate dialog
@@ -76,4 +70,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGGETENDDATE_H__0439CFCA_9EA4_4A26_A0C1_6773200915B7__INCLUDED_)

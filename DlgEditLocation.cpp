@@ -4,14 +4,13 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "DlgEditLocation.h"
-#include "level_0.h"
+
 
 #include "TTimeZone.h"
 #include "TCountry.h"
-#include "TLocation.h"
 #include "GCStrings.h"
 #include "GCGlobal.h"
-#include "TLocation.h"
+#include "Location.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditLocation dialog
@@ -179,28 +178,6 @@ void DlgEditLocation::OnSelendokComboCountry()
 
 	if (p)
 	{
-		//p->ResetContent();
-		// country_id -> list of timezones
-//		nc = TLocation::GetLocationCount();
-//		for(n = 0; n < nc; n++)
-//		{
-//			if (TLocation::gloc[n].country_code == country_id)
-//			{
-//				n_id = TLocation::gloc[n].timezone_id;
-//				if (p->FindString(-1, TTimeZone::GetTimeZoneName(n_id)) == CB_ERR)
-//				{
-//					index = p->AddString(TTimeZone::GetTimeZoneName(n_id));
-//					p->SetItemData(index, n_id);
-//				}
-//			}
-//		}
-
-//		if (p->GetCount() < 1)
-//		{
-//			p->AddString("Undefined");
-//		}
-
-//		p->SetCurSel(0);
 	}
 
 	if (n_id >= 0)
@@ -326,7 +303,7 @@ void DlgEditLocation::OnChangeEdit1()
 	double d;
 	CString str;
 	cLat.GetWindowText(str);
-	lastLatiAnalyse = TLocation::ParseDegreesFromString(str, false, d);
+	lastLatiAnalyse = CLocation::ParseDegreesFromString(str, false, d);
 	if (lastLatiAnalyse == NULL)
 	{
 		m_loc->m_fLatitude = d;
@@ -364,7 +341,7 @@ void DlgEditLocation::OnChangeEdit3()
 	double d;
 	CString str;
 	cLong.GetWindowText(str);
-	lastLongAnalyse = TLocation::ParseDegreesFromString(str, true, d);
+	lastLongAnalyse = CLocation::ParseDegreesFromString(str, true, d);
 	if (lastLongAnalyse == NULL)
 	{
 		m_loc->m_fLongitude = d;

@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGEDITSTRING_H__62931476_1114_4927_8489_C9DF06AF2FA4__INCLUDED_)
-#define AFX_DLGEDITSTRING_H__62931476_1114_4927_8489_C9DF06AF2FA4__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgEditString.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditString dialog
@@ -44,4 +37,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEDITSTRING_H__62931476_1114_4927_8489_C9DF06AF2FA4__INCLUDED_)

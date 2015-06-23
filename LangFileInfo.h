@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "platform.h"
+#include "TString.h"
 // PORTABLE
 
 class TLangFileInfo  

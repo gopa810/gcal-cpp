@@ -31,9 +31,6 @@
     <ClCompile Include="EditClipboarded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EventsHtmlView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,12 +56,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LocsTabCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MyWebView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="outcities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RichEditResults.cpp">
@@ -100,17 +91,11 @@
     <ClCompile Include="TString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TStringStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TTimeZone.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VCal5beta.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgAskLimitation.cpp">
-      <Filter>Source Dialog Windows</Filter>
     </ClCompile>
     <ClCompile Include="DlgStringManager.cpp">
       <Filter>Source Dialog Windows</Filter>
@@ -274,9 +259,6 @@
     <ClCompile Include="TFileXml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TLocation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GCGlobal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -312,9 +294,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgAskLimitation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DlgCalcProgress.h">
@@ -398,9 +377,6 @@
     <ClInclude Include="EditClipboarded.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventsHtmlView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -422,9 +398,6 @@
     <ClInclude Include="LangFileInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="level_0.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ListBoxClipboarded.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -435,12 +408,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LocsTabCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MyWebView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
@@ -479,9 +446,6 @@
     <ClInclude Include="TithiCalc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TLocation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TResultApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -489,9 +453,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TStringStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TTimeZone.h">

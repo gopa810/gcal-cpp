@@ -9,7 +9,7 @@
 
 //#include "afxtempl.h"
 #include "resource.h"		// main symbols
-#include "platform.h"
+#include "TString.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // GCalApp:

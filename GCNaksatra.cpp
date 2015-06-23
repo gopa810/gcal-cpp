@@ -5,6 +5,7 @@
 #include "GCAyanamsha.h"
 #include "GCStrings.h"
 #include "TFileXml.h"
+#include "GCSunData.h"
 
 GCNaksatra::GCNaksatra(void)
 {

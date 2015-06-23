@@ -1,14 +1,10 @@
-#if !defined(AFX_TITHICALC_H__876B52A6_8955_4730_B7CC_0132E1C64DC7__INCLUDED_)
-#define AFX_TITHICALC_H__876B52A6_8955_4730_B7CC_0132E1C64DC7__INCLUDED_
-
-#include "level_0.h"	// Added by ClassView
+	// Added by ClassView
 #include "staticheader1.h"
 #include "locationref.h"
-#if _MSC_VER > 1000
+
 #pragma once
-#endif // _MSC_VER > 1000
-// TithiCalc.h : header file
-//
+
+#include "GCVedicTime.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetStartDate dialog
@@ -74,4 +70,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_TITHICALC_H__876B52A6_8955_4730_B7CC_0132E1C64DC7__INCLUDED_)

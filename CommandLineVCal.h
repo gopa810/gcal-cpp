@@ -1,17 +1,8 @@
-// CommandLineVCal.h: interface for the CCommandLineVCal class.
-//
-//////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_COMMANDLINEVCAL_H__2DF20853_3345_4798_B1BE_C24A2A2C656E__INCLUDED_)
-#define AFX_COMMANDLINEVCAL_H__2DF20853_3345_4798_B1BE_C24A2A2C656E__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include "level_0.h"
-#include "platform.h"
-// PORTABLE
+#include "GCVedicTime.h"
+#include "GCGregorianTime.h"
 
 class CCommandLineVCal : public CCommandLineInfo  
 {
@@ -36,4 +27,4 @@ public:
 
 };
 
-#endif // !defined(AFX_COMMANDLINEVCAL_H__2DF20853_3345_4798_B1BE_C24A2A2C656E__INCLUDED_)
+

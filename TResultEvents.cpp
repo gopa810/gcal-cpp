@@ -12,6 +12,8 @@
 #include "GCStrings.h"
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
+#include "GCSunData.h"
+#include "GCMoonData.h"
 
 // PORTABLE
 

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "platform.h"
+#include "TString.h"
 #include "VCal5beta.h"
 #include "CommandLineVCal.h"
 #include "FrameMain.h"
@@ -11,7 +11,6 @@
 #include "TFile.h"
 #include "location.h"
 #include "customevent.h"
-#include "dlgasklimitation.h"
 #include "TTimeZone.h"
 #include "langfileinfo.h"
 #include "TFileRichList.h"
@@ -129,8 +128,6 @@ void GCalApp::InitInstanceData()
 	TString strFile;
 	TFile f;
 	TString str, strA, strB;
-	TLangFileInfo * pl;
-
 
 	// initialization of global variables
 	GCGlobal::myLocation.m_fLongitude = 77.73;
@@ -155,7 +152,7 @@ void GCalApp::InitInstanceData()
 	CCustomEventList::SetOldStyleFasting(GCDisplaySettings::getValue(42));
 
 	// inicializacia tipov dna
-	if (TFile::FileExists(GCGlobal::getFileName(GSTR_TIPS_FILE)))
+	if (!TFile::FileExists(GCGlobal::getFileName(GSTR_TIPS_FILE)))
 	{
 		if (f.Open(GCGlobal::getFileName(GSTR_TIPS_FILE), "w")==TRUE)
 		{

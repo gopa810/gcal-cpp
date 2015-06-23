@@ -4,9 +4,8 @@
 
 #pragma once
 
-#include "platform.h"
+#include "TString.h"
 #include "NSMutableArray.h"
-// PORTABLE
 
 //==============================================================
 //

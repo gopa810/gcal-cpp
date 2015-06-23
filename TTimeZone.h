@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 // PORTABLE
-#include "platform.h"
+#include "TString.h"
 
 class VCTIME;
 
@@ -22,7 +22,7 @@ public:
 	static int GetDaylightTimeStartDate(int nDst, int nYear, VCTIME &vcStart);
 	static int GetTimeZoneBias(int ndst);
 	static void ExportDB();
-	static void ExpandVal(UInt32 dw, int a[]);
+	static void ExpandVal(int dw, int a[]);
 	static bool GetXMLString(TString &str, int nIndex);
 	static int GetTimeZoneCount();
 	static double GetTimeZoneOffset(int nIndex);

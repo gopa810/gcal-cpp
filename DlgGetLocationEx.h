@@ -1,12 +1,6 @@
-#if !defined(AFX_DLGGETLOCATIONEX_H__142F4D8F_EB41_40D5_B2C8_EDD388BAAECB__INCLUDED_)
-#define AFX_DLGGETLOCATIONEX_H__142F4D8F_EB41_40D5_B2C8_EDD388BAAECB__INCLUDED_
-
 #include "Location.h"	// Added by ClassView
-#if _MSC_VER > 1000
+
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgGetLocationEx.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocationEx dialog
@@ -66,4 +60,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGGETLOCATIONEX_H__142F4D8F_EB41_40D5_B2C8_EDD388BAAECB__INCLUDED_)

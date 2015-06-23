@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGSETPRINTSTYLE_H__E788F005_AB15_41C8_B567_A99780F576DC__INCLUDED_)
-#define AFX_DLGSETPRINTSTYLE_H__E788F005_AB15_41C8_B567_A99780F576DC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgSetPrintStyle.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgSetPrintStyle dialog
@@ -58,4 +51,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGSETPRINTSTYLE_H__E788F005_AB15_41C8_B567_A99780F576DC__INCLUDED_)

@@ -13,7 +13,6 @@
 #include "Location.h"
 #include "LocsTabCtrl.h"
 #include <afxhtml.h>
-#include "MyWebView.h"
 
 class CFrameLocs : public CFrameBase  
 {

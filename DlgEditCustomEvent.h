@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGEDITCUSTOMEVENT_H__EA367CD9_365C_48A4_9CFB_53BE944CB856__INCLUDED_)
-#define AFX_DLGEDITCUSTOMEVENT_H__EA367CD9_365C_48A4_9CFB_53BE944CB856__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgEditCustomEvent.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditCustomEvent dialog
@@ -49,4 +42,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEDITCUSTOMEVENT_H__EA367CD9_365C_48A4_9CFB_53BE944CB856__INCLUDED_)

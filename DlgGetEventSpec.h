@@ -1,12 +1,6 @@
-#if !defined(AFX_DLGGETEVENTSPEC_H__836A9F40_38D3_45D7_A91A_CA852AD2ECD0__INCLUDED_)
-#define AFX_DLGGETEVENTSPEC_H__836A9F40_38D3_45D7_A91A_CA852AD2ECD0__INCLUDED_
+#include "TString.h"	// Added by ClassView
 
-#include "platform.h"	// Added by ClassView
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgGetEventSpec.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetEventSpec dialog
@@ -15,8 +9,8 @@ class DlgGetEventSpec : public CDialog
 {
 // Construction
 public:
-	UInt32 m_fSort;
-	UInt32 m_fOptions;
+	unsigned int m_fSort;
+	unsigned int m_fOptions;
 	int m_nNextStep;
 	DlgGetEventSpec(CWnd* pParent = NULL);   // standard constructor
 
@@ -66,4 +60,3 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGGETEVENTSPEC_H__836A9F40_38D3_45D7_A91A_CA852AD2ECD0__INCLUDED_)

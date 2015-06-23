@@ -3,6 +3,7 @@
 #include "GCEarthData.h"
 #include "GCGregorianTime.h"
 #include "LocationRef.h"
+#include "GCVedicTime.h"
 
 class GCTithi
 {

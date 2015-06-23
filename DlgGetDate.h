@@ -1,12 +1,6 @@
-#if !defined(AFX_DLGGETDATE_H__6A8F2989_51CA_4556_8A73_A42B7A519F3E__INCLUDED_)
-#define AFX_DLGGETDATE_H__6A8F2989_51CA_4556_8A73_A42B7A519F3E__INCLUDED_
+#include "GCEarthData.h"
 
-#include "level_0.h"	// Added by ClassView
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgGetDate.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetDate dialog
@@ -54,4 +48,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGGETDATE_H__6A8F2989_51CA_4556_8A73_A42B7A519F3E__INCLUDED_)

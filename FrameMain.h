@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 // FrameMain.h : header file
 //
-#include "level_0.h"
+
 //#include "texteditwnd.h"
 #include "TResultCalendar.h"	// Added by ClassView
 #include "framebase.h"
@@ -46,7 +46,7 @@ public:
 		VATIME va_end;
 		VCTIME vc_start;
 		VCTIME vc_end;
-		UInt32 fOptions;
+		unsigned int fOptions;
 	}
 	naks;
 

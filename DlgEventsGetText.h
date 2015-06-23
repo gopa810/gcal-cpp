@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGEVENTSGETTEXT_H__74DC8993_F071_4AB6_9BFB_03C25E284F7B__INCLUDED_)
-#define AFX_DLGEVENTSGETTEXT_H__74DC8993_F071_4AB6_9BFB_03C25E284F7B__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgEventsGetText.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEventsGetText dialog
@@ -43,4 +36,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEVENTSGETTEXT_H__74DC8993_F071_4AB6_9BFB_03C25E284F7B__INCLUDED_)

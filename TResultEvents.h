@@ -1,6 +1,6 @@
 #ifndef _TRESULTEVENT________
 #define _TRESULTEVENT________
-#include "level_0.h"
+
 #include "locationref.h"
 
 enum CoreEventType {
@@ -38,13 +38,13 @@ class TResultEvents
 public:
 	VCTIME  m_vcStart;
 	VCTIME  m_vcEnd;
-	UInt32 m_options;
+	unsigned int m_options;
 	CLocationRef m_location;
 	void clear();
 	TDayEventPtr * e_ptr;
 	TDayEvent * p_events;
-	UInt32      n_count;
-	UInt32      n_size;
+	unsigned int n_count;
+	unsigned int n_size;
 	bool     b_sorted;
 	bool AddEvent(VCTIME inTime, int inType, int inData, int inDst);
 	void Sort(bool inSort);

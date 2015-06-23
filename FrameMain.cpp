@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "vcal5beta.h"
 #include "FrameMain.h"
-#include "level_0.h"
+
 #include "TResultCalendar.h"
 
 #include "TFile.h"

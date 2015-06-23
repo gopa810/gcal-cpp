@@ -1,8 +1,10 @@
 
 #pragma once
 
-#include "level_0.h"
+
 // PORTABLE
+#include "GCEarthData.h"
+
 
 class CLocationRef  
 {

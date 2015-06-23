@@ -5,13 +5,13 @@
 #include "vcal5beta.h"
 #include "DlgGetLocation.h"
 #include "DlgGetLocationEx.h"
-#include "level_0.h"
+
 #include "GCMath.h"
 #include "TTimeZone.h"
 #include "GCStrings.h"
 #include "GCGlobal.h"
 #include "GCUserInterface.h"
-#include "TLocation.h"
+#include "Location.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetLocation dialog

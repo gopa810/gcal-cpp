@@ -10,9 +10,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "level_0.h"
 #include "LocationRef.h"
-;
+#include "GCVaisnavaDay.h"
+#include "GCGregorianTime.h"
+#include "GCEarthData.h"
+
 #define CDB_MAXDAYS 16
 #define BEFORE_DAYS 8
 

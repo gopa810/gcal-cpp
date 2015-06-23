@@ -1,11 +1,7 @@
 #pragma once
 
-#include "level_0.h"	// Added by ClassView
 #include "LocationRef.h"
 
-
-// ConditionsView.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // CConditionsView window

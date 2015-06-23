@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "platform.h"
+#include "TString.h"
 #include "vcal5beta.h"
 #include "DlgEventsGaubdTM.h"
 

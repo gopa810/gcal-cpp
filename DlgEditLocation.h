@@ -1,12 +1,7 @@
-#if !defined(AFX_DLGEDITLOCATION_H__1634F6F2_A2E4_4E22_A99E_15DC6120C7E2__INCLUDED_)
-#define AFX_DLGEDITLOCATION_H__1634F6F2_A2E4_4E22_A99E_15DC6120C7E2__INCLUDED_
-
 #include "Location.h"	// Added by ClassView
-#if _MSC_VER > 1000
+
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgEditLocation.h : header file
-//
+
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgEditLocation dialog
@@ -71,4 +66,3 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEDITLOCATION_H__1634F6F2_A2E4_4E22_A99E_15DC6120C7E2__INCLUDED_)

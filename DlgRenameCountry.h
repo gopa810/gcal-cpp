@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGRENAMECOUNTRY_H__8F1734B0_1A9A_41E2_BDFC_84DA486094C7__INCLUDED_)
-#define AFX_DLGRENAMECOUNTRY_H__8F1734B0_1A9A_41E2_BDFC_84DA486094C7__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgRenameCountry.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgRenameCountry dialog
@@ -47,4 +40,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGRENAMECOUNTRY_H__8F1734B0_1A9A_41E2_BDFC_84DA486094C7__INCLUDED_)

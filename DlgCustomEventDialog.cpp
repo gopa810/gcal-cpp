@@ -8,6 +8,7 @@
 #include "CustomEvent.h"
 #include "GCGlobal.h"
 #include "GCStrings.h"
+#include "GCDayData.h"
 
 /*extern TString gCustomEventTexts[360];*/
 

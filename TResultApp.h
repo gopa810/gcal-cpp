@@ -2,9 +2,10 @@
 #define _RESAPPDAY_________
 
 
-#include "level_0.h"
+
 #include "locationref.h"
-// PORTABLE
+#include "GCDayData.h"
+
 
 #define TRESULT_APP_CELEBS 3
 

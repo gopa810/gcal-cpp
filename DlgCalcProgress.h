@@ -1,11 +1,4 @@
-#if !defined(AFX_DLGCALCPROGRESS_H__4698EADD_D338_4547_AC9A_E26B36B548A7__INCLUDED_)
-#define AFX_DLGCALCPROGRESS_H__4698EADD_D338_4547_AC9A_E26B36B548A7__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgCalcProgress.h : header file
-//
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgCalcProgress dialog
@@ -43,4 +36,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGCALCPROGRESS_H__4698EADD_D338_4547_AC9A_E26B36B548A7__INCLUDED_)

@@ -1,11 +1,5 @@
-#if !defined(AFX_DLGSELECTLANGOUTPUT_H__EA42E4CA_6AAF_4F91_A007_B48B1521AAC4__INCLUDED_)
-#define AFX_DLGSELECTLANGOUTPUT_H__EA42E4CA_6AAF_4F91_A007_B48B1521AAC4__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgSelectLangOutput.h : header file
-//
+
 #include "LangFileInfo.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,4 +40,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGSELECTLANGOUTPUT_H__EA42E4CA_6AAF_4F91_A007_B48B1521AAC4__INCLUDED_)

@@ -8,6 +8,7 @@
 #include "GCStrings.h"
 #include "GCStringBuilder.h"
 #include "GCLayoutData.h"
+#include "GCDayData.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

@@ -8,6 +8,7 @@
 
 #include "GCStrings.h"
 #include "GCCalendar.h"
+#include "GCVedicTime.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // DlgGetStartDate dialog

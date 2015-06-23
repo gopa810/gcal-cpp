@@ -3,6 +3,7 @@
 #include "GCGregorianTime.h"
 #include "LocationRef.h"
 #include "TResultCalendar.h"
+#include "GCVaisnavaDay.h"
 
 class TResultToday
 {

@@ -524,7 +524,7 @@ void TTimeZone::ExportDB()
 	fclose(fo);
 }
 
-void TTimeZone::ExpandVal(UInt32 val, int a[])
+void TTimeZone::ExpandVal(int val, int a[])
 {
 	a[7] = val & 0xf;
 	val >>= 4;

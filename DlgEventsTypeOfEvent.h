@@ -1,9 +1,4 @@
-#if !defined(AFX_DLGEVENTSTYPEOFEVENT_H__83EFFF8F_342D_4C7F_816E_03890C7F74E5__INCLUDED_)
-#define AFX_DLGEVENTSTYPEOFEVENT_H__83EFFF8F_342D_4C7F_816E_03890C7F74E5__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "staticheader3.h"
 // DlgEventsTypeOfEvent.h : header file
@@ -48,4 +43,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEVENTSTYPEOFEVENT_H__83EFFF8F_342D_4C7F_816E_03890C7F74E5__INCLUDED_)

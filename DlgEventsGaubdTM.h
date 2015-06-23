@@ -1,11 +1,5 @@
-#if !defined(AFX_DLGEVENTSGAUBDTM_H__0BACCC1C_CBEB_4D49_9DA6_C6BC07006589__INCLUDED_)
-#define AFX_DLGEVENTSGAUBDTM_H__0BACCC1C_CBEB_4D49_9DA6_C6BC07006589__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgEventsGaubdTM.h : header file
-//
+
 #include "staticheader3.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,4 +46,3 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGEVENTSGAUBDTM_H__0BACCC1C_CBEB_4D49_9DA6_C6BC07006589__INCLUDED_)

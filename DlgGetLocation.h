@@ -1,13 +1,6 @@
-#if !defined(AFX_DLGGETLOCATION_H__35B6A6B4_7A1A_4789_BBD9_2B5B3F2B9D10__INCLUDED_)
-#define AFX_DLGGETLOCATION_H__35B6A6B4_7A1A_4789_BBD9_2B5B3F2B9D10__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// DlgGetLocation.h : header file
-//
-#include "platform.h"
-#include "level_0.h"
+
+#include "TString.h"
 #include "locationref.h"
 #include "StaticHeader1.h"
 
@@ -89,4 +82,3 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGGETLOCATION_H__35B6A6B4_7A1A_4789_BBD9_2B5B3F2B9D10__INCLUDED_)

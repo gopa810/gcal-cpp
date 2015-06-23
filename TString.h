@@ -6,15 +6,11 @@
 #ifndef ___MAC_AFX____
 #define ___MAC_AFX____
 
-// PORTABLE
-typedef unsigned int UInt32;
-typedef int SInt32;
-
 class TString
 {
 	char * m_pData;
-	UInt32 m_nSize;
-	UInt32 m_nLength;
+	unsigned int m_nSize;
+	unsigned int m_nLength;
 	
 public:
 	TString()
@@ -47,8 +43,8 @@ public:
 			Empty();
 			return * this;
 		}
-		UInt32 nl = 0;
-		UInt32 len = strlen(c);
+		unsigned int nl = 0;
+		unsigned int len = strlen(c);
 		if (len + 1 <= m_nSize)
 		{
 			strcpy(m_pData, c);
@@ -142,7 +138,7 @@ public:
 		m_nLength += len;
 		return * this;
 	}
-	TString &Insert(UInt32 nPos, const char *c)
+	TString &Insert(int nPos, const char *c)
 	{
 		if (c == NULL)
 		{
@@ -155,7 +151,7 @@ public:
 			if (nPos > m_nLength)
 				nPos = m_nLength;
 			int i = m_nLength;
-			for(i; i >= (SInt32)nPos; i--)
+			for(i; i >= (int)nPos; i--)
 				m_pData[i+len] = m_pData[i];
 			strncpy(m_pData + nPos, c, len);
 			m_nLength += len;
@@ -182,14 +178,14 @@ public:
 		m_nLength += len;
 		return * this;
 	}
-	TString &SetStr(const char * c, UInt32 len)
+	TString &SetStr(const char * c, int len)
 	{
 		if (c == NULL)
 		{
 			Empty();
 			return * this;
 		}
-		UInt32 nl = 0;
+		int nl = 0;
 		if (len + 1 <= m_nSize)
 		{
 			strncpy(m_pData, c, len);
@@ -213,7 +209,7 @@ public:
 		return * this;
 	}
 
-	void Mid(UInt32 a, UInt32 b, TString &dest)
+	void Mid(int a, int b, TString &dest)
 	{
 /*		if (a > b)
 		{
@@ -232,14 +228,14 @@ public:
 			dest.SetStr(m_pData + a, b);
 		}
 	}
-	void Left(UInt32 n, TString &dest)
+	void Left(unsigned int n, TString &dest)
 	{
 		if (m_pData)
 		{
 			dest.SetStr(m_pData, n);
 		}
 	}
-	void Right(UInt32 n, TString &dest)
+	void Right(unsigned int n, TString &dest)
 	{
 		if (m_pData)
 		{
@@ -272,13 +268,13 @@ public:
 	{
 		return (m_pData == NULL) || (m_nLength == 0) ? true : false;
 	}
-	char operator[](UInt32 i)
+	char operator[](unsigned int i)
 	{
 		if (i >= 0 && i < m_nSize && m_pData)
 			return m_pData[i];
 		return 0;
 	}
-	char GetAt(UInt32 i)
+	char GetAt(unsigned int i)
 	{
 		if (i >= 0 && i < m_nSize && m_pData)
 			return m_pData[i];
@@ -295,7 +291,7 @@ public:
 		else
 			return "";
 	}
-	int Find(const char *substr, UInt32 nFrom = 0)
+	int Find(const char *substr, unsigned int nFrom = 0)
 	{
 		if (m_pData == NULL)
 			return -1;
@@ -319,7 +315,7 @@ public:
 		}
 		return -1;
 	}
-	void Delete(UInt32 nFrom, UInt32 nCount = 1)
+	void Delete(int nFrom, int nCount = 1)
 	{
 		if (m_pData==NULL || nFrom<0 || nFrom>=m_nLength)
 			return;

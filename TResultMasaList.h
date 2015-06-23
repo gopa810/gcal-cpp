@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "LocationRef.h"	// Added by ClassView
-#include "level_0.h"	// Added by ClassView
-#include "platform.h"	// Added by ClassView
+	// Added by ClassView
+#include "TString.h"	// Added by ClassView
 
 #pragma once
 // PORTABLE
