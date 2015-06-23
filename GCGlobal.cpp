@@ -8,6 +8,8 @@
 #include "TTimeZone.h"
 #include "FrameServer.h"
 #include "GCLayoutData.h"
+#include "TCountry.h"
+#include "GCStrings.h"
 
 GCGlobal::GCGlobal(void)
 {
@@ -179,4 +181,99 @@ void GCGlobal::SaveFile(const char * fileName)
 
 		f.Close();
 	}
+}
+
+
+bool GCGlobal::GetLangFileForAcr(const char * pszAcr, TString &strFile)
+{
+	TLangFileInfo * p = GCGlobal::languagesList.list;
+
+	while(p)
+	{
+		if (p->m_strAcr.CompareNoCase(pszAcr) == 0)
+		{
+			strFile = p->m_strFile;
+			return true;
+		}
+		p = p->next;
+	}
+	return false;
+}
+
+
+void GCGlobal::LoadInstanceData(void)
+{
+	TString strFile;
+	TFile f;
+	TString str, strA, strB;
+
+	// initialization for AppDir
+	GCGlobal::initFolders();
+
+	// initialization of global strings
+	GCStrings::readFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
+
+	// inicializacia countries
+	TCountry::InitWithFile(GCGlobal::getFileName(GSTR_COUNTRY_FILE));
+
+	// inicializacia miest a kontinentov
+	CLocationList::OpenFile(GCGlobal::getFileName(GSTR_LOCX_FILE));
+
+	// inicializacia zobrazovanych nastaveni
+	GCDisplaySettings::readFile(GCGlobal::getFileName(GSTR_SSET_FILE));
+
+	// inicializacia custom events
+	CCustomEventList::OpenFile(GCGlobal::getFileName(GSTR_CEX_FILE));
+
+	// initialization of global variables
+	GCGlobal::myLocation.m_fLongitude = 77.73;
+	GCGlobal::myLocation.m_fLatitude = 27.583;
+	GCGlobal::myLocation.m_fTimezone = 5.5;
+	GCGlobal::myLocation.m_strLatitude = "27N35";
+	GCGlobal::myLocation.m_strLongitude = "77E42";
+	GCGlobal::myLocation.m_strName = "Vrindavan, India";
+	GCGlobal::myLocation.m_strTimeZone = "+5:30";
+	GCGlobal::myLocation.m_nDST = 188;
+	GCGlobal::lastLocation.m_fLongitude = 77.73;
+	GCGlobal::lastLocation.m_fLatitude = 27.583;
+	GCGlobal::lastLocation.m_fTimezone = 5.5;
+	GCGlobal::lastLocation.m_strLatitude = "27N35";
+	GCGlobal::lastLocation.m_strLongitude = "77E42";
+	GCGlobal::lastLocation.m_strName = "Vrindavan, India";
+	GCGlobal::lastLocation.m_strTimeZone = "+5:30";
+	GCGlobal::lastLocation.m_nDST = 188;
+
+	GCGlobal::OpenFile(GCGlobal::getFileName(GSTR_CONFX_FILE));
+	// refresh fasting style after loading user settings
+	CCustomEventList::SetOldStyleFasting(GCDisplaySettings::getValue(42));
+
+	// inicializacia tipov dna
+	if (!TFile::FileExists(GCGlobal::getFileName(GSTR_TIPS_FILE)))
+	{
+		TFile::CreateFileFromResource(IDR_FILE_TIPS, GCGlobal::getFileName(GSTR_TIPS_FILE));
+	}
+}
+
+
+void GCGlobal::SaveInstanceData(void)
+{
+	GCGlobal::SaveFile(GCGlobal::getFileName(GSTR_CONFX_FILE));
+
+	if (CLocationList::IsModified())
+	{
+		CLocationList::SaveAs(GCGlobal::getFileName(GSTR_LOCX_FILE),4);//GCAL 3.0
+	}
+
+	if (TCountry::IsModified())
+	{
+		TCountry::SaveToFile(GCGlobal::getFileName(GSTR_COUNTRY_FILE));
+	}
+
+	if (GCStrings::gstr_Modified)
+	{
+		GCStrings::writeFile(GCGlobal::getFileName(GSTR_TEXT_FILE));
+	}
+
+	CCustomEventList::SaveFile(GCGlobal::getFileName(GSTR_CEX_FILE));
+
 }

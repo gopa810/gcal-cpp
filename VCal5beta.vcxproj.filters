@@ -13,272 +13,283 @@
       <UniqueIdentifier>{353317bf-4708-4821-b9f2-ac20ec62aa07}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="Source Dialog Windows">
-      <UniqueIdentifier>{cd05ffca-72b8-4edc-bcb7-5baf6fc76127}</UniqueIdentifier>
-      <Extensions>Dlg*.cpp</Extensions>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{2882e3b8-925d-4397-b875-581aa9d846d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{31b0a66a-fb1e-48ad-ac60-d90508ca987c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Not Used">
+      <UniqueIdentifier>{808e58cc-e399-4057-9f0c-e8eb467fa472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{73f960f6-eccb-4396-9af3-bb59734bf06c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{4b48bf2b-597d-4a2a-ba57-19ee77bc6c69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CommandLineVCal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConditionsView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditClipboarded.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameEvents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameFind.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameLocs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ListBoxClipboarded.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Location.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LocsTabCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RichEditResults.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticHeader1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticHeader3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TCountry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextEditWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TFileRichList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TResultEvents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TResultMasaList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TTimeZone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VCal5beta.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgStringManager.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
     <ClCompile Include="DlgCalcProgress.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgCustomEventDialog.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEditCustomEvent.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEditLocation.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEditString.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEventsGaubdTM.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEventsGetText.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgEventsTypeOfEvent.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgGetDate.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgGetEndDate.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgGetEventSpec.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgGetLocation.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgGetLocationEx.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgMasaListing.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgObservedEvents.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgRenameCountry.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgSelectLangOutput.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgSetAyanamsaType.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgSetPrintStyle.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgSpecCommand.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DNewCountry.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DPageGeneral.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DPageAstro.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DPageAstroVedic.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="DPageFest.cpp">
-      <Filter>Source Dialog Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="GCGregorianTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCDayHours.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCStrings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCVedicTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCMoonData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCEarthData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCSunData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCDayData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCVaisnavaDay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCRasi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCTithi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCNaksatra.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCAyanamsha.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCSankranti.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCConjunction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCCalendar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GCDisplaySettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TipDlg.cpp">
-      <Filter>Source Dialog Windows</Filter>
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="TithiCalc.cpp">
-      <Filter>Source Dialog Windows</Filter>
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgCustomEventDialog.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEditCustomEvent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEditLocation.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEditString.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEventsGaubdTM.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEventsGetText.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgEventsTypeOfEvent.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgGetDate.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgGetEndDate.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgGetEventSpec.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgGetLocation.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgGetLocationEx.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgMasaListing.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgObservedEvents.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgRenameCountry.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgSelectLangOutput.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgSetAyanamsaType.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgSetPrintStyle.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgSpecCommand.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgStringManager.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DNewCountry.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DPageAstro.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DPageAstroVedic.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DPageFest.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DPageGeneral.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TipDlg.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="TResultApp.cpp">
-      <Filter>Source Dialog Windows</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCStringBuilder.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CommandLineVCal.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCLayoutData.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ConditionsView.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GCMutableDictionary.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CustomEvent.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCMutableArray.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="EditClipboarded.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="GCUserInterface.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FrameServer.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="TResultCalendar.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FrameBase.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="TResultToday.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FrameEvents.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="TFileXml.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="FrameFind.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameLocs.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameMain.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GCAyanamsha.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCVedicTime.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCCalendar.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCConjunction.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCDayData.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCDayHours.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCDisplaySettings.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCEarthData.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="GCGlobal.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCTextParser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GCGregorianTime.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCLayoutData.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="GCMath.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCWelcomeTips.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GCMoonData.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="GCStringPair.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GCMutableArray.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCMutableDictionary.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="GCMutableStringPairArray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCNaksatra.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCRasi.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCSankranti.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCStringBuilder.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCStringPair.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCStrings.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCSunData.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCTextParser.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCTithi.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCUserInterface.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GCVaisnavaDay.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBoxClipboarded.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="LocsTabCtrl.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="RichEditResults.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticHeader3.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticHeader1.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TextEditWnd.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GCWelcomeTips.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TTimeZone.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="LocationList.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TCountry.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TFile.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileRichList.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileXml.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultCalendar.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultEvents.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultMasaList.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TResultToday.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TString.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="VCal5beta.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -288,280 +299,280 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandLineVCal.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="ConditionsView.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="CustomEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="DlgCalcProgress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgCustomEventDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEditCustomEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEditLocation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEditString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEventsGaubdTM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEventsGetText.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgEventsTypeOfEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgGetDate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgGetEndDate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgGetEventSpec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgGetLocation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgGetLocationEx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgMasaListing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgObservedEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgRenameCountry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgSelectLangOutput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgSetAyanamsaType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgSetPrintStyle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgSpecCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgStringManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DNewCountry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPageAstro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPageAstroVedic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPageFest.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="DPageGeneral.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgCustomEventDialog.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEditCustomEvent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEditLocation.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEditString.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEventsGaubdTM.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEventsGetText.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgEventsTypeOfEvent.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgGetDate.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgGetEndDate.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgGetEventSpec.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgGetLocation.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgGetLocationEx.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgMasaListing.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgObservedEvents.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgRenameCountry.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgSelectLangOutput.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgSetAyanamsaType.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgSetPrintStyle.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgSpecCommand.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgStringManager.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DNewCountry.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DPageAstro.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DPageAstroVedic.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DPageFest.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="EditClipboarded.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameFind.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameLocs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameMain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LangFileInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ListBoxClipboarded.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Location.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LocationRef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LocsTabCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RichEditResults.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="showset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticHeader1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticHeader3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TCountry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextEditWnd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TFileRichList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TipDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TithiCalc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TResultApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TResultMasaList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TTimeZone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VCal5beta.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="enums.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GCGregorianTime.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameBase.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GCDayHours.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameMain.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GCStrings.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameEvents.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GCVedicTime.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameFind.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GCMoonData.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameLocs.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="GCEarthData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCSunData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCDayData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCVaisnavaDay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCRasi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCTithi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCNaksatra.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FrameServer.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="GCAyanamsha.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCSankranti.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCConjunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCCalendar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCDisplaySettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCStringBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCLayoutData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NSMutableArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCMutableDictionary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCMutableArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCUserInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TResultToday.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TResultCalendar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TResultEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TFileXml.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCGlobal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCTextParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GCMath.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="GCWelcomeTips.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GCStringPair.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GCCalendar.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCConjunction.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCDayData.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCDayHours.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCDisplaySettings.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCEarthData.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCGlobal.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCGregorianTime.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCLayoutData.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMath.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMoonData.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMutableArray.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCMutableDictionary.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="GCMutableStringPairArray.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCNaksatra.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCRasi.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCSankranti.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCStringBuilder.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCStringPair.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCStrings.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCSunData.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCTextParser.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCTithi.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCUserInterface.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCVaisnavaDay.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GCVedicTime.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LangFileInfo.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBoxClipboarded.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="LocsTabCtrl.h">
+      <Filter>Header Files\Not Used</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LocationRef.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="NSMutableArray.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RichEditResults.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticHeader1.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticHeader3.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="showset.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextEditWnd.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TCountry.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileXml.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TFile.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileRichList.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TipDlg.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TithiCalc.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultApp.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TTimeZone.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultCalendar.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultEvents.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultMasaList.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TResultToday.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TString.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="VCal5beta.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -609,10 +620,23 @@
     </None>
     <None Include="dst.xml" />
     <None Include="ReadMe.txt" />
-    <None Include="res\events.rl" />
-    <None Include="res\locations.rl" />
-    <None Include="res\countries.rl" />
-    <None Include="res\timezones.rl" />
-    <None Include="res\strings.rl" />
+    <None Include="res\countries.rl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\events.rl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\locations.rl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\strings.rl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\timezones.rl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tips.txt">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

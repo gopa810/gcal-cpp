@@ -1,16 +1,6 @@
-// LangFileInfo.h: interface for the CLangFileInfo class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_LANGFILEINFO_H__A6328A70_71E1_49CC_8A08_463B49B1D493__INCLUDED_)
-#define AFX_LANGFILEINFO_H__A6328A70_71E1_49CC_8A08_463B49B1D493__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "TString.h"
-// PORTABLE
 
 class TLangFileInfo  
 {
@@ -93,4 +83,3 @@ public:
 	~TLangFileList() { clear(); }
 };
 
-#endif // !defined(AFX_LANGFILEINFO_H__A6328A70_71E1_49CC_8A08_463B49B1D493__INCLUDED_)

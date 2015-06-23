@@ -65,17 +65,12 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 	int k;
 	CString str, str2, str3, dayText;
 
-//	char * spaces = "                                                                                ";
 	VAISNAVADAY * pvd, * prevd, *nextd;
 	int lastmasa = -1;
 	int lastmonth = -1;
-	//int nFestClass;
 	bool bStart = true;
 	bool bStarted = false;
-//	double rate;
-//	bool bCalcMoon = (GCDisplaySettings::getValue(4) > 0 || GCDisplaySettings::getValue(5) > 0);
 	CPoint midPoint;
-//	CRect rcPrint;
 	int yCurr = rcPrint.top;
 	int nWidth;
 	int yLine = 0;
@@ -83,11 +78,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 	TString strt, strt2;
 	int nPage = 0, nLineCount = 0;
 	int nColumn[7];
-//	int xPaper, yPaper;
 
-//	rcPrint.SetRect(0, 0, dc.GetDeviceCaps(HORZRES), dc.GetDeviceCaps(VERTRES));
-//	xPaper = dc.GetDeviceCaps(HORZSIZE);
-//	yPaper = dc.GetDeviceCaps(VERTSIZE);
 	yCurr = rcPrint.top;
 	midPoint = rcPrint.CenterPoint();
 	CSize sz;
@@ -276,7 +267,6 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 int CFrameBase::PrintBlockText(CDC &pdc, TString &strTitle, TString &strText, int &nPage, CRect & rcPrint)
 {
 	CPoint midPoint;
-//	CRect rcPrint;
 	int yCurr = rcPrint.top;
 	int xOffset = 0;
 	int nPos = 0, nPrevPos = 0;
@@ -285,7 +275,6 @@ int CFrameBase::PrintBlockText(CDC &pdc, TString &strTitle, TString &strText, in
 	BOOL bStart = TRUE;
 	CString str;
 
-//	rcPrint.SetRect(0, 0, pdc.GetDeviceCaps(HORZRES), pdc.GetDeviceCaps(VERTRES));
 	yCurr = rcPrint.top;
 	midPoint = rcPrint.CenterPoint();
 	CSize sz;

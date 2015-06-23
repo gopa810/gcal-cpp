@@ -40,6 +40,6 @@ public:
 	static int writeFile(const char * pszFile);
 	static const char * getLongitudeDirectionName(double d);
 	static const char * getLatitudeDirectionName(double d);
-
+	static bool InitLanguageOutputFromFile(const char * pszFile);
 };
 

@@ -1,6 +1,4 @@
-#ifndef _SHOWSET_GCAL_2008___
-#define _SHOWSET_GCAL_2008___
-
+#pragma once
 
 class CShowSetting
 {
@@ -10,6 +8,3 @@ public:
 	char * sig;
 	char * text;
 };
-
-
-#endif

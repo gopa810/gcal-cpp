@@ -22,6 +22,8 @@ public:
 	int SetArgLastError(int i);
 	int GetArgLastError();
 	int gnLastError;
+	int ParseCommandArguments(const char * m_lpCmdLine);
+
 	CCommandLineVCal();
 	virtual ~CCommandLineVCal();
 

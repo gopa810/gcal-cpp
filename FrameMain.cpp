@@ -801,7 +801,7 @@ void CFrameMain::OnSettingsLanguageOutput()
 		}
 		else
 		{
-			if (GCGlobal::application.InitLanguageOutputFromFile( d.m_pfi->m_strFile ) == FALSE)
+			if (GCStrings::InitLanguageOutputFromFile( d.m_pfi->m_strFile ) == FALSE)
 			{
 				AfxMessageBox("Error opening file with Language for Output.", MB_OK | MB_ICONSTOP);
 			}

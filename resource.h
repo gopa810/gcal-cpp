@@ -23,6 +23,7 @@
 #define IDR_FILE_COUNTRY                117
 #define IDR_FILE_TIMEZONES              118
 #define IDR_FILE_STRINGS                119
+#define IDR_FILE_TIPS                   120
 #define IDR_MAINFRAME                   128
 #define IDD_DIALOG1                     130
 #define IDD_SANKR                       132
@@ -78,7 +79,7 @@
 #define IDD_TIP_OF_DAY                  188
 #define IDD_SPEC_COMMAND                189
 #define IDR_TEXT1                       192
-#define IDR_TEXT2                       193
+#define IDR_TEXT2                       194
 #define IDC_BULB                        1000
 #define IDC_EDIT1                       1001
 #define IDC_STARTUP                     1001
@@ -251,9 +252,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        194
+#define _APS_NEXT_RESOURCE_VALUE        195
 #define _APS_NEXT_COMMAND_VALUE         32849
 #define _APS_NEXT_CONTROL_VALUE         1120
-#define _APS_NEXT_SYMED_VALUE           120
+#define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

@@ -543,3 +543,28 @@ const char * GCStrings::getLatitudeDirectionName(double d)
 	return "North";
 }
 
+bool GCStrings::InitLanguageOutputFromFile(const char * pszFile)
+{
+	TFile f;
+	TString strA, strB;
+
+	if (f.Open(pszFile, "r") == TRUE)
+	{
+		int n;
+
+		while(f.ReadString2(strA, strB))
+		{
+			n = atoi(strA);
+			if ((n >= 0) && (n < 800))
+			{
+				GCStrings::setString(n, strB);
+			}
+		}
+
+		f.Close();
+
+		return true;
+	}
+
+	return false;
+}

@@ -36,5 +36,18 @@ public:
 	};
 	
 
+
+	void GetFullName(TString * target)
+	{
+		if (target != NULL)
+		{
+			target->Format("%s (%s, %s, %s: %s)"
+				, m_strName.c_str()
+				, m_strLatitude.c_str()
+				, m_strLongitude.c_str()
+				, GCStrings::getString(12).c_str()
+				, m_strTimeZone.c_str());
+		}
+	}
 };
 

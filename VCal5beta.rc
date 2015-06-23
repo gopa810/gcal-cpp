@@ -1592,6 +1592,7 @@ IDR_FILE_LOCATIONS      TEXT                    "res\\locations.rl"
 IDR_FILE_COUNTRY        TEXT                    "res\\countries.rl"
 IDR_FILE_TIMEZONES      TEXT                    "res\\timezones.rl"
 IDR_FILE_STRINGS        TEXT                    "res\\strings.rl"
+IDR_FILE_TIPS           TEXT                    "res\\tips.txt"
 
 /////////////////////////////////////////////////////////////////////////////
 //

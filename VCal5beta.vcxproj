@@ -880,6 +880,7 @@
     <None Include="res\locations.rl" />
     <None Include="res\strings.rl" />
     <None Include="res\timezones.rl" />
+    <None Include="res\tips.txt" />
     <None Include="res\toolbar1.bmp" />
     <None Include="res\VCal5beta.ico" />
     <None Include="res\VCal5beta.rc2" />

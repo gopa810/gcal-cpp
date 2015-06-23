@@ -21,14 +21,7 @@ class GCalApp : public CWinApp
 {
 public:
 	BOOL m_bHelpAvailable;
-	int ParseCommandArguments(CCommandLineVCal *);
-	BOOL GetLangFileForAcr(const char * pszAcr, TString &strFile);
-	BOOL InitLanguageOutputFromFile(const char * pszFile);
-//	CList <CLangFileInfo *, CLangFileInfo *> m_langs;
-//	TString m_strLangFile;
 	BOOL m_bWindowless;
-	DWORD GetDWordFromString(const char * psz);
-	void InitInstanceData();
 	GCalApp();
 
 // Overrides

@@ -98,3 +98,5 @@ int GCUserInterface::CloseProgressWindow()
 
 	return 0;
 }
+
+

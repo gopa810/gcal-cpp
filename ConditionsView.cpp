@@ -93,15 +93,10 @@ int CConditionsView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	cr.right = 800;
 	m_edits[0].Create(WS_VISIBLE | WS_CHILD | ES_READONLY, cr, this, 132);
 	m_edits[0].SetFont(&m_infoFont);
-	str.Format("%s (%s, %s, %s: %s)"
-		, GCGlobal::lastLocation.m_strName.c_str()
-		, GCGlobal::lastLocation.m_strLatitude.c_str()
-		, GCGlobal::lastLocation.m_strLongitude.c_str()
-		, GCStrings::getString(12).c_str()
-		, GCGlobal::lastLocation.m_strTimeZone.c_str());
 	m_earth = (EARTHDATA)GCGlobal::lastLocation;
 	m_dst = GCGlobal::lastLocation.m_nDST;
 
+	GCGlobal::lastLocation.GetFullName(&str);
 	m_edits[0].SetWindowText(str);
 	ylev += basicHeight + 8;
 
@@ -161,14 +156,9 @@ BOOL CConditionsView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 			if (dlg.DoModal() == IDOK)
 			{
-				str.Format("%s (%s, %s, %s: %s)"
-					, GCGlobal::lastLocation.m_strName.c_str()
-					, GCGlobal::lastLocation.m_strLatitude.c_str()
-					, GCGlobal::lastLocation.m_strLongitude.c_str()
-					, GCStrings::getString(12).c_str()
-					, GCGlobal::lastLocation.m_strTimeZone.c_str());
 				m_earth = (EARTHDATA)GCGlobal::lastLocation;
 				m_dst = GCGlobal::lastLocation.m_nDST;
+				GCGlobal::lastLocation.GetFullName(&str);
 				m_edits[0].SetWindowText(str);
 			}
 		}

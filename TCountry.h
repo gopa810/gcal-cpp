@@ -5,7 +5,6 @@
 #pragma once
 
 
-// PORTABLE
 #include "NSMutableArray.h"
 #include "TString.h"
 
