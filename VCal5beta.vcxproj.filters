@@ -574,6 +574,9 @@
     <ClInclude Include="VCal5beta.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="GCHorizontalCoords.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\bitmap1.bmp">

@@ -817,6 +817,7 @@
     <ClInclude Include="GCEarthData.h" />
     <ClInclude Include="GCGlobal.h" />
     <ClInclude Include="GCGregorianTime.h" />
+    <ClInclude Include="GCHorizontalCoords.h" />
     <ClInclude Include="GCLayoutData.h" />
     <ClInclude Include="GCMath.h" />
     <ClInclude Include="GCMoonData.h" />

@@ -16,6 +16,8 @@ GCTithi::~GCTithi(void)
 {
 }
 
+double SunLong2(double julian);
+
 /*********************************************************************/
 /*                                                                   */
 /*   finds next time when starts next tithi                          */
@@ -29,7 +31,7 @@ GCTithi::~GCTithi(void)
 int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 {
 	double phi = 12.0;
-	double l1, l2, sunl;
+	double l1, l2, sunl, sun2;
 	double jday = startDate.GetJulianComplete();
 	double xj;
 	MOONDATA moon;
@@ -41,6 +43,7 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 
 	moon.Calculate(jday, ed);
 	sunl = SUNDATA::GetSunLongitude(d);
+	sun2 = SunLong2(jday);
 //	SunPosition(d, ed, sun, d.shour - 0.5 + d.tzone/24.0);
 	l1 = GCMath::putIn360(moon.longitude_deg - sunl - 180.0);
 	prev_tit = int(floor(l1/phi));

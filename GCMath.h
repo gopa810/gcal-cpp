@@ -21,6 +21,7 @@ public:
 	static double arcSinDeg(double x);
 	static double arcTanDeg(double x);
 	static double putIn1(double v);
+	static double putIn24(double id);
 	static double putIn360(double id);
 	static double putIn180(double in_d);
 	static int getSign(double d);

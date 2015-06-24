@@ -88,6 +88,16 @@ double GCMath::putIn1(double v)
 	return v2;
 }
 
+double GCMath::putIn24(double id)
+{
+	double d = id;
+	while(d >= 24.0)
+		d -= 24.0;
+	while(d < 0.0)
+		d += 24.0;
+	return d;
+}
+
 // modulo 360
 
 double GCMath::putIn360(double id)

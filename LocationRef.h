@@ -4,7 +4,7 @@
 
 // PORTABLE
 #include "GCEarthData.h"
-
+#include "GCStrings.h"
 
 class CLocationRef  
 {
