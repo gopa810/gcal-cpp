@@ -222,10 +222,10 @@ void GCEclipse::CalculateTimesMoonEclipse(double startDate, EARTHDATA obs, doubl
     }
 
 
-	for(double s = times[0]; s <= times[8]; s+= (times[8] - times[0]) / 20)
+	/*for(double s = times[0]; s <= times[8]; s+= (times[8] - times[0]) / 20)
 	{
 		TRACE2(" time[%f] = %f\n", s, functor->getDoubleValue(s));
-	}
+	}*/
 
 	delete functor;
 }

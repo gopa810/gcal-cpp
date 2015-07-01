@@ -254,7 +254,7 @@ void GCGlobal::LoadInstanceData(void)
 		TFile::CreateFileFromResource(IDR_FILE_TIPS, GCGlobal::getFileName(GSTR_TIPS_FILE));
 	}
 
-	double jd = 2457117.000000;
+	/*double jd = 2457117.000000;
 	GCEclipse ec;
 
 	EARTHDATA ed;
@@ -265,7 +265,7 @@ void GCGlobal::LoadInstanceData(void)
 	double times[9];
 	ec.CalculateTimesMoonEclipse(jd, ed, (double *)times);
 
-	TRACE1("done %f\n", jd);
+	TRACE1("done %f\n", jd);*/
 }
 
 
