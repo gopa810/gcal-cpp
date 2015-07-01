@@ -27,6 +27,23 @@ public:
 			m_nSize = 0;
 		}
 	}
+	TString(const char * cc)
+	{
+		m_pData = new char[64];
+		if (m_pData)
+		{
+			m_nSize = 64;
+			m_nLength = 0;
+			m_pData[0] = 0;
+		}
+		else
+		{
+			m_nSize = 0;
+		}
+		if (cc != NULL)
+			*this = cc;
+	}
+
 	~TString()
 	{
 		if (m_pData)

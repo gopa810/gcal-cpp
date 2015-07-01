@@ -202,6 +202,7 @@ void TResultApp::formatRtf(TString &strResult)
 	sb.fontSizeH1 = GCLayoutData::textSizeH1;
 	sb.fontSizeH2 = GCLayoutData::textSizeH2;
 	sb.fontSizeText = GCLayoutData::textSizeText;
+	sb.fontSizeNote = GCLayoutData::textSizeNote;
 	sb.Format = SBTF_RTF;
 	sb.Target = &strText;
 

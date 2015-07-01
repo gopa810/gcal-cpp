@@ -3,6 +3,7 @@
 #include "GCEarthData.h"
 #include "GCGregorianTime.h"
 #include "GCDayHours.h"
+#include "GCCoords.h"
 
 class MOONDATA 
 {
@@ -26,7 +27,6 @@ public:
 	MOONDATA();
 	~MOONDATA();
 	void Calculate(double jdate, EARTHDATA earth);
-	
 	static void CalcMoonTimes(EARTHDATA e, VCTIME vc, double nDaylightSavingShift, DAYTIME &rise, DAYTIME &set);
 	static double MoonCalcElevation(EARTHDATA e, VCTIME vc);
 	static double MoonDistance(double jdate);
@@ -36,5 +36,7 @@ public:
 	void calc_horizontal(double date, double longitude, double latitude);
 	void correct_position(double jdate, double latitude, double longitude, double height);
 
+	static GCEclipticalCoords CalculateEcliptical(double julian);
+	GCEquatorialCoords getTopocentricEquatorial(EARTHDATA obs, double jdate);
 };
 

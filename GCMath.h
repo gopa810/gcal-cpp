@@ -12,6 +12,8 @@ public:
 	static double PI2;
 	static double RADS;
 	static double AU;
+	static double EARTH_RADIUS, SUN_RADIUS, MOON_RADIUS;
+	static double J1999, J2000;
 
 	static double sinDeg(double x);
 	static double cosDeg(double x);
@@ -30,6 +32,10 @@ public:
 	static double getFraction(double x);
 	static double Max(double a, double b);
 	static double Min(double a, double b);
-	static double Fabs(double x);
+	static double Abs(double d);
+	static double Floor(double d);
+	static double arcDistance(double lon1, double lat1, double lon2, double lat2);
+    static double arcDistanceDeg(double lon1, double lat1, double lon2, double lat2);
+
 };
 

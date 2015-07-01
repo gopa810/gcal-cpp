@@ -14,6 +14,7 @@
 #include "GCLayoutData.h"
 #include "GCSunData.h"
 #include "GCMoonData.h"
+#include "GCYoga.h"
 
 // PORTABLE
 
@@ -293,6 +294,20 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_GULI_KALAM, ndst);
 		}
 
+		if (GCDisplaySettings::getValue(COREEVENTS_ABHIJIT_MUHURTA))
+		{
+			SUNDATA::CalculateKala(sunRise, sunSet, vcAdd.dayOfWeek, &r1, &r2, KT_ABHIJIT);
+
+			if (r1 > 0 && r2 > 0)
+			{
+				vcAdd.shour = r1;
+				inEvents.AddEvent(vcAdd, CCTYPE_KALA_START, KT_ABHIJIT, ndst); 
+
+				vcAdd.shour = r2;
+				inEvents.AddEvent(vcAdd, CCTYPE_KALA_END, KT_ABHIJIT, ndst);
+			}
+		}
+
 		vcAdd.NextDay();
 	}
 
@@ -335,6 +350,33 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 				vcNext.InitWeekDay();
 				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
 				inEvents.AddEvent(vcNext, CCTYPE_NAKS, nData, ndst);
+			}
+			else
+			{
+				break;
+			}
+			vcAdd = vcNext;
+			vcAdd.shour += 0.2;
+			if (vcAdd.shour >= 1.0)
+			{
+				vcAdd.shour -= 1.0;
+				vcAdd.NextDay();
+			}
+		}
+	}
+
+	if (GCDisplaySettings::getValue(COREEVENTS_YOGA))
+	{
+		vcAdd = vc;
+		vcAdd.shour = 0.0;
+		while(vcAdd.IsBeforeThis(vcEnd))
+		{
+			nData = GCYoga::GetNextYogaStart(earth, vcAdd, vcNext);
+			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
+			{
+				vcNext.InitWeekDay();
+				ndst = TTimeZone::determineDaylightChange(vcNext, loc.m_nDST);
+				inEvents.AddEvent(vcNext, CCTYPE_YOGA, nData, ndst);
 			}
 			else
 			{
@@ -463,7 +505,6 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 		}
 
 		*/
-
 	}
 
 	if (GCDisplaySettings::getValue(COREEVENTS_SORT))
@@ -510,7 +551,7 @@ int TResultEvents::formatText(TString &res)
 		{
 			if (prevd.day != dnr.Time.day || prevd.month != dnr.Time.month || prevd.year != dnr.Time.year)
 			{
-				str.Format("\r\n ===========  %d %s %d  - %s ====================================\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
+				str.Format("\r\n ===========  %d %s %d - %s ====================================\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
 					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
@@ -544,6 +585,9 @@ int TResultEvents::formatText(TString &res)
 				case CCTYPE_NAKS:
 					res += "\r\n ========== NAKSATRAS ================================================\r\n\r\n";
 					break;
+				case CCTYPE_YOGA:
+					res += "\r\n ========== YOGAS ================================================\r\n\r\n";
+					break;
 				case CCTYPE_SANK:
 					res += "\r\n ========== SANKRANTIS ===============================================\r\n\r\n";
 					break;
@@ -564,35 +608,35 @@ int TResultEvents::formatText(TString &res)
 
 		switch(dnr.nType)
 		{
-		case 10:
+		case CCTYPE_S_ARUN:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   arunodaya\r\n";
 			break;
-		case 11:
+		case CCTYPE_S_RISE:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   sunrise\r\n";
 			break;
-		case 12:
+		case CCTYPE_S_NOON:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   noon\r\n";
 			break;
-		case 13:
+		case CCTYPE_S_SET:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
 			res += GCStrings::GetDSTSignature(dnr.nDst);
 			res += "   sunset\r\n";
 			break;
-		case 20:
+		case CCTYPE_TITHI:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -602,7 +646,7 @@ int TResultEvents::formatText(TString &res)
 			res += " Tithi starts";
 			res += "\r\n";
 			break;
-		case 21:
+		case CCTYPE_NAKS:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -612,7 +656,17 @@ int TResultEvents::formatText(TString &res)
 			res += " Naksatra starts";
 			res += "\r\n";
 			break;
-		case 22:
+		case CCTYPE_YOGA:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetYogaName(dnr.nData);
+			res += " Yoga starts";
+			res += "\r\n";
+			break;
+		case CCTYPE_SANK:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -622,7 +676,7 @@ int TResultEvents::formatText(TString &res)
 			res += " ";
 			res += "\r\n";
 			break;
-		case 23:
+		case CCTYPE_CONJ:
 			res += "            ";
 			res += dnr.Time.c_str();
 			res += " ";
@@ -786,6 +840,10 @@ int TResultEvents::formatRtf(TString &res)
 
 	sb.Target = &res;
 	sb.Format = SBTF_RTF;
+	sb.fontSizeH1 = GCLayoutData::textSizeH1;
+	sb.fontSizeH2 = GCLayoutData::textSizeH2;
+	sb.fontSizeText = GCLayoutData::textSizeText;
+	sb.fontSizeNote = GCLayoutData::textSizeNote;
 
 	sb.AppendDocumentHeader();
 
@@ -818,7 +876,7 @@ int TResultEvents::formatRtf(TString &res)
 		{
 			if (prevd.day != dnr.Time.day || prevd.month != dnr.Time.month || prevd.year != dnr.Time.year)
 			{
-				str.Format("\\par\r\n ===========  %d %s %d  == %s ===================================\\par\\par\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
+				str.Format("\\par\r\n ===========  %d %s %d  - %s ===================================\\par\\par\r\n\r\n", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year,
 					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
@@ -830,25 +888,28 @@ int TResultEvents::formatRtf(TString &res)
 			{
 				switch(dnr.nType)
 				{
-				case 10:
-				case 11:
-				case 12:
-				case 13:
-					if (prevt < 10 || prevt >= 14)
+				case CCTYPE_S_ARUN:
+				case CCTYPE_S_RISE:
+				case CCTYPE_S_NOON:
+				case CCTYPE_S_SET:
+					if (prevt < CCTYPE_S_ARUN || prevt >= CCTYPE_S_SET)
 					{
 						res += "\\par\r\n ========== SUNRISE, SUNSET ==========================================\\par\r\n\\par\r\n";
 					}
 					break;
-				case 20:
+				case CCTYPE_TITHI:
 					res += "\\par\r\n ========== TITHIS ===================================================\\par\r\n\\par\r\n";
 					break;
-				case 21:
+				case CCTYPE_NAKS:
 					res += "\\par\r\n ========== NAKSATRAS ================================================\\par\r\n\\par\r\n";
 					break;
-				case 22:
+				case CCTYPE_YOGA:
+					res += "\\par\r\n ========== NAKSATRAS ================================================\\par\r\n\\par\r\n";
+					break;
+				case CCTYPE_SANK:
 					res += "\\par\r\n ========== SANKRANTIS ===============================================\\par\r\n\\par\r\n";
 					break;
-				case 23:
+				case CCTYPE_CONJ:
 					res += "\\par\r\n ========== SUN-MOON CONJUNCTIONS ====================================\\par\r\n\\par\r\n";
 					break;
 				}
@@ -904,6 +965,16 @@ int TResultEvents::formatRtf(TString &res)
 			res += "   ";
 			res += GCStrings::GetNaksatraName(dnr.nData);
 			res += " Naksatra starts";
+			res += "\\par\r\n";
+			break;
+		case CCTYPE_YOGA:
+			res += "            ";
+			res += dnr.Time.c_str();
+			res += " ";
+			res += GCStrings::GetDSTSignature(dnr.nDst);
+			res += "   ";
+			res += GCStrings::GetYogaName(dnr.nData);
+			res += " Yoga starts";
 			res += "\\par\r\n";
 			break;
 		case CCTYPE_SANK:
@@ -1120,6 +1191,11 @@ int TResultEvents::writeHtml(FILE * f)
 		case CCTYPE_NAKS:
 			fprintf(f, "<td>%s Naksatra</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
 				GCStrings::GetNaksatraName(dnr.nData),
+				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
+			break;
+		case CCTYPE_YOGA:
+			fprintf(f, "<td>%s Yoga</td><td>%02d:%02d:%02d</td></tr><tr>\n", 
+				GCStrings::GetYogaName(dnr.nData),
 				dnr.Time.GetHour(), dnr.Time.GetMinute(), dnr.Time.GetSecond());
 			break;
 		case CCTYPE_SANK:

@@ -4,6 +4,7 @@
 #include "GCGregorianTime.h"
 #include "GCEarthData.h"
 #include "enums.h"
+#include "GCCoords.h"
 
 class SUNDATA
 {
@@ -39,6 +40,14 @@ public:
 	void SunCalc(VCTIME vct, EARTHDATA earth);
 
 	static void CalculateKala(double sunRise, double sunSet, int dayWeek, double * r1, double * r2, KalaType kt);
+
+	// this is not used effectovely
+	// it is just try to have some alternative function for calculation sun position
+	// but it needs to be fixed, because
+	// it calculates correct ecliptical coordinates, but when transforming
+	// into horizontal coordinates (azimut, elevation) it will do something wrong
+	static GCHorizontalCoords sunPosition(int year, int month, int day, int hour=12, int min=0, int sec=0,
+                    double lat=48.14455, double longi=17.10775136947632);
 };
 
 

@@ -19,6 +19,12 @@ double GCMath::RADS = 0.0174532925199432958;
 
 double GCMath::AU = 149597869.0;
 
+double GCMath::EARTH_RADIUS = 6378.15;     // Radius of the earth 
+double GCMath::MOON_RADIUS = 1737.4;
+double GCMath::SUN_RADIUS = 695500;
+double GCMath::J1999 = 2451180.0;
+double GCMath::J2000 = 2451545.0;
+
 
 /////////////////////////////////////
 // input value: arc in degrees
@@ -39,6 +45,11 @@ double GCMath::sinDeg(double x)
 double GCMath::arccosDeg(double x)
 {
 	return acos(x) / GCMath::RADS;
+}
+
+double GCMath::Abs(double d)
+{
+	return fabs(d);
 }
 
 /////////////////////////////////////
@@ -176,7 +187,19 @@ double GCMath::Min(double a, double b)
 	return b;
 }
 
-double GCMath::Fabs(double x)
+double GCMath::arcDistance(double lon1, double lat1, double lon2, double lat2)
 {
-	return fabs(x);
+    lat1 = GCMath::PI / 2 - lat1;
+    lat2 = GCMath::PI / 2 - lat2;
+    return GCMath::arccosDeg(GCMath::cosDeg(lat1) * GCMath::cosDeg(lat2) + GCMath::sinDeg(lat1) * GCMath::sinDeg(lat2) * GCMath::cosDeg(lon1 - lon2));
+}
+
+double GCMath::arcDistanceDeg(double lon1, double lat1, double lon2, double lat2)
+{
+    return rad2deg(arcDistance(deg2rad(lon1), deg2rad(lat1), deg2rad(lon2), deg2rad(lat2)));
+}
+
+double GCMath::Floor(double d)
+{
+	return floor(d);
 }

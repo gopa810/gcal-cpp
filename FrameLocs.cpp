@@ -374,11 +374,11 @@ void CFrameLocs::OnLocationEditlocation()
 	if (dlg.m_loc == NULL)
 		return;
 
-	if ((GCMath::Fabs(dlg.m_loc->m_fLatitude - GCGlobal::myLocation.m_fLatitude)<0.001)
+	if ((GCMath::Abs(dlg.m_loc->m_fLatitude - GCGlobal::myLocation.m_fLatitude)<0.001)
 		&& (fabs(dlg.m_loc->m_fLongitude - GCGlobal::myLocation.m_fLongitude)<0.001))
 		bUpdMyLoc = true;
 
-	if ((GCMath::Fabs(dlg.m_loc->m_fLatitude - GCGlobal::lastLocation.m_fLatitude)<0.001)
+	if ((GCMath::Abs(dlg.m_loc->m_fLatitude - GCGlobal::lastLocation.m_fLatitude)<0.001)
 		&& (fabs(dlg.m_loc->m_fLongitude - GCGlobal::lastLocation.m_fLongitude)<0.001))
 		bUpdLastLoc = true;
 

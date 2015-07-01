@@ -187,33 +187,43 @@ void EARTHDATA::calc_epsilon_phi(double date, double & delta_phi, double & epsil
 
 }
 
-void EARTHDATA::calc_geocentric(double &longitude, double &latitude, double &rektaszension, double &declination, double date)
+GCEquatorialCoords EARTHDATA::eclipticalToEquatorialCoords(GCEclipticalCoords * ecc, double date)
 {
 	//var
+	GCEquatorialCoords eqc;
+
 	double epsilon; //: extended;
 	double delta_phi; //: extended;
 	double alpha,delta; //: extended;
 
 	EARTHDATA::calc_epsilon_phi(date, delta_phi, epsilon);
 
-	longitude = GCMath::putIn360(longitude+delta_phi);
+	ecc->longitude = GCMath::putIn360(ecc->longitude+delta_phi);
 
-	alpha = GCMath::arcTan2Deg( GCMath::sinDeg(longitude)*GCMath::cosDeg(epsilon)-GCMath::tanDeg(latitude)*GCMath::sinDeg(epsilon), GCMath::cosDeg(longitude));
+	eqc.rightAscension = GCMath::arcTan2Deg( GCMath::sinDeg(ecc->longitude)*GCMath::cosDeg(epsilon)-GCMath::tanDeg(ecc->latitude)*GCMath::sinDeg(epsilon), GCMath::cosDeg(ecc->longitude));
 
-	delta = GCMath::arcSinDeg( GCMath::sinDeg(latitude)*GCMath::cosDeg(epsilon)+GCMath::cosDeg(latitude)*GCMath::sinDeg(epsilon)*GCMath::sinDeg(longitude));
+	eqc.declination = GCMath::arcSinDeg( GCMath::sinDeg(ecc->latitude)*GCMath::cosDeg(epsilon)+GCMath::cosDeg(ecc->latitude)*GCMath::sinDeg(epsilon)*GCMath::sinDeg(ecc->longitude));
 
-	rektaszension = alpha;
-	declination = delta;
-
-	double xg, yg, zg;
-
-	xg = GCMath::cosDeg(longitude)*GCMath::cosDeg(latitude);
-	yg = GCMath::sinDeg(longitude)*GCMath::cosDeg(latitude);
-	zg = GCMath::sinDeg(latitude);
-
-	alpha = GCMath::arcTan2Deg(yg*GCMath::cosDeg(epsilon) - zg*GCMath::sinDeg(epsilon), GCMath::cosDeg(longitude)*GCMath::cosDeg(latitude));
+	return eqc;
 }
 
+
+GCHorizontalCoords EARTHDATA::equatorialToHorizontalCoords(GCEquatorialCoords * eqc, EARTHDATA obs, double date)
+{
+	double h;
+	GCHorizontalCoords hc;
+
+	h = GCMath::putIn360(EARTHDATA::star_time(date) - eqc->rightAscension + obs.longitude_deg);
+	
+	hc.azimut = GCMath::rad2deg( atan2(GCMath::sinDeg(h),
+                           GCMath::cosDeg(h)*GCMath::sinDeg(obs.latitude_deg)-
+                           GCMath::tanDeg(eqc->declination)*GCMath::cosDeg(obs.latitude_deg) ));
+	
+	hc.elevation = GCMath::rad2deg(asin(GCMath::sinDeg(obs.latitude_deg)*GCMath::sinDeg(eqc->declination) +
+                            GCMath::cosDeg(obs.latitude_deg)*GCMath::cosDeg(eqc->declination)*GCMath::cosDeg(h)));
+
+	return hc;
+}
 
 char * EARTHDATA::GetTextLatitude(double d)
 {

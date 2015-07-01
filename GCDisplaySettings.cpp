@@ -151,14 +151,16 @@ CShowSetting GCDisplaySettings::gss[] =
 	{1, 1, "CE02", "Tithi events"}, //53
 	{1, 1, "CE03", "Naksatra Events"}, //54
 	{1, 1, "CE04", "Sankranti Events"},//55
-	{1, 1, "CE05", "Conjunction EVents"},//56
+	{1, 1, "CE05", "Conjunction Events"},//56
 	{0, 0, "CE06", "Rahu kalam"}, //57
 	{0, 0, "CE07", "Yama ghanti"}, //58
 	{0, 0, "CE08", "Guli kalam"}, //59
 	{0, 0, "CE09", "Moon events"}, //60
 	{0, 0, "CE10", "Moon rasi"}, //61
 	{0, 0, "CE11", "Ascendent"}, //62
-	{0, 0, "CE12", "Sort results core events"},//63
+	{1, 1, "CE12", "Sort results core events"},//63
+	{0, 0, "CE13", "Abhijit Muhurta"}, //64
+	{0, 0, "CE14", "Yoga Events"}, //65
 	{0, 0, NULL, NULL}
 };
 

@@ -566,17 +566,23 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="GCAstroEngine.cpp" />
     <ClCompile Include="GCAyanamsha.cpp" />
     <ClCompile Include="GCCalendar.cpp" />
     <ClCompile Include="GCConjunction.cpp" />
     <ClCompile Include="GCDayData.cpp" />
     <ClCompile Include="GCDayHours.cpp" />
     <ClCompile Include="GCDisplaySettings.cpp" />
+    <ClCompile Include="GCDynamicTime.cpp" />
     <ClCompile Include="GCEarthData.cpp" />
+    <ClCompile Include="GCEclipse.cpp" />
+    <ClCompile Include="GCFunctor.cpp" />
+    <ClCompile Include="GCFunctorSunMoon.cpp" />
     <ClCompile Include="GCGlobal.cpp" />
     <ClCompile Include="GCGregorianTime.cpp" />
     <ClCompile Include="GCLayoutData.cpp" />
     <ClCompile Include="GCMath.cpp" />
+    <ClCompile Include="GCMeeusEarth.cpp" />
     <ClCompile Include="GCMoonData.cpp" />
     <ClCompile Include="GCMutableArray.cpp" />
     <ClCompile Include="GCMutableDictionary.cpp" />
@@ -584,6 +590,7 @@
     <ClCompile Include="GCNaksatra.cpp" />
     <ClCompile Include="GCRasi.cpp" />
     <ClCompile Include="GCSankranti.cpp" />
+    <ClCompile Include="GCSearch.cpp" />
     <ClCompile Include="GCStringBuilder.cpp" />
     <ClCompile Include="GCStringPair.cpp" />
     <ClCompile Include="GCStrings.cpp" />
@@ -594,6 +601,7 @@
     <ClCompile Include="GCVaisnavaDay.cpp" />
     <ClCompile Include="GCVedicTime.cpp" />
     <ClCompile Include="GCWelcomeTips.cpp" />
+    <ClCompile Include="GCYoga.cpp" />
     <ClCompile Include="LocationList.cpp" />
     <ClCompile Include="TResultCalendar.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -808,18 +816,24 @@
     <ClInclude Include="FrameLocs.h" />
     <ClInclude Include="FrameMain.h" />
     <ClInclude Include="FrameServer.h" />
+    <ClInclude Include="GCAstroEngine.h" />
     <ClInclude Include="GCAyanamsha.h" />
     <ClInclude Include="GCCalendar.h" />
     <ClInclude Include="GCConjunction.h" />
     <ClInclude Include="GCDayData.h" />
     <ClInclude Include="GCDayHours.h" />
     <ClInclude Include="GCDisplaySettings.h" />
+    <ClInclude Include="GCDynamicTime.h" />
     <ClInclude Include="GCEarthData.h" />
+    <ClInclude Include="GCEclipse.h" />
+    <ClInclude Include="GCFunctor.h" />
+    <ClInclude Include="GCFunctorSunMoon.h" />
     <ClInclude Include="GCGlobal.h" />
     <ClInclude Include="GCGregorianTime.h" />
-    <ClInclude Include="GCHorizontalCoords.h" />
+    <ClInclude Include="GCCoords.h" />
     <ClInclude Include="GCLayoutData.h" />
     <ClInclude Include="GCMath.h" />
+    <ClInclude Include="GCMeeusEarth.h" />
     <ClInclude Include="GCMoonData.h" />
     <ClInclude Include="GCMutableArray.h" />
     <ClInclude Include="GCMutableDictionary.h" />
@@ -827,6 +841,7 @@
     <ClInclude Include="GCNaksatra.h" />
     <ClInclude Include="GCRasi.h" />
     <ClInclude Include="GCSankranti.h" />
+    <ClInclude Include="GCSearch.h" />
     <ClInclude Include="GCStringBuilder.h" />
     <ClInclude Include="GCStringPair.h" />
     <ClInclude Include="GCStrings.h" />
@@ -837,6 +852,7 @@
     <ClInclude Include="GCVaisnavaDay.h" />
     <ClInclude Include="GCVedicTime.h" />
     <ClInclude Include="GCWelcomeTips.h" />
+    <ClInclude Include="GCYoga.h" />
     <ClInclude Include="LangFileInfo.h" />
     <ClInclude Include="TResultCalendar.h" />
     <ClInclude Include="ListBoxClipboarded.h" />

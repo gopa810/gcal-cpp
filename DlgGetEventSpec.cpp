@@ -48,6 +48,9 @@ void DlgGetEventSpec::DoDataExchange(CDataExchange* pDX)
 	//  D//  DV_MaxChars(p//  DX, m_off, 3);
 	//  DDX_Text(pDX, IDC_EDIT1, m_off);
 	//  DDV_MinMaxDouble(pDX, m_off, -200, 200);
+	DDX_Check(pDX, IDC_CHECK12, m_muhurtaAbhijit);
+	//  DDX_Control(pDX, IDC_CHECK13, m_yoga);
+	DDX_Check(pDX, IDC_CHECK13, m_yoga);
 }
 
 
@@ -58,6 +61,7 @@ BEGIN_MESSAGE_MAP(DlgGetEventSpec, CDialog)
 	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_CHECK6, &DlgGetEventSpec::OnBnClickedCheck6)
+	ON_BN_CLICKED(IDC_CHECK12, &DlgGetEventSpec::OnBnClickedCheck12)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,6 +95,8 @@ void DlgGetEventSpec::OnOK()
 	GCDisplaySettings::setValue(COREEVENTS_MOONRASI, m_moon_rasi);
 	GCDisplaySettings::setValue(COREEVENTS_MOON, m_moon_times);
 	GCDisplaySettings::setValue(COREEVENTS_ASCENDENT, m_ascendent);
+	GCDisplaySettings::setValue(COREEVENTS_ABHIJIT_MUHURTA, m_muhurtaAbhijit);
+	GCDisplaySettings::setValue(COREEVENTS_YOGA, m_yoga);
 
 	GCDisplaySettings::setValue(COREEVENTS_SORT, m_fSort);
 
@@ -124,6 +130,8 @@ BOOL DlgGetEventSpec::OnInitDialog()
 	m_moon_rasi = GCDisplaySettings::getValue(COREEVENTS_MOONRASI) ? true : false;
 	m_moon_times = GCDisplaySettings::getValue(COREEVENTS_MOON) ? true : false;
 	m_ascendent = GCDisplaySettings::getValue(COREEVENTS_ASCENDENT) ? true : false;
+	m_muhurtaAbhijit = GCDisplaySettings::getValue(COREEVENTS_ABHIJIT_MUHURTA) ? true : false;
+	m_yoga = GCDisplaySettings::getValue(COREEVENTS_YOGA) ? true : false;
 
 	CDialog::OnInitDialog();
 
@@ -137,6 +145,12 @@ BOOL DlgGetEventSpec::OnInitDialog()
 
 
 void DlgGetEventSpec::OnBnClickedCheck6()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void DlgGetEventSpec::OnBnClickedCheck12()
 {
 	// TODO: Add your control notification handler code here
 }

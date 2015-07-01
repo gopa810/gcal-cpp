@@ -2422,6 +2422,10 @@ int TResultCalendar::formatRtf(TString &m_text)
 
 	sb.Target = &m_text;
 	sb.Format = SBTF_RTF;
+	sb.fontSizeH1 = GCLayoutData::textSizeH1;
+	sb.fontSizeH2 = GCLayoutData::textSizeH2;
+	sb.fontSizeText = GCLayoutData::textSizeText;
+	sb.fontSizeNote = GCLayoutData::textSizeNote;
 
 	sb.AppendDocumentHeader();
 
@@ -2576,6 +2580,10 @@ int TResultCalendar::formatRtfDay(VAISNAVADAY * pvd, TString &dayText)
 	
 	sb.Target = &dayText;
 	sb.Format = SBTF_RTF;
+	sb.fontSizeH1 = GCLayoutData::textSizeH1;
+	sb.fontSizeH2 = GCLayoutData::textSizeH2;
+	sb.fontSizeText = GCLayoutData::textSizeText;
+	sb.fontSizeNote = GCLayoutData::textSizeNote;
 
 	if (pvd->astrodata.sun.longitude_deg < 0.0)
 	{

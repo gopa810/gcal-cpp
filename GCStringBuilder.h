@@ -15,6 +15,7 @@ public:
 	int fontSizeH1;
 	int fontSizeH2;
 	int fontSizeText;
+	int fontSizeNote;
 
 	GCStringBuilderTextFormat Format;
 	TString * Target;

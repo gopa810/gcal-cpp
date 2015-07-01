@@ -1274,29 +1274,34 @@ BEGIN
     CTEXT           "Static",IDC_STATIC_1,7,7,306,39,SS_CENTERIMAGE
 END
 
-IDD_CALCEVENTS_TYPES DIALOGEX 0, 0, 320, 220
+IDD_CALCEVENTS_TYPES DIALOGEX 0, 0, 320, 258
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Select Type of Events"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "Calculate",IDOK,263,199,50,14,BS_FLAT
-    CONTROL         "Sunrise, Sunset, Noon",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,26,87,10
-    CONTROL         "Start of Tithis",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,41,57,10
-    CONTROL         "Start of Naksatras",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,55,73,10
-    CONTROL         "Sankranti Time",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,69,63,10
-    CONTROL         "Sun-Moon Conjunction Time",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,83,105,10
-    CONTROL         "Sort by time",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,21,143,53,10
-    CONTROL         "Group by event type",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON | WS_GROUP,21,156,80,10
-    PUSHBUTTON      "<< Back",IDC_BUTTON_BACK,209,199,50,14,BS_FLAT
-    PUSHBUTTON      "Cancel",IDCANCEL,7,199,50,14,BS_FLAT
-    GROUPBOX        "Event Types",IDC_STATIC,7,7,306,112
-    GROUPBOX        "Options",IDC_STATIC,7,127,306,55
-    CONTROL         "Rahu kalam",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,25,54,10
-    CONTROL         "Yama ghanti",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,41,55,10
-    CONTROL         "Guli kalam",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,56,49,10
-    CONTROL         "Moon rasi",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,70,47,10
-    CONTROL         "Moonrise, Moonset",IDC_CHECK10,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,83,76,10
-    CONTROL         "Ascendent",IDC_CHECK11,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,177,98,50,10
+    DEFPUSHBUTTON   "Calculate",IDOK,263,237,50,14,BS_FLAT
+    CONTROL         "Sunrise, Sunset, Noon",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,54,87,10
+    CONTROL         "Start of Tithi",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,72,54,10
+    CONTROL         "Start of Naksatra",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,90,69,10
+    CONTROL         "Rasi of the sun change (Sankranti)",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,126,125,10
+    CONTROL         "Sun-Moon Conjunction Time",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,162,105,10
+    CONTROL         "Sort by time",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,180,186,53,10
+    CONTROL         "Group by event type",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON | WS_GROUP,180,204,80,10
+    PUSHBUTTON      "<< Back",IDC_BUTTON_BACK,209,237,50,14,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,7,237,50,14,BS_FLAT
+    GROUPBOX        "Astronomical Moments",IDC_STATIC,7,6,149,216
+    GROUPBOX        "Options",IDC_STATIC,168,168,144,55
+    CONTROL         "Rahu kalam (not auspicious)",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,54,105,10
+    CONTROL         "Yama ghanti (not auspicious)",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,72,107,10
+    CONTROL         "Guli kalam (not auspicious)",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,90,100,10
+    CONTROL         "Rasi of the moon change",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,144,95,10
+    CONTROL         "Moonrise, Moonset",IDC_CHECK10,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,180,76,10
+    CONTROL         "Ascendent",IDC_CHECK11,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,198,50,10
+    CONTROL         "Abhijit Muhurta (auspicious)",IDC_CHECK12,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,138,102,10
+    CONTROL         "Start of Yoga",IDC_CHECK13,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,108,57,10
+    GROUPBOX        "Astrology Moments",IDC_STATIC,168,6,144,156
+    LTEXT           "These events are based on observable astronomy or based on the length of muhurta = 96 min",IDC_STATIC,18,18,132,24
+    LTEXT           "These events are based on muhurta length = 1/15 of day length or similar division of a day",IDC_STATIC,180,18,120,30
 END
 
 IDD_NEW_COUNTRY DIALOG 0, 0, 242, 153
@@ -1435,7 +1440,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 313
         TOPMARGIN, 7
-        BOTTOMMARGIN, 213
+        BOTTOMMARGIN, 251
     END
 
     IDD_NEW_COUNTRY, DIALOG

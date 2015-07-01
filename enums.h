@@ -167,7 +167,8 @@ enum KalaType {
 	KT_RAHU_KALAM = 1,
 	KT_YAMA_GHANTI = 2,
 	KT_GULI_KALAM = 3,
-	KT_VISHAGATI = 4
+	KT_VISHAGATI = 4,
+	KT_ABHIJIT = 5
 };
 
 enum GlobalStringsEnum {

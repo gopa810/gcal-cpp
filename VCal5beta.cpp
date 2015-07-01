@@ -91,6 +91,8 @@ BOOL GCalApp::InitInstance()
 		ShowTipAtStartup();
 	}
 
+
+
 	return TRUE;
 }
 

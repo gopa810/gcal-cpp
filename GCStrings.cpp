@@ -343,7 +343,12 @@ const char * GCStrings::GetFastingName(int i)
 
 TString & GCStrings::getString(int i)
 {
-	return *gstr.ObjectAtIndex(i);
+	static TString def("");
+
+	TString * p = gstr.ObjectAtIndex(i);
+	if (p == NULL)
+		return def;
+	return *p;
 }
 
 const char * GCStrings::GetEkadasiName(int nMasa, int nPaksa)
@@ -522,6 +527,8 @@ const char * GCStrings::GetKalaName(KalaType i)
 		return "Yama ghanti";
 	case KT_GULI_KALAM:
 		return "Guli kalam";
+	case KT_ABHIJIT:
+		return "Abhijit muhurta";
 	}
 
 	return "";

@@ -55,6 +55,10 @@ public:
 	BOOL m_ascendent;
 //	CString m_off;
 //	double m_off;
+	afx_msg void OnBnClickedCheck12();
+	BOOL m_muhurtaAbhijit;
+//	CButton m_yoga;
+	BOOL m_yoga;
 };
 
 //{{AFX_INSERT_LOCATION}}

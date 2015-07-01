@@ -2,6 +2,7 @@
 
 #include "GCGregorianTime.h"
 #include "TString.h"
+#include "GCCoords.h"
 
 class EARTHDATA
 {
@@ -25,7 +26,8 @@ public:
 
 	EARTHDATA();
 	static void calc_epsilon_phi(double date, double &epsilon, double &phi);
-	static void calc_geocentric(double &longitude, double &latitude, double &rektaszension, double &declination, double date);
+	static GCEquatorialCoords eclipticalToEquatorialCoords(GCEclipticalCoords * ecc, double date);
+	static GCHorizontalCoords equatorialToHorizontalCoords(GCEquatorialCoords * eqc, EARTHDATA obs, double date);
 	static char * GetTextLatitude(double d);
 	static char * GetTextLongitude(double d);
 	static double star_time(double date);

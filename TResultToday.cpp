@@ -206,6 +206,10 @@ void TResultToday::formatRtf(TString &str)
 	GCStringBuilder sb;
 
 	sb.Format = SBTF_RTF;
+	sb.fontSizeH1 = GCLayoutData::textSizeH1;
+	sb.fontSizeH2 = GCLayoutData::textSizeH2;
+	sb.fontSizeText = GCLayoutData::textSizeText;
+	sb.fontSizeNote = GCLayoutData::textSizeNote;
 	sb.Target = &str;
 
 	str = "";

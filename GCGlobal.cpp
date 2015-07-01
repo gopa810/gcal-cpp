@@ -10,6 +10,7 @@
 #include "GCLayoutData.h"
 #include "TCountry.h"
 #include "GCStrings.h"
+#include "GCEclipse.h"
 
 GCGlobal::GCGlobal(void)
 {
@@ -252,6 +253,19 @@ void GCGlobal::LoadInstanceData(void)
 	{
 		TFile::CreateFileFromResource(IDR_FILE_TIPS, GCGlobal::getFileName(GSTR_TIPS_FILE));
 	}
+
+	double jd = 2457117.000000;
+	GCEclipse ec;
+
+	EARTHDATA ed;
+	ed.latitude_deg = 45;
+	ed.longitude_deg = 17;
+	ed.dst = 1;
+	ed.tzone = 1.0;
+	double times[9];
+	ec.CalculateTimesMoonEclipse(jd, ed, (double *)times);
+
+	TRACE1("done %f\n", jd);
 }
 
 
