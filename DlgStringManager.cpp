@@ -168,32 +168,19 @@ void DlgStringManager::OnButton4()
 void DlgStringManager::InitListWithStrings()
 {
 	TString str1;
-	int i, j, nn;
-
-	// a[x][0] je zaciatocny index
-	// a[x][1] je konecny index skupiny (vratane)
-	int a[3][2] =
-	{
-		{ 0, 128 },
-		{ 135, 199 },
-		{ 561, 899 }
-	};
+	int i, nn;
 
 	m_List.DeleteAllItems();
-	// save 0 - 128
-	// save 135 - 199
-	// save 561 - 899
-	for(j = 0; j < 3; j++)
+
+	int mxx = GCStrings::getCount();
+	for(i = 0; i < mxx; i++)
 	{
-		for(i = a[j][0]; i <= a[j][1]; i++)
+		if (GCStrings::getString(i).GetLength() > 0)
 		{
-			if (GCStrings::getString(i).GetLength() > 0)
-			{
-				str1.Format("%6d", i);
-				nn = m_List.InsertItem(1, str1);
-				m_List.SetItemText(nn, 1, GCStrings::getString(i).c_str());
-				m_List.SetItemData(nn, i);
-			}
+			str1.Format("%6d", i);
+			nn = m_List.InsertItem(1, str1);
+			m_List.SetItemText(nn, 1, GCStrings::getString(i).c_str());
+			m_List.SetItemData(nn, i);
 		}
 	}
 

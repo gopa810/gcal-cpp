@@ -28,7 +28,6 @@ public:
 	static const char * GetEkadasiName(int nMasa, int nPaksa);
 	static const char * GetDSTSignature(int nDST);
 	static const char * GetParanaReasonText(int eparana_type);
-	static bool GetSpecFestivalNameEx(TString &str, int i);
 	static void SetSpecFestivalName(int i, const char * szName);
 	static TString & getString(int i);
 	static void setString(int i, const char * str);
@@ -41,5 +40,6 @@ public:
 	static const char * getLongitudeDirectionName(double d);
 	static const char * getLatitudeDirectionName(double d);
 	static bool InitLanguageOutputFromFile(const char * pszFile);
+	static int getCount(void);
 };
 

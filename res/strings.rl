@@ -123,6 +123,9 @@
 78 126|(urad dal fast for one month)
 78 127|Fourth month of Caturmasya continues
 78 128|(Caturmasya is not observed during Purusottama Adhika Masa.)
+78 132|<all sankrantis>
+78 133|<all tithis>
+78 134|<all fasting days>
 78 135|(Fasting for Ekadasi)
 78 136|No Moonrise
 78 137|No Moonset
@@ -147,9 +150,13 @@
 78 167|end of tithi
 78 168|end of naksatra
 78 169|sunrise
+78 512|
+78 513|
+78 514|
+78 560|Varuthini Ekadasi
 78 561|Mohini Ekadasi
 78 562|Apara Ekadasi
-78 563|Pandava Nirjala Ekadasi#(Total fast, even from water, if you have broken Ekadasi)
+78 563|Pandava Nirjala Ekadasi
 78 564|Yogini Ekadasi
 78 565|Sayana Ekadasi
 78 566|Kamika Ekadasi
@@ -432,3 +439,13 @@
 78 897|Madhusudana (Vaisakha)
 78 898|Trivikrama (Jyestha)
 78 899|Vamana (Asadha)
+78 900|Sridhara (Sravana)
+78 901|Hrsikesa (Bhadra)
+78 902|Padmanabha (Asvina)
+78 903|Damodara (Kartika)
+78 904|Kesava (Margasirsa)
+78 905|Narayana (Pausa)
+78 906|Madhava (Magha)
+78 907|Govinda (Phalguna)
+78 908|Visnu (Caitra)
+78 909|Purusottama-adhika

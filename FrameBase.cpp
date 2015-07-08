@@ -233,7 +233,7 @@ int CFrameBase::AfxPrintCalendarText(CDC &dc, TResultCalendar &daybuff, CLocatio
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
 				str = ed->stringForKey("text");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					if (ed->containsKey("spec"))
 					{

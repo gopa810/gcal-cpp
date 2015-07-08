@@ -264,57 +264,6 @@ void GCStrings::SetSpecFestivalName(int i, const char * szName)
 	return;
 }
 
-
-bool GCStrings::GetSpecFestivalNameEx(TString &str, int i)
-{
-	switch(i)
-	{
-	case SPEC_JANMASTAMI:
-		str = GCStrings::getString(741);
-		str += "[f:5:Sri Krsna]";
-		break;
-	case SPEC_GAURAPURNIMA:
-		str = GCStrings::getString(742);
-		str += "[f:3:Sri Caitanya Mahaprabhu]";
-		break;
-	case SPEC_RETURNRATHA:
-		str = GCStrings::getString(743);
-		break;
-	case SPEC_HERAPANCAMI:
-		str = GCStrings::getString(744);
-		break;
-	case SPEC_GUNDICAMARJANA:
-		str = GCStrings::getString(745);
-		break;
-	case SPEC_GOVARDHANPUJA:
-		str = GCStrings::getString(746);
-		break;
-	case SPEC_RAMANAVAMI:
-		str = GCStrings::getString(747);
-		str += "[f:2:Sri Ramacandra]";
-		break;
-	case SPEC_RATHAYATRA:
-		str = GCStrings::getString(748);
-		break;
-	case SPEC_NANDAUTSAVA:
-		str = GCStrings::getString(749);
-		break;
-	case SPEC_PRABHAPP:
-		str = GCStrings::getString(759);
-		str += "[f:1:Srila Prabhupada]";
-		break;
-	case SPEC_MISRAFESTIVAL:
-		str = GCStrings::getString(750);
-		break;
-	default:
-		str = GCStrings::getString(64);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-
 const char * GCStrings::GetFastingName(int i)
 {
 	switch (i)
@@ -384,7 +333,7 @@ const char * GCStrings::GetParanaReasonText(int eparana_type)
 
 const char * GCStrings::GetVersionText(void)
 {
-	return GCStrings::getString(130);
+	return GCStrings::getString(131);
 }
 
 void GCStrings::setString(int i, const char * str)
@@ -574,4 +523,10 @@ bool GCStrings::InitLanguageOutputFromFile(const char * pszFile)
 	}
 
 	return false;
+}
+
+
+int GCStrings::getCount(void)
+{
+	return gstr.Count();
 }

@@ -1992,7 +1992,7 @@ void TResultCalendar::ResolveFestivalsFasting(int nIndex)
 				if (nftype != 0)
 				{
 					t.AddEvent(md->intForKey("prio") + 1, md->intForKey("disp"), 
-						GCStrings::getString(0x200 + nftype).c_str());
+						GCStrings::GetFastingName(0x200 + nftype));
 				}
 			}
 		}
@@ -2374,13 +2374,13 @@ int TResultCalendar::formatPlainTextDay(VAISNAVADAY * pvd, TString &dayText)
 	{
 		GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 		int disp = ed->intForKey("disp");
-		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 		{
 			if (ed->containsKey("spec"))
 			{
 				str = ed->stringForKey("text");
 				int length = str.GetLength();
-				length = (80 - length) / 2;
+				length = (82 - length) / 2;
 				sb.AppendSeparatorWithWidth(length);
 				sb.AppendString(str.c_str());
 				sb.AppendSeparatorWithWidth(length);
@@ -2598,7 +2598,7 @@ int TResultCalendar::formatRtfDay(VAISNAVADAY * pvd, TString &dayText)
 	{
 		GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 		int disp = ed->intForKey("disp");
-		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 		{
 			if (ed->containsKey("spec"))
 			{
@@ -2745,7 +2745,7 @@ int TResultCalendar::formatICal(TString &m_text)
 			{
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					dayText += SPACE_BEFORE_LINE;
 					dayText += ed->stringForKey("text");
@@ -2931,7 +2931,7 @@ int TResultCalendar::formatVCal(TString &m_text)
 			{
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					dayText += SPACE_BEFORE_LINE;
 					dayText += ed->stringForKey("text");
@@ -3022,7 +3022,7 @@ int TResultCalendar::formatCsv(TString &m_text)
 			{
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					dayText += ed->stringForKey("text");
 					dayText += "; ";
@@ -3181,7 +3181,7 @@ int TResultCalendar::writeHtml(FILE * fout)
 			{
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					if (ed->containsKey("spec"))
 					{
@@ -3349,7 +3349,7 @@ int TResultCalendar::writeTableHtml(FILE * fout)
 			{
 				GCMutableDictionary * ed = pvd->dayEvents.ObjectAtIndex(i);
 				int disp = ed->intForKey("disp");
-				if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+				if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 				{
 					if (bSemicolon)
 						xml.write("; ");

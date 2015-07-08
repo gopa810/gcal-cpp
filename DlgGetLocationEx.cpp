@@ -280,7 +280,7 @@ int  DlgGetLocationEx::InitCitiesForCountry(int nCurrentCountry, const char * ps
 	for(int i = 0; i < CLocationList::LocationCount(); i++)
 	{
 		loc = CLocationList::LocationAtIndex(i);
-		city.Format("%s [%s]\t%s\t%s\t%s", loc->m_strCity, loc->m_strCountry, EARTHDATA::GetTextLatitude(loc->m_fLatitude),
+		city.Format("%s [%s]\t%s\t%s\t%s", loc->m_strCity.c_str(), loc->m_strCountry.c_str(), EARTHDATA::GetTextLatitude(loc->m_fLatitude),
 			EARTHDATA::GetTextLongitude(loc->m_fLongitude), TTimeZone::GetTimeZoneOffsetText(loc->m_fTimezone));
 		if (nCurrentCountry == 0)
 		{

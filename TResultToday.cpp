@@ -76,7 +76,7 @@ void TResultToday::formatPlain(TString &str)
 	{
 		GCMutableDictionary * ed = p->dayEvents.ObjectAtIndex(i);
 		int disp = ed->intForKey("disp");
-		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 		{
 			if (ed->containsKey("spec"))
 			{
@@ -233,7 +233,7 @@ void TResultToday::formatRtf(TString &str)
 	{
 		GCMutableDictionary * ed = p->dayEvents.ObjectAtIndex(i);
 		int disp = ed->intForKey("disp");
-		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 		{
 			if (ed->containsKey("spec"))
 			{
@@ -404,7 +404,7 @@ void TResultToday::writeHtml(FILE * f)
 		{
 			GCMutableDictionary * ed = p->dayEvents.ObjectAtIndex(i);
 			int disp = ed->intForKey("disp");
-			if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+			if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 			{
 				if (ed->containsKey("spec"))
 					fprintf(f, "<span style=\'color:#110033\'>");

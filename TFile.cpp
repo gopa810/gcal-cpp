@@ -176,5 +176,5 @@ void TFile::CreateFileFromResource(int resourceId, const char * fileName)
 
 void TFile::DeleteFile(const char * fileName)
 {
-	DeleteFile(fileName);
+	::DeleteFile(fileName);
 }

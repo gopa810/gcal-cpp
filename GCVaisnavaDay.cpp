@@ -41,7 +41,7 @@ int VAISNAVADAY::GetTextLineCount()
 	{
 		GCMutableDictionary * ed = dayEvents.ObjectAtIndex(i);
 		int disp = ed->intForKey("disp");
-		if (!ed->containsKey("disp") || GCDisplaySettings::getValue(disp))
+		if (!ed->containsKey("disp") || disp == -1 || GCDisplaySettings::getValue(disp))
 		{
 			nCount++;
 		}
@@ -253,12 +253,61 @@ GCMutableDictionary * VAISNAVADAY::findEventsText(const char * text)
 bool VAISNAVADAY::AddSpecFestival(int nSpecialFestival, int nFestClass)
 {
 	TString str;
+	int fasting = -1;
+	const char * fastingSubject = NULL;
 
-	if (GCStrings::GetSpecFestivalNameEx(str, nSpecialFestival))
+	switch(nSpecialFestival)
 	{
-		AddEvent(PRIO_FESTIVALS_0 + (nFestClass-CAL_FEST_0)*100, nFestClass, str.c_str());
+	case SPEC_JANMASTAMI:
+		str = GCStrings::getString(741);
+		fasting = 5;
+		fastingSubject = "Sri Krsna";
+		break;
+	case SPEC_GAURAPURNIMA:
+		str = GCStrings::getString(742);
+		fasting = 3;
+		fastingSubject = "Sri Caitanya Mahaprabhu";
+		break;
+	case SPEC_RETURNRATHA:
+		str = GCStrings::getString(743);
+		break;
+	case SPEC_HERAPANCAMI:
+		str = GCStrings::getString(744);
+		break;
+	case SPEC_GUNDICAMARJANA:
+		str = GCStrings::getString(745);
+		break;
+	case SPEC_GOVARDHANPUJA:
+		str = GCStrings::getString(746);
+		break;
+	case SPEC_RAMANAVAMI:
+		str = GCStrings::getString(747);
+		fasting = 2;
+		fastingSubject = "Sri Ramacandra";
+		break;
+	case SPEC_RATHAYATRA:
+		str = GCStrings::getString(748);
+		break;
+	case SPEC_NANDAUTSAVA:
+		str = GCStrings::getString(749);
+		break;
+	case SPEC_PRABHAPP:
+		str = GCStrings::getString(759);
+		fasting = 1;
+		fastingSubject = "Srila Prabhupada";
+		break;
+	case SPEC_MISRAFESTIVAL:
+		str = GCStrings::getString(750);
+		break;
+	default:
+		return false;
+	}
 
-		return true;
+	GCMutableDictionary * md = AddEvent(PRIO_FESTIVALS_0 + (nFestClass-CAL_FEST_0)*100, nFestClass, str.c_str());
+	if (fasting > 0)
+	{
+		md->setIntForKey("fasttype", fasting);
+		md->setStringForKey("fastsubject", fastingSubject);
 	}
 
 	return false;
