@@ -76,7 +76,7 @@ double GCConjunction::GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 	double jd;
 	VCTIME d;
 
-	d = date;
+	d.Set(date);
 	d.shour = 0.5;
 	d.tzone = 0.0;
 	jd = d.GetJulian();//GetJulianDay(d.year, d.month, d.day);
@@ -121,7 +121,7 @@ double GCConjunction::GetPrevConjunction(VCTIME &date, EARTHDATA earth)
 				d.NextDay();
 				d.shour = x - 0.5;
 			}
-			date = d;
+			date.Set(d);
 			double other = SUNDATA::GetSunLongitude(d);
 //			double other2 = nowSun + (prevSun - nowSun)*x;
 			GCMath::putIn360(prevSun);
@@ -172,7 +172,7 @@ double GCConjunction::GetNextConjunction(VCTIME &date, EARTHDATA earth)
 	double jd;
 	VCTIME d;
 
-	d = date;
+	d.Set(date);
 	d.shour = 0.5;
 	d.tzone = 0.0;
 	jd = d.GetJulian();
@@ -217,7 +217,7 @@ double GCConjunction::GetNextConjunction(VCTIME &date, EARTHDATA earth)
 			{
 				d.shour = x - 0.5;
 			}
-			date = d;
+			date.Set(d);
 			GCMath::putIn360(prevSun);
 			GCMath::putIn360(nowSun);
 			if (fabs(prevSun - nowSun) > 10.0)
@@ -260,7 +260,8 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 	double jday = test_date.GetJulianComplete();
 	double xj;
 	MOONDATA moon;
-	VCTIME d = test_date;
+	VCTIME d;
+	d.Set(test_date);
 	VCTIME xd;
 	double scan_step = 1.0;
 	int prev_tit = 0;
@@ -275,7 +276,7 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday -= scan_step;
 		d.shour -= scan_step;
@@ -293,7 +294,7 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 		if (prev_tit >= 0 && new_tit < 0)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -305,7 +306,7 @@ double GCConjunction::GetPrevConjunction(VCTIME test_date, VCTIME &found, bool t
 		}
 
 	}
-	found = d;
+	found.Set(d);
 	return sunl;
 }
 
@@ -332,7 +333,8 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 	double jday = test_date.GetJulianComplete();
 	double xj;
 	MOONDATA moon;
-	VCTIME d = test_date;
+	VCTIME d;
+	d.Set(test_date);
 	VCTIME xd;
 	double scan_step = 1.0;
 	int prev_tit = 0;
@@ -347,7 +349,7 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday += scan_step;
 		d.shour += scan_step;
@@ -365,7 +367,7 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 		if (prev_tit < 0 && new_tit >= 0)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -377,6 +379,6 @@ double GCConjunction::GetNextConjunction(VCTIME test_date, VCTIME &found, bool t
 
 		prev_tit = new_tit;
 	}
-	found = d;
+	found.Set(d);
 	return sunl;
 }

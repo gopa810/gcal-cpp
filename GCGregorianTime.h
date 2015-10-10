@@ -34,6 +34,7 @@ public:
 	void ChangeTimeZone(double);
 	void NormalizeValues();
 	void NormalizeValues(int &y, int &m, int &d, double &h);
+	void Set(VCTIME &tt);
 	
 	static bool IsLeapYear(int year);
 	static int GetMonthMaxDays(int year, int month);
@@ -41,12 +42,12 @@ public:
 	static double CalculateJulianDay(int, int, int);
 	const char * ToString(VCTIME vc);
 
+	void AddDays(int);
+	void SubtractDays(int);
+	void Clear();
 
-	int operator=(int i);
-	void operator+=(int);
-	void operator-=(int);
-	bool operator<(VCTIME &date);
-	bool operator<=(VCTIME &date);
-	bool operator==(VCTIME &date);
+	bool IsLessThan(VCTIME &date);
+	bool IsLessOrEqualTo(VCTIME &date);
+	bool IsDateEqual(VCTIME &date);
 };
 

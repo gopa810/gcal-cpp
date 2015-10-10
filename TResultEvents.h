@@ -1,5 +1,4 @@
-#ifndef _TRESULTEVENT________
-#define _TRESULTEVENT________
+#pragma once
 
 #include "locationref.h"
 
@@ -29,6 +28,15 @@ public:
 	int nData;
 	VCTIME Time;
 	int nDst;
+	void Set(TDayEvent &de)
+	{
+		nType = de.nType;
+		nData = de.nData;
+		Time.Set(de.Time);
+		nDst = de.nDst;
+	}
+
+
 };
 // PORTABLE
 
@@ -63,7 +71,6 @@ public:
 	int formatRtf(TString &res);
 	int writeHtml(FILE * f);
 
+
 };
 
-
-#endif

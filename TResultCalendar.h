@@ -3,12 +3,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LEVEL_5_DAYS_H__957DEA2E_87AF_4C5B_A359_4E0C8F511234__INCLUDED_)
-#define AFX_LEVEL_5_DAYS_H__957DEA2E_87AF_4C5B_A359_4E0C8F511234__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 
 #include "LocationRef.h"
 #include "GCVaisnavaDay.h"
@@ -66,7 +62,5 @@ public:
 	int top;
 	VAISNAVADAY days[CDB_MAXDAYS];
 
-	int Push(VAISNAVADAY &day);
 };
 
-#endif // !defined(AFX_LEVEL_5_DAYS_H__957DEA2E_87AF_4C5B_A359_4E0C8F511234__INCLUDED_)

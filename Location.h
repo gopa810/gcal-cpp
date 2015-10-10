@@ -24,6 +24,7 @@ public:
 	virtual ~CLocation();
 
 	static const char * ParseDegreesFromString(const char * str, bool bNorth, double &Longitude);
+	
 
 };
 

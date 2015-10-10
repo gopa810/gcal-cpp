@@ -53,7 +53,7 @@ int CCommandLineVCal::SetArgLastError(int i)
 //////////////////////////////////////////////////////////////////////
 //
 
-int CCommandLineVCal::GetArg_Year(const char * str, int &nYear)
+int CCommandLineVCal::GetArg_Year(const char * str, int * nYear)
 {
 	int n = _ttoi(str);
 
@@ -65,7 +65,7 @@ int CCommandLineVCal::GetArg_Year(const char * str, int &nYear)
 	if (n > 3999)
 		return SetArgLastError(11);
 
-	nYear = n;
+	*nYear = n;
 
 	return NULL;
 
@@ -74,9 +74,9 @@ int CCommandLineVCal::GetArg_Year(const char * str, int &nYear)
 //////////////////////////////////////////////////////////////////////
 //
 
-int CCommandLineVCal::GetArg_Int(const char * str, int &nInteger)
+int CCommandLineVCal::GetArg_Int(const char * str, int * nInteger)
 {
-	nInteger = _ttoi(str);
+	*nInteger = _ttoi(str);
 
 	return NULL;
 }
@@ -136,7 +136,7 @@ int CCommandLineVCal::MasaIndexToInternal(int nMasa)
 		return nMasaIndex[ nMasa ];
 }
 
-int CCommandLineVCal::GetArg_EarthPos(const char * str, double &Latitude, double &Longitude)
+int CCommandLineVCal::GetArg_EarthPos(const char * str, double * Latitude, double * Longitude)
 {
 	double l = 0.0;
 	double sig = 1.0;
@@ -211,13 +211,13 @@ int CCommandLineVCal::GetArg_EarthPos(const char * str, double &Latitude, double
 			if (bNorth == true)
 			{
 				bLat = true;
-				Latitude = l * sig;
+				*Latitude = l * sig;
 				bNorth = false;
 			}
 			else
 			{
 				bLon = true;
-				Longitude = l * sig;
+				*Longitude = l * sig;
 				bNorth = true;
 			}
 			l = 0.0;
@@ -235,18 +235,18 @@ int CCommandLineVCal::GetArg_EarthPos(const char * str, double &Latitude, double
 	if (bNorth == true)
 	{
 		bLat = true;
-		Latitude = l * sig;
+		*Latitude = l * sig;
 	}
 	else
 	{
 		bLon = true;
-		Longitude = l * sig;
+		*Longitude = l * sig;
 	}
 
 	return NULL;
 }
 
-int CCommandLineVCal::GetArg_TimeZone(const char * str, double &TimeZone)
+int CCommandLineVCal::GetArg_TimeZone(const char * str, double * TimeZone)
 {
 	double l = 0.0;
 	double sig = 1.0;
@@ -312,7 +312,7 @@ int CCommandLineVCal::GetArg_TimeZone(const char * str, double &TimeZone)
 		s++;
 	}
 
-	TimeZone = l * sig;
+	*TimeZone = l * sig;
 
 	return NULL;
 }
@@ -381,7 +381,7 @@ int CCommandLineVCal::GetArg_Paksa(const char * str)
 	return 0;
 }
 
-int CCommandLineVCal::GetArg_Date(const char * str, VCTIME &vc)
+int CCommandLineVCal::GetArg_Date(const char * str, VCTIME * vc)
 {
 	char szt[32];
 	TString s[4];
@@ -407,18 +407,18 @@ int CCommandLineVCal::GetArg_Date(const char * str, VCTIME &vc)
 		}
 	}
 
-	vc.day = atoi(s[2].c_str());
-	if (vc.day == 0)
-		vc.day = 1;
-	vc.month = atoi(s[1].c_str());
-	if (vc.month == 0)
-		vc.month = 1;
-	vc.year = atoi(s[0].c_str());
+	vc->day = atoi(s[2].c_str());
+	if (vc->day == 0)
+		vc->day = 1;
+	vc->month = atoi(s[1].c_str());
+	if (vc->month == 0)
+		vc->month = 1;
+	vc->year = atoi(s[0].c_str());
 
 	return NULL;
 }
 
-int CCommandLineVCal::GetArg_VaisnDate(const char * str, VATIME &va)
+int CCommandLineVCal::GetArg_VaisnDate(const char * str, VATIME * va)
 {
 	char szt[32];
 	TString s[4];
@@ -444,20 +444,20 @@ int CCommandLineVCal::GetArg_VaisnDate(const char * str, VATIME &va)
 		}
 	}
 
-	va.tithi = GetArg_Tithi(s[3].c_str()) + GetArg_Paksa(s[2].c_str())*15;
-	va.masa = GetArg_Masa(s[1].c_str());
-	va.gyear = atoi(s[0].c_str());
+	va->tithi = GetArg_Tithi(s[3].c_str()) + GetArg_Paksa(s[2].c_str())*15;
+	va->masa = GetArg_Masa(s[1].c_str());
+	va->gyear = atoi(s[0].c_str());
 
 	return NULL;
 }
 
 
-int CCommandLineVCal::GetArg_Interval(const char * pszText, int &A, int &B)
+int CCommandLineVCal::GetArg_Interval(const char * pszText, int * A, int * B)
 {
-	int * p = &A;
+	int * p = A;
 
-	A = 0;
-	B = 0;
+	*A = 0;
+	*B = 0;
 
 	const TCHAR * t = pszText;
 
@@ -465,7 +465,7 @@ int CCommandLineVCal::GetArg_Interval(const char * pszText, int &A, int &B)
 	{
 		if ((*t == TCHAR('-')) || (*t == TCHAR(':')))
 		{
-			p = &B;
+			p = B;
 		}
 		else if (isdigit(TCHAR(*t)))
 		{
@@ -477,15 +477,15 @@ int CCommandLineVCal::GetArg_Interval(const char * pszText, int &A, int &B)
 	}
 
 	if (A == 0)
-		A = B;
+		*A = *B;
 	else if (B == 0)
-		B = A;
+		*B = *A;
 	
 	return 0;
 }
 
 
-int CCommandLineVCal::GetArg_Time(const char * str, VCTIME &vc)
+int CCommandLineVCal::GetArg_Time(const char * str, VCTIME * vc)
 {
 	double l = 0.0;
 	double sig = 1.0;
@@ -529,7 +529,7 @@ int CCommandLineVCal::GetArg_Time(const char * str, VCTIME &vc)
 		s++;
 	}
 
-	vc.shour = l / 24.0;
+	vc->shour = l / 24.0;
 
 	return NULL;
 }
@@ -593,9 +593,9 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 	vcStart.day = 0;
 	vcStart.month = 0;
 	vcStart.year = 0;
-	vcEnd = vcStart;
+	vcEnd.Set(vcStart);
 	vaStart.tithi = vaStart.masa = vaStart.gyear = 0;
-	vaEnd = vaStart;
+	vaEnd.Set(vaStart);
 	nCount = -1;
 
 	for(int i = 0; i < argc; i++)
@@ -606,7 +606,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 			if (argc >= i+2)
 			{
 				loc.m_strLongitude = args[i+1];
-				cmd->GetArg_EarthPos(args[i+1], loc.m_fLatitude, loc.m_fLongitude);
+				cmd->GetArg_EarthPos(args[i+1], & loc.m_fLatitude, & loc.m_fLongitude);
 				//TRACE2("-L latitude=%f longitude=%f\n", loc.m_fLatitude, loc.m_fLongitude);
 			}
 			i++;
@@ -624,7 +624,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_VaisnDate(args[i+1], vaStart);
+				cmd->GetArg_VaisnDate(args[i+1], &vaStart);
 			}
 			i++;
 		}
@@ -632,7 +632,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_Date(args[i+1], vcStart);
+				cmd->GetArg_Date(args[i+1], &vcStart);
 			}
 			i++;
 		}
@@ -640,7 +640,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_Time(args[i+1], vcStart);
+				cmd->GetArg_Time(args[i+1], &vcStart);
 			}
 			i++;
 		}
@@ -648,7 +648,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_Date(args[i+1], vcEnd);
+				cmd->GetArg_Date(args[i+1], &vcEnd);
 				//AfxTrace("-EG day=%d month=%d year=%d\n", vcEnd.day, vcEnd.month, vcEnd.year);
 			}
 			i++;
@@ -657,7 +657,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_VaisnDate(args[i+1], vaEnd);
+				cmd->GetArg_VaisnDate(args[i+1], &vaEnd);
 				//AfxTrace("-EV tithi=%d masa=%d gyear=%d\n", vaEnd.tithi, vaEnd.masa, vaEnd.gyear);
 			}
 			i++;
@@ -675,7 +675,7 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		{
 			if (argc >= i+2)
 			{
-				cmd->GetArg_TimeZone(args[i+1], loc.m_fTimezone);
+				cmd->GetArg_TimeZone(args[i+1], & loc.m_fTimezone);
 				//TRACE1("-TZ  timezone=%f\n", loc.m_fTimezone);
 			}
 			i++;
@@ -780,9 +780,9 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 	case 13:
 	case 14:
 		if (vcStart.year == 0 && vaStart.gyear != 0)
-			GCCalendar::VATIMEtoVCTIME(vaStart, vcStart, (EARTHDATA)loc);
+			GCCalendar::VATIMEtoVCTIME(vaStart, &vcStart, (EARTHDATA)loc);
 		if (vcEnd.year == 0 && vaEnd.gyear != 0)
-			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, (EARTHDATA)loc);		
+			GCCalendar::VATIMEtoVCTIME(vaEnd, &vcEnd, (EARTHDATA)loc);		
 		break;
 	default:
 		break;
@@ -819,8 +819,8 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 	case 13:
 		if (vcEnd.year == 0)
 		{
-			vcEnd = vcStart;
-			vcEnd += nCount;
+			vcEnd.Set(vcStart);
+			vcEnd.AddDays(nCount);
 		}
 		GCSankranti::writeXml(fout, loc, vcStart, vcEnd);
 		break;
@@ -831,8 +831,8 @@ int CCommandLineVCal::ParseCommandArguments(const char * m_lpCmdLine)
 		GCCalendar::writeFirstDayXml(fout, loc, vcStart);
 		break;
 	case 16:
-		vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
-		vcEnd = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year + 1);
+		vcStart.Set(DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year));
+		vcEnd.Set(DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year + 1));
 		nCount = int(vcEnd.GetJulian() - vcStart.GetJulian());
 		GCUserInterface::CalculateCalendar(calendar, loc, vcStart, nCount);
 		calendar.writeXml(fout);

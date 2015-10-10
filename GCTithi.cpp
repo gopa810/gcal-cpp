@@ -33,7 +33,8 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	double jday = startDate.GetJulianComplete();
 	double xj;
 	MOONDATA moon;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	VCTIME xd;
 	double scan_step = 0.5;
 	int prev_tit = 0;
@@ -49,7 +50,7 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday += scan_step;
 		d.shour += scan_step;
@@ -69,7 +70,7 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 		if (prev_tit != new_tit)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -79,7 +80,7 @@ int GCTithi::GetNextTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 			l1 = l2;
 		}
 	}
-	nextDate = d;
+	nextDate.Set(d);
 //	nextDate.shour += startDate.tzone / 24.0;
 //	nextDate.NormalizeValues();
 	return new_tit;
@@ -102,7 +103,8 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	double jday = startDate.GetJulianComplete();
 	double xj;
 	MOONDATA moon;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	VCTIME xd;
 	double scan_step = 0.5;
 	int prev_tit = 0;
@@ -117,7 +119,7 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday -= scan_step;
 		d.shour -= scan_step;
@@ -135,7 +137,7 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 		if (prev_tit != new_tit)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -145,7 +147,7 @@ int GCTithi::GetPrevTithiStart(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 			l1 = l2;
 		}
 	}
-	nextDate = d;
+	nextDate.Set(d);
 //	nextDate.shour += startDate.tzone / 24.0;
 //	nextDate.NormalizeValues();
 	return new_tit;
@@ -192,7 +194,7 @@ VCTIME GCTithi::CalcTithiEnd(int nGYear, int nMasa, int nPaksa, int nTithi, EART
 {
 	VCTIME d;
 
-	d = DAYDATA::GetFirstDayOfYear(earth, nGYear + 1486);
+	d.Set(DAYDATA::GetFirstDayOfYear(earth, nGYear + 1486));
 	d.shour = 0.5;
 	d.tzone = earth.tzone;
 
@@ -219,12 +221,12 @@ VCTIME GCTithi::CalcTithiEndEx(VCTIME vcStart, int GYear, int nMasa, int nPaksa,
 	d.shour = 0.5;
 	d.TimeZone = earth.tzone;
 */
-	d = vcStart;
+	d.Set(vcStart);
 
 	i = 0;
 	do
 	{
-		d += 13;
+		d.AddDays(13);
 		day.DayCalc(d, earth);
 		day.nMasa = day.MasaCalc(d, earth);
 		gy = day.nGaurabdaYear;
@@ -338,7 +340,7 @@ cont_2:
 		//d.shour += 0.02;
 		GCTithi::GetNextTithiStart(earth, d, d2);
 
-		endTithi = d2;
+		endTithi.Set(d2);
 		return d1;
 	}
 	else if (nType == 2)
@@ -346,12 +348,12 @@ cont_2:
 		VCTIME d1, d2;
 		d.shour = sunrise;
 		GCTithi::GetNextTithiStart(earth, d, d1);
-		d = d1;
+		d.Set(d1);
 		d.shour += 0.1;
 		d.NormalizeValues();
 		GCTithi::GetNextTithiStart(earth, d, d2);
 
-		endTithi = d2;
+		endTithi.Set(d2);
 		return d1;
 	}
 
@@ -362,12 +364,12 @@ cont_2:
 		d.month = 0;
 		d.day = 0;
 		d.shour = 0.0;
-		endTithi = d;
+		endTithi.Set(d);
 	}
 	else
 	{
-		d = start;
-		endTithi = end;
+		d.Set(start);
+		endTithi.Set(end);
 	}
 
 	return d;
@@ -417,7 +419,7 @@ VCTIME GCTithi::CalcTithiDate(int nGYear, int nMasa, int nPaksa, int nTithi, EAR
 		i = 0;
 		do
 		{
-			d += 13;
+			d.AddDays(13);
 			day.DayCalc(d, earth);
 			day.nMasa = day.MasaCalc(d, earth);
 			gy = day.nGaurabdaYear;
@@ -536,7 +538,8 @@ int GCTithi::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc)
 	xml.write("\t</request>\n");
 	xml.write("\t<result name=\"Tithi\">\n");
 
-	VCTIME d = vc;
+	VCTIME d;
+	d.Set(vc);
 	VCTIME d1, d2;
 	d.tzone = loc.m_fTimezone;
 	VCTIME dn;
@@ -666,7 +669,7 @@ int GCTithi::writeGaurabdaTithiXml(FILE * fout, CLocationRef &loc, VATIME vaStar
 
 	for(; A <= B; A++)
 	{
-		vcs = GCTithi::CalcTithiEnd(A, gmasa, gpaksa, gtithi, earth, vce);
+		vcs.Set(GCTithi::CalcTithiEnd(A, gmasa, gpaksa, gtithi, earth, vce));
 		if (gyearA > 1500)
 		{
 			if ((vcs.year < gyearA) || (vcs.year > gyearB))
@@ -688,13 +691,13 @@ int GCTithi::writeGaurabdaTithiXml(FILE * fout, CLocationRef &loc, VATIME vaStar
 		xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
 		xml.write("\"\n");
 		// test ci je ksaya
-		today = vcs;
+		today.Set(vcs);
 		today.shour = 0.5;
 		sun.SunCalc(today, earth);
 		sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 		if (sunrise < vcs.shour)
 		{
-			today = vce;
+			today.Set(vce);
 			sun.SunCalc(today, earth);
 			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 			if (sunrise < vce.shour)
@@ -718,7 +721,7 @@ int GCTithi::writeGaurabdaTithiXml(FILE * fout, CLocationRef &loc, VATIME vaStar
 		else
 		{
 			// normal, alebo prvy den vriddhi
-			today = vce;
+			today.Set(vce);
 			sun.SunCalc(today, earth);
 			if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 			{
@@ -801,12 +804,12 @@ int GCTithi::writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vc
 	DAYDATA day;
 	int oTithi, oPaksa, oMasa, oYear;
 
-	today = vcStart;
+	today.Set(vcStart);
 	today.PreviousDay();
-	vcStart -= 15;
+	vcStart.SubtractDays(15);
 	for(A = 0; A <= 3; A++)
 	{
-		vcs = GCTithi::CalcTithiEndEx(vcStart, 0, gmasa, gpaksa, gtithi, earth, vce);
+		vcs.Set(GCTithi::CalcTithiEndEx(vcStart, 0, gmasa, gpaksa, gtithi, earth, vce));
 		if (!vcs.IsBeforeThis(today))
 		{
 			oTithi = gpaksa*15 + gtithi;
@@ -825,13 +828,13 @@ int GCTithi::writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vc
 			xml.write((oPaksa ? _T("Gaura") : _T("Krsna")));
 			xml.write("\"\n");
 			// test ci je ksaya
-			today = vcs;
+			today.Set(vcs);
 			today.shour = 0.5;
 			sun.SunCalc(today, earth);
 			sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 			if (sunrise < vcs.shour)
 			{
-				today = vce;
+				today.Set(vce);
 				sun.SunCalc(today, earth);
 				sunrise = (sun.sunrise_deg + loc.m_fTimezone*15.0)/360;
 				if (sunrise < vce.shour)
@@ -855,7 +858,7 @@ int GCTithi::writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vc
 			else
 			{
 				// normal, alebo prvy den vriddhi
-				today = vce;
+				today.Set(vce);
 				sun.SunCalc(today, earth);
 				if ((sun.sunrise_deg + loc.m_fTimezone*15.0)/360 < vce.shour)
 				{
@@ -885,7 +888,7 @@ int GCTithi::writeGaurabdaNextTithiXml(FILE * fout, CLocationRef &loc, VCTIME vc
 		}
 		else
 		{
-			vcStart = vcs;
+			vcStart.Set(vcs);
 			vcs.NextDay();
 		}
 	}

@@ -48,6 +48,7 @@ public:
 	// into horizontal coordinates (azimut, elevation) it will do something wrong
 	static GCHorizontalCoords sunPosition(int year, int month, int day, int hour=12, int min=0, int sec=0,
                     double lat=48.14455, double longi=17.10775136947632);
+
 };
 
 

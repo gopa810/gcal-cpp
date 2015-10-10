@@ -39,23 +39,23 @@ const char * GCCalendar::FormatDate(VCTIME vc, VATIME va)
 //
 //===========================================================================
 
-void GCCalendar::VATIMEtoVCTIME(VATIME va, VCTIME &vc, EARTHDATA earth)
+void GCCalendar::VATIMEtoVCTIME(VATIME va, VCTIME * vc, EARTHDATA earth)
 {
-	vc = GCTithi::CalcTithiDate(va.gyear, va.masa, va.tithi / 15, va.tithi % 15, earth);
+	vc->Set(GCTithi::CalcTithiDate(va.gyear, va.masa, va.tithi / 15, va.tithi % 15, earth));
 }
 
 //===========================================================================
 //
 //===========================================================================
 
-void GCCalendar::VCTIMEtoVATIME(VCTIME vc, VATIME &va, EARTHDATA earth)
+void GCCalendar::VCTIMEtoVATIME(VCTIME vc, VATIME * va, EARTHDATA earth)
 {
 	DAYDATA day;
 
 	day.DayCalc(vc, earth);
-	va.masa = day.MasaCalc(vc, earth);
-	va.tithi = day.nTithi;
-	va.gyear = day.nGaurabdaYear;
+	va->masa = day.MasaCalc(vc, earth);
+	va->tithi = day.nTithi;
+	va->gyear = day.nGaurabdaYear;
 }
 
 int GCCalendar::CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, VCTIME &vcEnd, VATIME &vaEnd, int nType, int nCount)
@@ -63,19 +63,19 @@ int GCCalendar::CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, V
 	switch(nType)
 	{
 	case 1:
-		vcEnd = vcStart;
+		vcEnd.Set(vcStart);
 		if (nCount > 30240) nCount = 30240;
-		vcEnd += nCount;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		vcEnd.AddDays(nCount);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, &vaEnd, m_earth);
 		break;
 	case 2:
-		vcEnd = vcStart;
+		vcEnd.Set(vcStart);
 		if (nCount > 4320) nCount = 4320;
-		vcEnd += nCount*7;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		vcEnd.AddDays(nCount*7);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, &vaEnd, m_earth);
 		break;
 	case 3:
-		vcEnd = vcStart;
+		vcEnd.Set(vcStart);
 		if (nCount > 1080) nCount = 1080;
 		vcEnd.month += nCount;
 		while(vcEnd.month > 12)
@@ -83,16 +83,16 @@ int GCCalendar::CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, V
 			vcEnd.year++;
 			vcEnd.month -= 12;
 		}
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, &vaEnd, m_earth);
 		break;
 	case 4:
-		vcEnd = vcStart;
+		vcEnd.Set(vcStart);
 		if (nCount > 90) nCount = 90;
 		vcEnd.year += nCount;
-		GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+		GCCalendar::VCTIMEtoVATIME(vcEnd, &vaEnd, m_earth);
 		break;
 	case 5:
-		vaEnd = vaStart;
+		vaEnd.Set(vaStart);
 		if (nCount > 30240) nCount = 30240;
 		vaEnd.tithi += nCount;
 		while(vaEnd.tithi >= 30)
@@ -105,24 +105,24 @@ int GCCalendar::CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, V
 			vaEnd.masa -= 12;
 			vaEnd.gyear++;
 		}
-		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+		GCCalendar::VATIMEtoVCTIME(vaEnd, &vcEnd, m_earth);
 		break;
 	case 6:
-		vaEnd = vaStart;
+		vaEnd.Set(vaStart);
 		if (nCount > 1080) nCount = 1080;
 		vaEnd.masa = GCCalendar::MasaToComboMasa(vaEnd.masa);
 		if (vaEnd.masa == ADHIKA_MASA)
 		{
-			vcEnd = vcStart;
+			vcEnd.Set(vcStart);
 			vcEnd.month += nCount;
 			while(vcEnd.month > 12)
 			{
 				vcEnd.year++;
 				vcEnd.month -= 12;
 			}
-			GCCalendar::VCTIMEtoVATIME(vcEnd, vaEnd, m_earth);
+			GCCalendar::VCTIMEtoVATIME(vcEnd, &vaEnd, m_earth);
 			vaEnd.tithi = vaStart.tithi;
-			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+			GCCalendar::VATIMEtoVCTIME(vaEnd, &vcEnd, m_earth);
 		}
 		else
 		{
@@ -133,14 +133,14 @@ int GCCalendar::CalcEndDate(EARTHDATA m_earth, VCTIME vcStart, VATIME vaStart, V
 				vaEnd.gyear++;
 			}
 			vaEnd.masa = GCCalendar::ComboMasaToMasa(vaEnd.masa);
-			GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+			GCCalendar::VATIMEtoVCTIME(vaEnd, &vcEnd, m_earth);
 		}
 		break;
 	case 7:
-		vaEnd = vaStart;
+		vaEnd.Set(vaStart);
 		if (nCount > 90) nCount = 90;
 		vaEnd.gyear += nCount;
-		GCCalendar::VATIMEtoVCTIME(vaEnd, vcEnd, m_earth);
+		GCCalendar::VATIMEtoVCTIME(vaEnd, &vcEnd, m_earth);
 		break;
 	}
 
@@ -163,7 +163,7 @@ int GCCalendar::writeFirstDayXml(FILE * fout, CLocationRef & loc, VCTIME vcStart
 
 	xml.initWithFile(fout);
 
-	vcStart = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year);
+	vcStart.Set(DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, vcStart.year));
 	vcStart.InitWeekDay();
 
 	// write

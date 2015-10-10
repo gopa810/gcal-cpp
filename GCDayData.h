@@ -52,7 +52,6 @@ public:
 	static unsigned int gGaurBeg[];
 	static VCTIME GetFirstDayOfYear(EARTHDATA,int);
 	static VCTIME GetFirstDayOfMasa(EARTHDATA earth, int GYear, int nMasa);
-
 };
 
 

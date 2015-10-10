@@ -2,12 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "LocationRef.h"	// Added by ClassView
-	// Added by ClassView
-#include "TString.h"	// Added by ClassView
+#include "LocationRef.h"
+#include "TString.h"
 
 #pragma once
-// PORTABLE
+
 
 class TResultMasaList  
 {

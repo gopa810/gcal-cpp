@@ -45,7 +45,8 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	double l1, l2;
 	double jday = startDate.GetJulianComplete();
 	MOONDATA moon;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	double ayanamsa = GCAyanamsha::GetAyanamsa(jday);
 	double scan_step = 0.5;
 	int prev_naks = 0;
@@ -62,7 +63,7 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday += scan_step;
 		d.shour += scan_step;
@@ -78,7 +79,7 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 		if (prev_naks != new_naks)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -88,7 +89,7 @@ int GCNaksatra::GetNextNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 			l1 = l2;
 		}
 	}
-	nextDate = d;
+	nextDate.Set(d);
 	return new_naks;
 }
 
@@ -108,7 +109,8 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	double l1, l2;
 	double jday = startDate.GetJulianComplete();
 	MOONDATA moon;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	double ayanamsa = GCAyanamsha::GetAyanamsa(jday);
 	double scan_step = 0.5;
 	int prev_naks = 0;
@@ -125,7 +127,7 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday -= scan_step;
 		d.shour -= scan_step;
@@ -142,7 +144,7 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 		if (prev_naks != new_naks)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -154,7 +156,7 @@ int GCNaksatra::GetPrevNaksatra(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate
 
 	}
 
-	nextDate = d;
+	nextDate.Set(d);
 	return new_naks;
 
 }
@@ -189,7 +191,8 @@ int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCou
 	xml.write("\t</request>\n");
 	xml.write("\t<result name=\"Naksatra\">\n");
 
-	VCTIME d = vc;
+	VCTIME d;
+	d.Set(vc);
 	d.tzone = loc.m_fTimezone;
 	VCTIME dn;
 	DAYTIME dt;
@@ -200,7 +203,7 @@ int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCou
 	for(int i = 0; i < 30; i++)
 	{
 		nak = GCNaksatra::GetNextNaksatra(earth, d, dn);
-		d = dn;
+		d.Set(dn);
 		xml.write("\t\t<day date=\"");
 		xml.write(d);
 		xml.write("\">\n");
@@ -229,7 +232,7 @@ int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCou
 
 		xml.write("\t\t</day>\n");
 		// increment for non-duplication of naksatra
-		d = dn;
+		d.Set(dn);
 		d.shour += 1.0/8.0;
 	}
 
@@ -244,7 +247,8 @@ int GCNaksatra::writeXml(FILE * fout, CLocationRef &loc, VCTIME vc, int nDaysCou
 double GCNaksatra::GetEndHour(EARTHDATA earth, VCTIME yesterday, VCTIME today)
 {
 	VCTIME nend;
-	VCTIME snd = yesterday;
+	VCTIME snd;
+	snd.Set(yesterday);
 	snd.shour = 0.5;
 	GCNaksatra::GetNextNaksatra(earth, snd, nend);
 	return nend.GetJulian() - today.GetJulian() + nend.shour;

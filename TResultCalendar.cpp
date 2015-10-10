@@ -68,25 +68,6 @@ int TResultCalendar::DAY_INDEX(int day)
 	return (day + GCDisplaySettings::getValue(GENERAL_FIRST_DOW))%7;
 }
 
-int TResultCalendar::Push(VAISNAVADAY &day)
-{
-	int nWrite = 0;
-	if (nTop < CDB_MAXDAYS - 1)
-	{
-		nWrite = nTop;
-		days[nTop] = day;
-		nTop++;
-	}
-	else
-	{
-		nWrite = nBeg;
-		days[nBeg] = day;
-		nBeg = (nBeg + 1) % CDB_MAXDAYS;
-	}
-
-	return nWrite;
-}
-
 bool TResultCalendar::NextNewFullIsVriddhi(int nIndex, EARTHDATA earth)
 {
 	int i = 0;
@@ -183,8 +164,8 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 		TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE };
 
 	m_nCount = 0;
-	m_Location = loc;
-	m_vcStart = begDate;
+	m_Location.Set(loc);
+	m_vcStart.Set(begDate);
 	m_vcCount = iCount;
 	earth = (EARTHDATA)loc;
 
@@ -203,7 +184,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	m_nCount = nTotalCount;
 	m_PureCount = iCount;
 
-	date = begDate;
+	date.Set(begDate);
 	date.shour = 0.0;
 	date.tzone = loc.m_fTimezone;
 //	date -= BEFORE_DAYS;
@@ -219,7 +200,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	// initialization of days
 	for(i = 0; i < nTotalCount; i++)
 	{
-		m_pData[i].date = date;
+		m_pData[i].date.Set(date);
 		m_pData[i].date.dayOfWeek = weekday;
 		date.NextDay();
 		weekday = (weekday + 1) % 7;
@@ -473,14 +454,14 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 	}
 
 	// init for sankranti
-	date = m_pData[0].date;
+	date.Set(m_pData[0].date);
 	i = 0;
 	bool bFoundSan;
 	int zodiac;
 	int i_target;
 	do
 	{
-		date = GCSankranti::GetNextSankranti(date, zodiac);
+		date.Set(GCSankranti::GetNextSankranti(date, zodiac));
 		date.shour += TTimeZone::determineDaylightStatus(date, loc.m_nDST)/24.0;
 		date.NormalizeValues();
 
@@ -543,7 +524,7 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 				TString str;
 
 				m_pData[i_target].sankranti_zodiac = zodiac;
-				m_pData[i_target].sankranti_day = date;
+				m_pData[i_target].sankranti_day.Set(date);
 
 				if (GCDisplaySettings::getValue(CAL_SANKRANTI))
 				{
@@ -614,11 +595,11 @@ int TResultCalendar::CalculateCalendar(CLocationRef & loc, VCTIME begDate, int i
 			TString str, str2, str3;
 			VCTIME day1, d1, d2;
 
-			day1 = m_pData[i].date;
+			day1.Set(m_pData[i].date);
 			day1.shour = m_pData[i].astrodata.sun.sunrise_deg/360.0 + earth.tzone/24.0;
 
 			GCTithi::GetPrevTithiStart(earth, day1, d2);
-			day1 = d2;
+			day1.Set(d2);
 			day1.shour -= 0.1;
 			day1.NormalizeValues();
 			GCTithi::GetPrevTithiStart(earth, day1, d1);
@@ -825,7 +806,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 			{
 				if (t.moonrise.hour >= 0)
 				{
-					if (t.moonrise > t.astrodata.sun.rise)
+					if (t.moonrise.IsGreaterThan(t.astrodata.sun.rise))
 					// today is GOVARDHANA PUJA
 						t.AddSpecFestival(SPEC_GOVARDHANPUJA, CAL_FEST_1);
 					else
@@ -833,7 +814,7 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 				}
 				else if (u.moonrise.hour >= 0)
 				{
-					if (u.moonrise < u.astrodata.sun.rise)
+					if (u.moonrise.IsLessThan(u.astrodata.sun.rise))
 					// today is GOVARDHANA PUJA
 						t.AddSpecFestival(SPEC_GOVARDHANPUJA, CAL_FEST_1);
 					else

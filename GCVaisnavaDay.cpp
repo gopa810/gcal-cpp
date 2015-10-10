@@ -185,7 +185,7 @@ bool VAISNAVADAY::GetNaksatraTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to
 {
 	VCTIME start;
 
-	start = date;
+	start.Set(date);
 	start.shour = this->astrodata.sun.sunrise_deg / 360 + earth.tzone/24.0;
 
 	GCNaksatra::GetNextNaksatra(earth, start, to);
@@ -199,7 +199,7 @@ bool VAISNAVADAY::GetTithiTimeRange(EARTHDATA earth, VCTIME &from, VCTIME &to)
 {
 	VCTIME start;
 
-	start = date;
+	start.Set(date);
 	start.shour = this->astrodata.sun.sunrise_deg / 360 + earth.tzone/24.0;
 
 	GCTithi::GetNextTithiStart(earth, start, to);

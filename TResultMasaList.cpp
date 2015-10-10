@@ -55,9 +55,11 @@ int TResultMasaList::CalculateMasaList(CLocationRef &loc, int nYear, int nCount)
 
 	mlist.n_startYear = nYear;
 	mlist.n_countYears = nCount;
-	mlist.vc_start = d  = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear);
-	mlist.vc_end   = de = DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear + nCount);
-	mlist.m_location = loc;
+	d.Set(DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear));
+	mlist.vc_start.Set(d);
+	de.Set(DAYDATA::GetFirstDayOfYear((EARTHDATA)loc, nYear + nCount));
+	mlist.vc_end.Set(de);
+	mlist.m_location.Set(loc);
 
 	if (mlist.alloc(nCount) == false)
 		return 0;
@@ -80,15 +82,15 @@ int TResultMasaList::CalculateMasaList(CLocationRef &loc, int nYear, int nCount)
 			{
 				if (lm >= 0)
 				{
-					t = d;
+					t.Set(d);
 					t.PreviousDay();
-					mlist.arr[current].vc_end = t;
+					mlist.arr[current].vc_end.Set(t);
 					current++;
 				}
 				lm = day.nMasa;
 				mlist.arr[current].masa = day.nMasa;
 				mlist.arr[current].year = day.nGaurabdaYear;
-				mlist.arr[current].vc_start = d;
+				mlist.arr[current].vc_start.Set(d);
 			}
 		}
 		prev_paksa = day.nPaksa;
@@ -96,8 +98,8 @@ int TResultMasaList::CalculateMasaList(CLocationRef &loc, int nYear, int nCount)
 		i ++;
 	}
 
-	t = d;
-	mlist.arr[current].vc_end = t;
+	t.Set(d);
+	mlist.arr[current].vc_end.Set(t);
 	current++;
 	mlist.n_countMasa = current;
 

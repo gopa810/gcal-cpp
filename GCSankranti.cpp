@@ -79,7 +79,7 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 	int prev_rasi, new_rasi;
 	VCTIME prevday;
 
-	d = startDate;
+	d.Set(startDate);
 	//d.ChangeTimeZone(0.0);
 	//d.shour = 0.0;
 
@@ -88,7 +88,7 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 
 	while(count < 20)
 	{
-		prevday = d;
+		prevday.Set(d);
 		d.shour += step;
 		if (d.shour > 1.0)
 		{
@@ -104,7 +104,7 @@ VCTIME GCSankranti::GetNextSankranti( VCTIME startDate, int &zodiac)
 			zodiac = new_rasi;
 			//v uplynulom dni je sankranti
 			step *= 0.5;
-			d = prevday;
+			d.Set(prevday);
 			count++;
 			continue;
 		}
@@ -124,7 +124,7 @@ int GCSankranti::writeXml(FILE * fout, CLocationRef & loc, VCTIME vcStart, VCTIM
 	// open file
 	xml.initWithFile(fout);
 
-	d = vcStart;
+	d.Set(vcStart);
 
 	xml.write("<xml>\n");
 	xml.write("\t<request name=\"Sankranti\" version=\"");
@@ -153,7 +153,7 @@ int GCSankranti::writeXml(FILE * fout, CLocationRef & loc, VCTIME vcStart, VCTIM
 
 	while(d.IsBeforeThis(vcEnd))
 	{
-		d = GCSankranti::GetNextSankranti(d, zodiac);
+		d.Set(GCSankranti::GetNextSankranti(d, zodiac));
 		d.InitWeekDay();
 		xml.write("\t\t<sank date=\"");
 		xml.write(d);

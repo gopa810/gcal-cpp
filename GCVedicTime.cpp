@@ -49,3 +49,9 @@ void VATIME::prev()
 	}
 }
 
+void VATIME::Set(VATIME &va)
+{
+	tithi = va.tithi;
+	masa = va.masa;
+	gyear = va.gyear;
+}

@@ -162,10 +162,10 @@ void DlgGetLocation::OnButtonNext()
 	// TODO: Add your control notification handler code here
 	if (m_bMyLocation)
 	{
-		GCGlobal::myLocation = m_location;
+		GCGlobal::myLocation.Set(m_location);
 	}
 
-	GCGlobal::lastLocation = m_location;
+	GCGlobal::lastLocation.Set(m_location);
 
 	m_nNextStep = 1;
 	CDialog::OnOK();
@@ -185,11 +185,11 @@ BOOL DlgGetLocation::OnInitDialog()
 
 	if (m_bMyLocation)
 	{
-		m_location = GCGlobal::myLocation;
+		m_location.Set(GCGlobal::myLocation);
 	}
 	else
 	{
-		m_location = GCGlobal::lastLocation;
+		m_location.Set(GCGlobal::lastLocation);
 	}
 
 	CDialog::OnInitDialog();

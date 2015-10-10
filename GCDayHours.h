@@ -11,17 +11,18 @@ public:
 	int mili;
 
 	double GetDayTime(void);
-	bool operator<(DAYTIME &dt);
-	bool operator>(DAYTIME &dt);
-	bool operator>=(DAYTIME &dt);
-	bool operator<=(DAYTIME &dt);
-	void operator+=(int mn);
-	void operator-=(int mn);
+	bool IsLessThan(DAYTIME &dt);
+	bool IsGreaterThan(DAYTIME &dt);
+	bool IsGreaterOrEqualThan(DAYTIME &dt);
+	bool IsLessOrEqualThan(DAYTIME &dt);
+	void AddMinutes(int mn);
 	void SetValue(int i);
+	void Set(DAYTIME &);
 	void SetDayTime(double d);
 	void SetDegTime(double);
 
 	void ToLongTimeString(TString &str);
+
 };
 
 

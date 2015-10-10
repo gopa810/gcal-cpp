@@ -137,7 +137,7 @@ BOOL DlgGetStartDate::OnInitDialog()
 		m_resultC.shour = double(0.5);
 		m_resultC.tzone = m_earth.tzone;
 
-		GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+		GCCalendar::VCTIMEtoVATIME(m_resultC, &m_resultA, m_earth);
 
 		s_init = 1;
 
@@ -215,7 +215,7 @@ void DlgGetStartDate::SynchroGregorianToGaurabda()
 	m_resultC.NextDay();
 	m_resultC.PreviousDay();
 
-	GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+	GCCalendar::VCTIMEtoVATIME(m_resultC, &m_resultA, m_earth);
 
 	w_tithi.SetCurSel(m_resultA.tithi);
 	w_masa.SetCurSel(GCCalendar::MasaToComboMasa(m_resultA.masa));
@@ -264,7 +264,7 @@ void DlgGetStartDate::SynchroGaurabdaToGregorian()
 		return;
 	}
 
-	GCCalendar::VATIMEtoVCTIME(m_resultA, m_resultC, m_earth);
+	GCCalendar::VATIMEtoVCTIME(m_resultA, &m_resultC, m_earth);
 
 	if (m_resultC.year < 0)
 	{
@@ -300,7 +300,7 @@ BOOL DlgGetStartDate::OnCommand(WPARAM wParam, LPARAM lParam)
 		w_day.SetCurSel(m_resultC.day - 1);
 		w_month.SetCurSel(m_resultC.month - 1);
 		SetDlgItemInt(IDC_EDIT2, m_resultC.year, FALSE);
-		GCCalendar::VCTIMEtoVATIME(m_resultC, m_resultA, m_earth);
+		GCCalendar::VCTIMEtoVATIME(m_resultC, &m_resultA, m_earth);
 		w_tithi.SetCurSel(m_resultA.tithi);
 		w_masa.SetCurSel(GCCalendar::MasaToComboMasa(m_resultA.masa));
 		SetDlgItemInt(IDC_EDIT1, m_resultA.gyear, FALSE);

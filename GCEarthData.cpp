@@ -281,7 +281,8 @@ int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)
 	double l1, l2;
 	double jday = startDate.GetJulianComplete();
 	double xj;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	VCTIME xd;
 	double scan_step = 0.05;
 	int prev_tit = 0;
@@ -295,7 +296,7 @@ int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday += scan_step;
 		d.shour += scan_step;
@@ -311,7 +312,7 @@ int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)
 		if (prev_tit != new_tit)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -321,7 +322,7 @@ int EARTHDATA::GetNextAscendentStart(VCTIME startDate, VCTIME &nextDate)
 			l1 = l2;
 		}
 	}
-	nextDate = d;
+	nextDate.Set(d);
 
 	return new_tit;
 }

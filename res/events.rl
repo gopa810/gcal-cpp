@@ -45,7 +45,6 @@
 13 Lord Balarama -- Appearance|3|29|0|1|7|Lord Balarama|1|0
 13 Srila Prabhupada's departure for the USA|4|0|4|1|0||1|0
 13 Srimati Sita Thakurani (Sri Advaita's consort) -- Appearance|4|19|3|1|0||1|0
-13 Lalita sasti|4|20|1|1|0||1|0
 13 Radhastami: Appearance of Srimati Radharani|4|22|0|1|0|Srimati Radharani|1|0
 13 Sri Vamana Dvadasi: Appearance of Lord Vamanadeva|4|26|0|1|7|Vamanadeva|1|0
 13 Srila Jiva Gosvami -- Appearance|4|26|3|1|0||1|0

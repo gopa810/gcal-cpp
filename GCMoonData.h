@@ -38,5 +38,7 @@ public:
 
 	static GCEclipticalCoords CalculateEcliptical(double julian);
 	GCEquatorialCoords getTopocentricEquatorial(EARTHDATA obs, double jdate);
+
+
 };
 

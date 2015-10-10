@@ -54,5 +54,6 @@ public:
 	TString & GetFullTithiName(void);
 	bool ConditionEvaluate(int nClass, int nValue, TString &strText, bool defaultRet);
 	int GetTextLineCount();
+
 };
 

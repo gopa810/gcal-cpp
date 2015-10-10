@@ -683,7 +683,8 @@ char * TTimeZone::GetTimeZoneOffsetTextArg(double d)
 int TTimeZone::determineDaylightChange(VCTIME vc2, int nIndex)
 {
 	int t2 = TTimeZone::determineDaylightStatus(vc2, nIndex);
-	VCTIME vc3 = vc2;
+	VCTIME vc3;
+	vc3.Set(vc2);
 	vc3.PreviousDay();
 	int t1 = TTimeZone::determineDaylightStatus(vc3, nIndex);
 	if (t1)

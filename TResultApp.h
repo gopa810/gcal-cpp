@@ -1,7 +1,4 @@
-#ifndef _RESAPPDAY_________
-#define _RESAPPDAY_________
-
-
+#pragma once
 
 #include "locationref.h"
 #include "GCDayData.h"
@@ -13,7 +10,7 @@ class TResultApp
 {
 public:
 	CLocationRef location;
-	VCTIME  event;
+	VCTIME eventTime;
 	DAYDATA details;
 	bool b_adhika;
 	int celeb_gy[TRESULT_APP_CELEBS];
@@ -26,4 +23,3 @@ public:
 	void writeHtml(FILE *F);
 };
 
-#endif

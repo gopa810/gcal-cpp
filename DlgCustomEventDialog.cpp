@@ -158,23 +158,7 @@ AE_TypeAgain:
 			m_list.SetItemText(n, 3, ce.strText);
 			m_list.SetItemData(n, ce.nTithi + ce.nMasa*30);
 
-			// vklada do global custom events
-/*			n = nMasa*30 + nTithi;
-			if (gCustomEventTexts[n].IsEmpty() == TRUE)
-			{
-				gCustomEventTexts[n] = ce.strText;
-			}
-			else
-			{
-				gCustomEventTexts[n] += "#";
-				gCustomEventTexts[n] += ce.strText;
-			}*/
-
 		}
-		else
-		{
-		}
-
 	}
 }
 
@@ -203,12 +187,6 @@ void DlgCustomEventDialog::OnOK()
 	i = 0;
 	max = m_list.GetItemCount();
 
-/*	for(i = 0; i < 360; i++)
-	{
-		if (gCustomEventTexts[i].IsEmpty() == FALSE)
-			gCustomEventTexts[i].Empty();
-	}*/
-
 	for(i = 0; i < max; i++)
 	{
 		pce = GCGlobal::customEventList.add();
@@ -218,19 +196,8 @@ void DlgCustomEventDialog::OnOK()
 			pce->strText = m_list.GetItemText(i, 3);
 			pce->nTithi = data % 30;
 			pce->nMasa = data / 30;
-/*			if (gCustomEventTexts[data].IsEmpty() == TRUE)
-			{
-				gCustomEventTexts[data] = pce->strText;
-			}
-			else
-			{
-				gCustomEventTexts[data] += "#";
-				gCustomEventTexts[data] += pce->strText;
-			}*/
 		}
 	}
-
-//	CCustomEventList::WriteFile(GCGlobal::getFileName(GSTR_CE_FILE));
 
 	CDialog::OnOK();
 }

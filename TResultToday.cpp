@@ -25,9 +25,9 @@ TResultToday::~TResultToday(void)
 void TResultToday::Calculate(VCTIME dateTime, CLocationRef& location)
 {
 	VCTIME vc2;
-	currentDay = dateTime;
+	currentDay.Set(dateTime);
 	currentDay.InitWeekDay();
-	vc2 = currentDay;
+	vc2.Set(currentDay);
 
 	vc2.tzone = location.m_fTimezone;
 	vc2.PreviousDay();
@@ -104,10 +104,10 @@ void TResultToday::formatPlain(TString &str)
 
 	if (GCDisplaySettings::getValue(45))
 	{
-		tdA = p->astrodata.sun.rise;
-		tdB = p->astrodata.sun.rise;
-		tdA -= 96;
-		tdB -= 48;
+		tdA.Set(p->astrodata.sun.rise);
+		tdB.Set(p->astrodata.sun.rise);
+		tdA.AddMinutes(-96);
+		tdB.AddMinutes(-48);
 		str2.Format("\r\nBrahma Muhurta %2d:%02d - %2d:%02d (%s)", 
 			tdA.hour, tdA.min, tdB.hour, tdB.min, GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
@@ -120,10 +120,10 @@ void TResultToday::formatPlain(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.rise;
-			tdB = p->astrodata.sun.rise;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.rise);
+			tdB.Set(p->astrodata.sun.rise);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -136,10 +136,10 @@ void TResultToday::formatPlain(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.noon;
-			tdB = p->astrodata.sun.noon;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.noon);
+			tdB.Set(p->astrodata.sun.noon);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -152,10 +152,10 @@ void TResultToday::formatPlain(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.set;
-			tdB = p->astrodata.sun.set;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.set);
+			tdB.Set(p->astrodata.sun.set);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -261,10 +261,10 @@ void TResultToday::formatRtf(TString &str)
 
 	if (GCDisplaySettings::getValue(45))
 	{
-		tdA = p->astrodata.sun.rise;
-		tdB = p->astrodata.sun.rise;
-		tdA -= 96;
-		tdB -= 48;
+		tdA.Set(p->astrodata.sun.rise);
+		tdB.Set(p->astrodata.sun.rise);
+		tdA.AddMinutes(-96);
+		tdB.AddMinutes(-48);
 		str2.Format("\\par\r\nBrahma Muhurta %2d:%02d - %2d:%02d (%s)", 
 			tdA.hour, tdA.min, tdB.hour, tdB.min, GCStrings::GetDSTSignature(p->nDST));
 		str += str2;
@@ -277,10 +277,10 @@ void TResultToday::formatRtf(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.rise;
-			tdB = p->astrodata.sun.rise;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.rise);
+			tdB.Set(p->astrodata.sun.rise);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -293,10 +293,10 @@ void TResultToday::formatRtf(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.noon;
-			tdB = p->astrodata.sun.noon;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.noon);
+			tdB.Set(p->astrodata.sun.noon);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -309,10 +309,10 @@ void TResultToday::formatRtf(TString &str)
 		str += str2;
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.set;
-			tdB = p->astrodata.sun.set;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.set);
+			tdB.Set(p->astrodata.sun.set);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			str2.Format(" sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 			str += str2;
 		}
@@ -429,10 +429,10 @@ void TResultToday::writeHtml(FILE * f)
 			GCStrings::getString(51).c_str(), p->astrodata.sun.rise.hour, p->astrodata.sun.rise.min );
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.rise;
-			tdB = p->astrodata.sun.rise;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.rise);
+			tdB.Set(p->astrodata.sun.rise);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			fprintf(f, " sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 		}
 		fprintf(f, " (%s)", GCStrings::GetDSTSignature(p->nDST));
@@ -442,10 +442,10 @@ void TResultToday::writeHtml(FILE * f)
 		fprintf(f, "<br>%s    %2d:%02d ", GCStrings::getString(857).c_str(), p->astrodata.sun.noon.hour, p->astrodata.sun.noon.min);
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.noon;
-			tdB = p->astrodata.sun.noon;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.noon);
+			tdB.Set(p->astrodata.sun.noon);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			fprintf(f, " sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 		}
 		fprintf(f, " (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));
@@ -455,10 +455,10 @@ void TResultToday::writeHtml(FILE * f)
 		fprintf(f, "<br>%s  %2d:%02d ", GCStrings::getString(52).c_str(), p->astrodata.sun.set.hour, p->astrodata.sun.set.min);
 		if (GCDisplaySettings::getValue(32))
 		{
-			tdA = p->astrodata.sun.set;
-			tdB = p->astrodata.sun.set;
-			tdA -= 24;
-			tdB += 24;
+			tdA.Set(p->astrodata.sun.set);
+			tdB.Set(p->astrodata.sun.set);
+			tdA.AddMinutes(-24);
+			tdB.AddMinutes(+24);
 			fprintf(f, " sandhya %2d:%02d - %2d:%02d ", tdA.hour, tdA.min, tdB.hour, tdB.min);
 		}
 		fprintf(f, " (%s)\r\n", GCStrings::GetDSTSignature(p->nDST));

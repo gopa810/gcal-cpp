@@ -12,6 +12,7 @@ public:
 	VATIME(int t, int m, int y);
 	void next();
 	void prev();
+	void Set(VATIME &);
 };
 
 

@@ -17,14 +17,16 @@ void TResultApp::calculateAppDay(CLocationRef &location, VCTIME eventDate)
 	DAYDATA &d = this->details;
 	double dd;
 	TString str;
-	VCTIME vc = eventDate;
-	VCTIME vcsun = eventDate;
+	VCTIME vc;
+	vc.Set(eventDate);
+	VCTIME vcsun;
+	vcsun.Set(eventDate);
 	VCTIME dprev, dnext;
 	EARTHDATA m_earth = (EARTHDATA)location;
 
 	this->b_adhika = false;
-	this->event = eventDate;
-	this->location = location;
+	this->eventTime.Set(eventDate);
+	this->location.Set(location);
 	
 	//d.nTithi = GetPrevTithiStart(m_earth, vc, dprev);
 	//GetNextTithiStart(m_earth, vc, dnext);
@@ -73,12 +75,12 @@ void TResultApp::calculateAppDay(CLocationRef &location, VCTIME eventDate)
 
 	for(int i = 0; i < 6; i++)
 	{
-		GCCalendar::VATIMEtoVCTIME(va, vctemp, m_earth);
+		GCCalendar::VATIMEtoVCTIME(va, &vctemp, m_earth);
 		if (va.gyear > d.nGaurabdaYear)
 		{
 			if (m < TRESULT_APP_CELEBS)
 			{
-				this->celeb_date[m] = vctemp;
+				this->celeb_date[m].Set(vctemp);
 				this->celeb_gy[m] = va.gyear;
 				m++;
 			}
@@ -94,7 +96,8 @@ void TResultApp::formatPlainText(TString &strResult)
 	TResultApp & app = *this;
 	DAYDATA &d = app.details;
 	TString str;
-	VCTIME vc = app.event;
+	VCTIME vc;
+	vc.Set(app.eventTime);
 	EARTHDATA m_earth = (EARTHDATA)app.location;
 	TString & strText = strResult;
 //	int nHour, nMin;
@@ -192,7 +195,8 @@ void TResultApp::formatRtf(TString &strResult)
 	//SUNDATA sun;
 	DAYDATA &d = app.details;
 	TString str;
-	VCTIME vc = app.event;
+	VCTIME vc;
+	vc.Set(app.eventTime);
 	EARTHDATA m_earth = (EARTHDATA)app.location;
 	TString & strText = strResult;
 //	int nHour, nMin;
@@ -294,7 +298,8 @@ void TResultApp::formatXml(TString &strResult)
 	TResultApp & app = *this;
 	DAYDATA &d = this->details;
 	TString str;
-	VCTIME vc = this->event;
+	VCTIME vc;
+	vc.Set(eventTime);
 	EARTHDATA m_earth = (EARTHDATA)this->location;
 	CLocationRef & loc = this->location;
 	TString & strText = strResult;
@@ -314,7 +319,8 @@ void TResultApp::formatXml(TString &strResult)
 		"\t\t<arg name=\"minute\" value=\"%d\" />\n"
 		"\t</request>\n", GCStrings::getString(130).c_str(),
 		loc.m_fLongitude, loc.m_fLatitude, loc.m_fTimezone,
-		app.event.year, app.event.month, app.event.day, app.event.GetHour(), app.event.GetMinuteRound()
+		app.eventTime.year, app.eventTime.month, app.eventTime.day, 
+		app.eventTime.GetHour(), app.eventTime.GetMinuteRound()
 		);
 
 
@@ -372,7 +378,8 @@ void TResultApp::writeHtml(FILE *F)
 {
 	DAYDATA &d = this->details;
 	TString str;
-	VCTIME vc = this->event;
+	VCTIME vc;
+	vc.Set(eventTime);
 	EARTHDATA m_earth = (EARTHDATA)this->location;
 
 	fprintf(F, "<html><head><title>Appearance day</title>");

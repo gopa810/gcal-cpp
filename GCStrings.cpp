@@ -88,20 +88,6 @@ const char * GCStrings::GetRasiChildSylable(int n)
 		"ga.. sa.. sha..",
 		"da.. ca.. tha.. jha.."
 	};
-	/*Mesa :	 	 a   la
-Vrsabha: 	   u   va,   i, e, o
-Mithuna:  	 ka,  cha, gha
-Kataka:	   ha
-Simha:		  ma
-Kanya:		 pa
-Tula:		 ra , ta
-Vrschika:	  na ,  ba
-
-Dhanus:	   dha , bha,  pha
-Makra:  	kha, ja
-Kumbha:	   ga,, sa
-Mina:		  da, ca , jha
-*/		
 
 	return childsylable[n % 12];
 }

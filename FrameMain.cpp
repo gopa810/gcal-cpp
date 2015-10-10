@@ -237,26 +237,26 @@ void CFrameMain::OnCalculateCalendar()
 _step_1:
 	if (d1.DoModal() == IDCANCEL) return;
 	if (d1.m_nNextStep < 0) return;
-	earth = d1.m_location;
+	earth.Set(d1.m_location);
 
 _step_2:
 	dstart.m_earth = (EARTHDATA)earth;
 	if (dstart.DoModal() == IDCANCEL) return;
 	if (dstart.m_nNextStep < 0) goto _step_1;
-	calendar.vc_start = dstart.m_resultC;
-	calendar.va_start = dstart.m_resultA;
+	calendar.vc_start.Set(dstart.m_resultC);
+	calendar.va_start.Set(dstart.m_resultA);
 
 _step_final:
 	dend.bFinal = TRUE;
 	dend.m_earth  = (EARTHDATA)earth;
-	dend.va_start = calendar.va_start;
-	dend.vc_start = calendar.vc_start;
+	dend.va_start.Set(calendar.va_start);
+	dend.vc_start.Set(calendar.vc_start);
 
 	if (dend.DoModal() == IDCANCEL) return;
 	if (dend.m_nNextStep < 0) goto _step_2;
 
-	calendar.vc_end = dend.vc_end;
-	calendar.va_end   = dend.va_end;
+	calendar.vc_end.Set(dend.vc_end);
+	calendar.va_end.Set(dend.va_end);
 	calendar.count = int(dend.vc_end.GetJulian() - dend.vc_start.GetJulian());
 
 	GCUserInterface::CalculateCalendar(m_calendar, earth, calendar.vc_start, calendar.count);
@@ -297,7 +297,7 @@ _step_1:
 	{
 		return;
 	}
-	earth = d1.m_location;
+	earth.Set(d1.m_location);
 
 _step_final:
 	d2.s_event.tzone = earth.m_fTimezone;
@@ -349,23 +349,23 @@ void CFrameMain::OnCalculateEvents()
 _step_1:
 	dloc.DoModal();
 	if (dloc.m_nNextStep < 1) return;
-	naks.m_loc = dloc.m_location;
+	naks.m_loc.Set(dloc.m_location);
 
 _step_2:
 	dstart.m_earth = (EARTHDATA)naks.m_loc;
 	if (dstart.DoModal() == IDCANCEL) return;
 	if (dstart.m_nNextStep < 0) goto _step_1;
-	naks.va_start = dstart.m_resultA;
-	naks.vc_start = dstart.m_resultC;
+	naks.va_start.Set(dstart.m_resultA);
+	naks.vc_start.Set(dstart.m_resultC);
 
 _step_3:
 	dend.m_earth = (EARTHDATA)naks.m_loc;
-	dend.va_start = naks.va_start;
-	dend.vc_start = naks.vc_start;
+	dend.va_start.Set(naks.va_start);
+	dend.vc_start.Set(naks.vc_start);
 	if (dend.DoModal() == IDCANCEL) return;
 	if (dend.m_nNextStep < 0) goto _step_2;
-	naks.va_end = dend.va_end;
-	naks.vc_end = dend.vc_end;
+	naks.va_end.Set(dend.va_end);
+	naks.vc_end.Set(dend.vc_end);
 
 _step_final:
 	dspec.m_fOptions = naks.fOptions;
@@ -470,7 +470,7 @@ void CFrameMain::OnCalculateMasalisting()
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
-	d1.m_location = GCGlobal::lastLocation;
+	d1.m_location.Set(GCGlobal::lastLocation);
 	if (m_bJumpToFinalStep == TRUE)
 	{
 		m_bJumpToFinalStep = FALSE;
@@ -483,10 +483,10 @@ _step_1:
 	{
 		return;
 	}
-	earth = d1.m_location;
+	earth.Set(d1.m_location);
 
 _step_final:
-	dlg.m_loc = d1.m_location;
+	dlg.m_loc.Set(d1.m_location);
 	dlg.bFinal = TRUE;
 	dlg.m_pMasaList = &m_masalist;
 	dlg.DoModal();
@@ -636,10 +636,10 @@ void CFrameMain::OnCalculateToday()
 	GCGlobal::dateTimeShown.year = st.wYear;
 	GCGlobal::dateTimeShown.shour = 0.5;
 	GCGlobal::dateTimeShown.tzone = GCGlobal::myLocation.m_fTimezone;
-	GCGlobal::dateTimeToday = GCGlobal::dateTimeShown;
-	GCGlobal::dateTimeTomorrow = GCGlobal::dateTimeToday;
+	GCGlobal::dateTimeToday.Set(GCGlobal::dateTimeShown);
+	GCGlobal::dateTimeTomorrow.Set(GCGlobal::dateTimeToday);
 	GCGlobal::dateTimeTomorrow.NextDay();
-	GCGlobal::dateTimeYesterday = GCGlobal::dateTimeToday;
+	GCGlobal::dateTimeYesterday.Set(GCGlobal::dateTimeToday);
 	GCGlobal::dateTimeYesterday.PreviousDay();
 
 	m_today.Calculate(GCGlobal::dateTimeShown, GCGlobal::myLocation);
@@ -731,7 +731,7 @@ void CFrameMain::OnSettingsMylocation()
 
 	if (d1.m_nNextStep == 1)
 	{
-		GCGlobal::myLocation = d1.m_location;
+		GCGlobal::myLocation.Set(d1.m_location);
 		if (m_nInfoType == 7)
 			OnCalculateToday();
 	}
@@ -1498,24 +1498,24 @@ int CFrameMain::PrintNaksatras(CDC &dc, EARTHDATA earth, int m_masa, int m_year,
 	nColumn[4] = nColumn[3] + sz.cx + maxTithi + xSpace;
 */
 	midPoint = rcPrint.CenterPoint();
-	d = DAYDATA::GetFirstDayOfMasa(earth, m_year, mas);
+	d.Set(DAYDATA::GetFirstDayOfMasa(earth, m_year, mas));
 	d.InitWeekDay();
 	d.PreviousDay();
 	if (m_stop_masa == 0)
-		dstop = DAYDATA::GetFirstDayOfMasa(earth, m_year + 1, mas);
+		dstop.Set(DAYDATA::GetFirstDayOfMasa(earth, m_year + 1, mas));
 	else
-		dstop = DAYDATA::GetFirstDayOfMasa(earth, m_year, (mas + 1) % 12);
+		dstop.Set(DAYDATA::GetFirstDayOfMasa(earth, m_year, (mas + 1) % 12));
 	count = int (dstop.GetJulian() - d.GetJulian());
 
 	TString strTitle;
 
 	strTitle = GCStrings::getString(46);
 
-	dn = d;
+	dn.Set(d);
 	dn.PreviousDay();
 	nak = 0;
 
-	dtit = d;
+	dtit.Set(d);
 	dtit.PreviousDay();
 	tith = 0;
 	

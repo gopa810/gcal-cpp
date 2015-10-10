@@ -57,7 +57,7 @@ bool TResultEvents::AddEvent(VCTIME inTime, int inType, int inData, int inDst)
 		if (p == NULL)
 			return false;
 		for(unsigned int i = 0; i < n_count; i++)
-			p[i] = p_events[i];
+			p[i].Set(p_events[i]);
 		delete [] p_events;
 		n_size += 64;
 		p_events = p;
@@ -99,7 +99,7 @@ bool TResultEvents::AddEvent(VCTIME inTime, int inType, int inData, int inDst)
 	default:
 		p_events[n_count].nDst = 0;
 	}
-	p_events[n_count].Time = inTime;
+	p_events[n_count].Time.Set(inTime);
 	p_events[n_count].nData = inData;
 	p_events[n_count].nType = inType;
 	n_count++;
@@ -165,16 +165,16 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 	
 	TResultEvents &inEvents = *this;
 	this->clear();
-	this->m_location = loc;
-	this->m_vcStart = vcStart;
-	this->m_vcEnd = vcEnd;
+	this->m_location.Set(loc);
+	this->m_vcStart.Set(vcStart);
+	this->m_vcEnd.Set(vcEnd);
 	
 	VCTIME vcAdd, vcNext;
 	EARTHDATA earth = (EARTHDATA)loc;
 
-	vc = vcStart;
+	vc.Set(vcStart);
 
-	vcAdd = vc;
+	vcAdd.Set(vc);
 	vcAdd.InitWeekDay();
 
 	double sunRise, sunSet;
@@ -218,7 +218,8 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			todaySunriseHour = sunRise;
 			if (previousLongitude < -10)
 			{
-				VCTIME prevSunrise = vcAdd;
+				VCTIME prevSunrise;
+				prevSunrise.Set(vcAdd);
 				prevSunrise.PreviousDay();
 				sun.SunCalc(prevSunrise, earth);
 				previousSunriseHour = sun.rise.GetDayTime() - 1;
@@ -249,7 +250,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 				double tm = ( tr - b ) / a;
 				if (tm > fromTimeLimit)
 				{
-					vcNext = vcAdd;
+					vcNext.Set(vcAdd);
 					vcNext.shour = tm;
 					vcNext.NormalizeValues();
 					inEvents.AddEvent(vcNext, CCTYPE_ASCENDENT, (int)tr, ndst);
@@ -313,7 +314,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 
 	if (GCDisplaySettings::getValue(COREEVENTS_TITHI))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
@@ -328,7 +329,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.shour += 0.2;
 			if (vcAdd.shour >= 1.0)
 			{
@@ -340,7 +341,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 
 	if (GCDisplaySettings::getValue(COREEVENTS_NAKSATRA))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
@@ -355,7 +356,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.shour += 0.2;
 			if (vcAdd.shour >= 1.0)
 			{
@@ -367,7 +368,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 
 	if (GCDisplaySettings::getValue(COREEVENTS_YOGA))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
@@ -382,7 +383,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.shour += 0.2;
 			if (vcAdd.shour >= 1.0)
 			{
@@ -394,11 +395,11 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 
 	if (GCDisplaySettings::getValue(COREEVENTS_SANKRANTI))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
-			vcNext = GCSankranti::GetNextSankranti(vcAdd, nData);
+			vcNext.Set(GCSankranti::GetNextSankranti(vcAdd, nData));
 			if (vcNext.GetDayInteger() < vcEnd.GetDayInteger())
 			{
 				vcNext.InitWeekDay();
@@ -409,14 +410,14 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.NextDay();
 		}
 	}
 
 	if (GCDisplaySettings::getValue(COREEVENTS_MOONRASI))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
@@ -431,7 +432,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.shour += 0.5;
 			vcAdd.NormalizeValues();
 		}
@@ -440,7 +441,7 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 	if (GCDisplaySettings::getValue(COREEVENTS_CONJUNCTION))
 	{
 		double dlong;
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
@@ -455,26 +456,26 @@ void TResultEvents::CalculateEvents(CLocationRef &loc, VCTIME vcStart, VCTIME vc
 			{
 				break;
 			}
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 			vcAdd.NextDay();
 		}
 	}
 
 	if (GCDisplaySettings::getValue(COREEVENTS_MOON))
 	{
-		vcAdd = vc;
+		vcAdd.Set(vc);
 		vcAdd.shour = 0.0;
 		while(vcAdd.IsBeforeThis(vcEnd))
 		{
-			vcNext = MOONDATA::GetNextRise(earth, vcAdd, true);
+			vcNext.Set(MOONDATA::GetNextRise(earth, vcAdd, true));
 			inEvents.AddEvent(vcNext, CCTYPE_M_RISE, 0, ndst);
 
-			vcNext = MOONDATA::GetNextRise(earth, vcNext, false);
+			vcNext.Set(MOONDATA::GetNextRise(earth, vcNext, false));
 			inEvents.AddEvent(vcNext, CCTYPE_M_SET, 0, ndst);
 
 			vcNext.shour += 0.05;
 			vcNext.NormalizeValues();
-			vcAdd = vcNext;
+			vcAdd.Set(vcNext);
 		}
 	}
 
@@ -555,7 +556,7 @@ int TResultEvents::formatText(TString &res)
 					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
-			prevd = dnr.Time;
+			prevd.Set(dnr.Time);
 		}
 		else
 		{
@@ -778,7 +779,7 @@ int TResultEvents::formatXml(TString &strXml)
 				str.Format("\t<day date=\"%d/%d/%d\" />\n", dnr.Time.day, dnr.Time.month, dnr.Time.year);
 				strXml += str;
 			}
-			prevd = dnr.Time;
+			prevd.Set(dnr.Time);
 		}
 
 		switch(dnr.nType)
@@ -880,7 +881,7 @@ int TResultEvents::formatRtf(TString &res)
 					GCStrings::GetDayOfWeek(dnr.Time.dayOfWeek));
 				res += str;
 			}
-			prevd = dnr.Time;
+			prevd.Set(dnr.Time);
 		}
 		else
 		{
@@ -1126,7 +1127,7 @@ int TResultEvents::writeHtml(FILE * f)
 			{
 				fprintf(f, "<td class=\"hed\" colspan=2>%d %s %d </td></tr>\n<tr>", dnr.Time.day, GCStrings::GetMonthAbreviation(dnr.Time.month), dnr.Time.year);
 			}
-			prevd = dnr.Time;
+			prevd.Set(dnr.Time);
 		}
 		else
 		{

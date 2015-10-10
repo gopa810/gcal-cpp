@@ -26,7 +26,7 @@ const char * VCTIME::ToString(VCTIME vc)
 	return ts;
 }
 
-bool VCTIME::operator<(VCTIME &date)
+bool VCTIME::IsLessThan(VCTIME &date)
 {
 	int y1, y2, m1, m2, d1, d2;
 	double h1, h2;
@@ -62,7 +62,7 @@ bool VCTIME::operator<(VCTIME &date)
 	}
 }
 
-bool VCTIME::operator<=(VCTIME &date)
+bool VCTIME::IsLessOrEqualTo(VCTIME &date)
 {
 	int y1, y2, m1, m2, d1, d2;
 	double h1, h2;
@@ -99,7 +99,7 @@ bool VCTIME::operator<=(VCTIME &date)
 	}
 }
 
-bool VCTIME::operator==(VCTIME &date)
+bool VCTIME::IsDateEqual(VCTIME &date)
 {
 	int y1, y2, m1, m2, d1, d2;
 	double h1, h2;
@@ -250,13 +250,13 @@ void VCTIME::NextDay()
 	dayOfWeek = (dayOfWeek + 1) % 7;
 }
 
-void VCTIME::operator+=(int n)
+void VCTIME::AddDays(int n)
 {
 	for(int i = 0; i < n; i++)
 		NextDay();
 }
 
-void VCTIME::operator-=(int n)
+void VCTIME::SubtractDays(int n)
 {
 	for(int i = 0; i < n; i++)
 		PreviousDay();
@@ -318,15 +318,23 @@ void VCTIME::SetFromJulian(double jd)
 }
 
 
-int VCTIME::operator=(int i)
+void VCTIME::Clear()
 {
-	year = i;
-	month = i;
-	day = i;
+	year = 0;
+	month = 0;
+	day = 0;
 	shour = 0.0;
 	tzone = 0.0;
+}
 
-	return i;
+void VCTIME::Set(VCTIME & ta)
+{
+	year = ta.year;
+	month = ta.month;
+	day = ta.day;
+	shour = ta.shour;
+	tzone = ta.tzone;
+	dayOfWeek = ta.dayOfWeek;
 }
 
 bool VCTIME::IsBeforeThis(VCTIME &date)

@@ -203,7 +203,7 @@ BOOL CFrameFind::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				GCUserInterface::CalculateCalendar(m_calendar, m_viewCond.m_earth, vc, 10);
 				m_calendar.formatPlainText(text);
 
-				calendar.vc_start = vc;
+				calendar.vc_start.Set(vc);
 				calendar.count = 10;
 
 				m_wndCalend.SetWindowText(text);

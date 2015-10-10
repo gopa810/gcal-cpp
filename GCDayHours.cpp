@@ -31,7 +31,15 @@ void DAYTIME::SetValue(int i)
 	hour = min = sec = mili = i;
 }
 
-bool DAYTIME::operator>(DAYTIME &dt)
+void DAYTIME::Set(DAYTIME &d)
+{
+	hour = d.hour;
+	min = d.min;
+	sec = d.sec;
+	mili = d.mili;
+}
+
+bool DAYTIME::IsGreaterThan(DAYTIME &dt)
 {
 	if (hour > dt.hour)
 		return TRUE;
@@ -54,7 +62,7 @@ bool DAYTIME::operator>(DAYTIME &dt)
 	return FALSE;
 }
 
-bool DAYTIME::operator<(DAYTIME &dt)
+bool DAYTIME::IsLessThan(DAYTIME &dt)
 {
 	if (hour < dt.hour)
 		return TRUE;
@@ -77,7 +85,7 @@ bool DAYTIME::operator<(DAYTIME &dt)
 	return FALSE;
 }
 
-bool DAYTIME::operator>=(DAYTIME &dt)
+bool DAYTIME::IsGreaterOrEqualThan(DAYTIME &dt)
 {
 	if (hour >= dt.hour)
 		return TRUE;
@@ -100,7 +108,7 @@ bool DAYTIME::operator>=(DAYTIME &dt)
 	return FALSE;
 }
 
-bool DAYTIME::operator<=(DAYTIME &dt)
+bool DAYTIME::IsLessOrEqualThan(DAYTIME &dt)
 {
 	if (hour <= dt.hour)
 		return TRUE;
@@ -124,20 +132,12 @@ bool DAYTIME::operator<=(DAYTIME &dt)
 }
 
 
-void DAYTIME::operator+=(int mn) 
+void DAYTIME::AddMinutes(int mn) 
 {
 	min += mn;
 	while(min < 0) { min += 60; hour--;}
 	while(min > 59) { min -= 60; hour++;}
 }
-
-void DAYTIME::operator-=(int mn) 
-{
-	min -= mn;
-	while(min < 0) { min += 60; hour--;}
-	while(min > 59) { min -= 60; hour++;}
-}
-
 
 double DAYTIME::GetDayTime()
 {

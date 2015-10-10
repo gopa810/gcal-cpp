@@ -35,7 +35,18 @@ public:
 		m_nDST = e.dst; return e;
 	};
 	
-
+	void Set(CLocationRef & L)
+	{
+		m_strTimeZone = L.m_strTimeZone;
+		m_strLatitude = L.m_strLatitude;
+		m_strLongitude = L.m_strLongitude;
+		m_strName = L.m_strName;
+		m_strFullName = L.m_strFullName;
+		m_fLongitude = L.m_fLongitude;
+		m_fLatitude = L.m_fLatitude;
+		m_fTimezone = L.m_fTimezone;
+		m_nDST = L.m_nDST;
+	}
 
 	void GetFullName(TString * target)
 	{
@@ -49,5 +60,7 @@ public:
 				, m_strTimeZone.c_str());
 		}
 	}
+		private:
+	void operator=(CLocationRef&);
 };
 

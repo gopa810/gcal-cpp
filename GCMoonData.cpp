@@ -111,7 +111,8 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	double l1, l2;
 	double jday = startDate.GetJulianComplete();
 	MOONDATA moon;
-	VCTIME d = startDate;
+	VCTIME d;
+	d.Set(startDate);
 	double ayanamsa = GCAyanamsha::GetAyanamsa(jday);
 	double scan_step = 0.5;
 	int prev_naks = 0;
@@ -128,7 +129,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 	while(counter < 20)
 	{
 		xj = jday;
-		xd = d;
+		xd.Set(d);
 
 		jday += scan_step;
 		d.shour += scan_step;
@@ -144,7 +145,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 		if (prev_naks != new_naks)
 		{
 			jday = xj;
-			d = xd;
+			d.Set(xd);
 			scan_step *= 0.5;
 			counter++;
 			continue;
@@ -154,7 +155,7 @@ int MOONDATA::GetNextMoonRasi(EARTHDATA ed, VCTIME startDate, VCTIME &nextDate)
 			l1 = l2;
 		}
 	}
-	nextDate = d;
+	nextDate.Set(d);
 	return new_naks;
 }
 
@@ -171,7 +172,8 @@ VCTIME MOONDATA::GetNextRise(EARTHDATA e, VCTIME vc, bool bRise)
 	double hour = 1/24.0;
 	double startHour = vc.shour;
 
-	VCTIME track = vc;
+	VCTIME track;
+	track.Set(vc);
 	track.NormalizeValues();
 
 	// inicializacia prvej hodnoty ELEVATION
