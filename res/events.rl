@@ -53,6 +53,7 @@
 13 Srila Haridasa Thakura -- Disappearance|4|28|3|1|0||1|0
 13 Sri Visvarupa Mahotsava|4|29|1|1|0||1|0
 13 Acceptance of sannyasa by Srila Prabhupada|4|29|4|1|0||1|0
+13 Bhadra Purnima|4|29|1|1|0||1|0
 13 Srila Prabhupada's arrival in the USA|5|6|4|1|0||1|0
 13 Durga Puja|5|21|5|1|0||1|0
 13 Ramacandra Vijayotsava|5|24|1|1|0||1|0
@@ -64,7 +65,6 @@
 13 Sri Murari Gupta -- Disappearance|5|29|3|1|0||1|0
 13 Laksmi Puja|5|29|5|1|0||1|0
 13 Srila Narottama Dasa Thakura -- Disappearance|6|4|3|1|0||1|0
-13 Appearance of Radha Kunda, snana dana|6|7|1|1|0||1|0
 13 Bahulastami|6|7|1|1|0||1|0
 13 Sri Virabhadra -- Appearance|6|8|3|1|0||1|0
 13 Dipa dana, Dipavali, (Kali Puja)|6|14|1|1|0||1|0
@@ -145,3 +145,4 @@
 13 Nandotsava|4|23|1|1|0||0|13
 13 Srila Prabhupada -- Appearance|4|8|2|1|0|Srila Prabhupada|0|15
 13 Festival of Jagannatha Misra|11|15|1|1|0||0|14
+13 Appearance of Radha Kunda, snana dana|11|29|1|1|0||1|0

@@ -393,7 +393,7 @@ int GCStrings::readFile(const char * pszFile)
 	}
 
 	TString * p;
-	const char * version = "11, Build 4";
+	const char * version = "11, Build 5";
 	p = new TString();
 	(*p) = version;
 	gstr.SetObjectAtIndex(130, p);

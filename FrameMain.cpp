@@ -9,7 +9,7 @@
 
 #include "TFile.h"
 #include "dlgselectlangoutput.h"
-#include <C:\Program Files (x86)\HTML Help Workshop\include\htmlhelp.h>
+//#include <C:\Program Files (x86)\HTML Help Workshop\include\htmlhelp.h>
 #include "DlgGetLocation.h"
 #include "DlgGetLocationEx.h"
 #include "DlgGetDate.h"

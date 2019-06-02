@@ -1056,113 +1056,85 @@ int TResultCalendar::CompleteCalc(int nIndex, EARTHDATA earth)
 	// test for other festivals
 	// ------------------------
 
-	int n, n2;
-	int _masa_from, _masa_to;
-	int _tithi_from, _tithi_to;
+	int n2;
+	int _masa_from = -1, _masa_to = -1;
+	int _tithi_from = -1, _tithi_to = -1;
 	CCustomEvent * pEvx;
 
-	bool s1 = true, s2 = false;
 	TString evx_temp;
 
 	if (t.astrodata.nMasa > 11)
 		goto other_fest;
 
-	n = t.astrodata.nMasa * 30 + t.astrodata.nTithi;
-	_tithi_to = t.astrodata.nTithi;
-	_masa_to  = t.astrodata.nMasa;
+	if (s.astrodata.nTithi != t.astrodata.nTithi) {
+		_tithi_to = t.astrodata.nTithi;
+		_masa_to  = t.astrodata.nMasa;
+	}
 
-	if (s.astrodata.nTithi == t.astrodata.nTithi)
-		s1 = false;
-
-	// if ksaya tithi, then s2 is true
-	if ((t.astrodata.nTithi != s.astrodata.nTithi) && 
-		(t.astrodata.nTithi != (s.astrodata.nTithi + 1)%30))
-	{
-		n2 = (n + 359 ) % 360; // this is index into table of festivals for previous tithi
-		_tithi_from   = n2 % 30;
-		_masa_from    = n2 / 30;
-		s2 = true;
+	// resolving 
+	if (GCDisplaySettings::getValue(71) == 0) {
+		// if ksaya tithi, then s2 is true
+		if ((t.astrodata.nTithi != s.astrodata.nTithi) && 
+			(t.astrodata.nTithi != (s.astrodata.nTithi + 1)%30))
+		{
+			n2 = (t.astrodata.nMasa * 30 + t.astrodata.nTithi + 359 ) % 360; // this is index into table of festivals for previous tithi
+			_tithi_from   = n2 % 30;
+			_masa_from    = n2 / 30;
+		}
+	} else {
+		// if ksaya tithi, then s2 is true
+		if ((u.astrodata.nTithi != t.astrodata.nTithi) && 
+			(u.astrodata.nTithi != (t.astrodata.nTithi + 1)%30))
+		{
+			n2 = (t.astrodata.nMasa * 30 + t.astrodata.nTithi + 1) % 360; // this is index into table of festivals for previous tithi
+			_tithi_from   = n2 % 30;
+			_masa_from    = n2 / 30;
+		}
 	}
 
 	int currFestTop = 0;
 	GCMutableDictionary * md = NULL;
+	int eventSelected = 0;
 
-	if (s2)
+	for(int kn = 0; kn < CCustomEventList::Count(); kn ++)
 	{
-		for(int kn = 0; kn < CCustomEventList::Count(); kn ++)
+		eventSelected = 0;
+		pEvx = CCustomEventList::EventAtIndex(kn);
+		if (_masa_from >= 0 && pEvx->nMasa==_masa_from && pEvx->nTithi == _tithi_from && pEvx->nUsed && pEvx->nVisible) 
+			eventSelected = 1;
+		else if (_masa_to >= 0 && pEvx->nMasa==_masa_to && pEvx->nTithi==_tithi_to && pEvx->nUsed && pEvx->nVisible)
+			eventSelected = 1;
+
+		if (!eventSelected) continue;
+		md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
+			pEvx->strText.c_str());
+		currFestTop += 5;
+		if (pEvx->nFastType > 0)
 		{
-			pEvx = CCustomEventList::EventAtIndex(kn);
-			if (pEvx->nMasa==_masa_from && pEvx->nTithi == _tithi_from && pEvx->nUsed && pEvx->nVisible)
+			md->setIntForKey("fasttype", pEvx->nFastType);
+			md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
+		}
+
+		if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
+		{
+			TString ss1;
+			int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
+			char * appx = "th";
+			if (years % 10 == 1) appx = "st";
+			else if (years % 10 == 2) appx = "nd";
+			else if (years % 10 == 3) appx = "rd";
+			if (GCDisplaySettings::getValue(51) == 0)
 			{
-				md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
-					pEvx->strText.c_str());
-				currFestTop += 5;
-				if (pEvx->nFastType > 0)
-				{
-					md->setIntForKey("fasttype", pEvx->nFastType);
-					md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
-				}
-
-				if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
-				{
-					TString ss1;
-					int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
-					char * appx = "th";
-					if (years % 10 == 1) appx = "st";
-					else if (years % 10 == 2) appx = "nd";
-					else if (years % 10 == 3) appx = "rd";
-					if (GCDisplaySettings::getValue(51) == 0)
-					{
-						ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
-					}
-					else
-					{
-						ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
-					}
-					md->setStringForKey("text", ss1.c_str());
-				}
-
+				ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
 			}
+			else
+			{
+				ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
+			}
+			md->setStringForKey("text", ss1.c_str());
 		}
 	}
 
-	if(s1)
-	{
-		for(int kn = 0; kn < CCustomEventList::Count(); kn++)
-		{
-			pEvx = CCustomEventList::EventAtIndex(kn);
-			if (pEvx->nMasa==_masa_to && pEvx->nTithi==_tithi_to && pEvx->nUsed && pEvx->nVisible)
-			{
-				md = t.AddEvent(PRIO_FESTIVALS_0 + pEvx->nClass*100 + currFestTop, CAL_FEST_0 + pEvx->nClass,
-					pEvx->strText.c_str());
-				currFestTop += 5;
-				if (pEvx->nFastType > 0)
-				{
-					md->setIntForKey("fasttype", pEvx->nFastType);
-					md->setStringForKey("fastsubject", pEvx->strFastSubject.c_str());
-				}
-
-				if (GCDisplaySettings::getValue(51) != 2 && pEvx->nStartYear > -7000)
-				{
-					TString ss1;
-					int years = t.astrodata.nGaurabdaYear - (pEvx->nStartYear - 1496);
-					char * appx = "th";
-					if (years % 10 == 1) appx = "st";
-					else if (years % 10 == 2) appx = "nd";
-					else if (years % 10 == 3) appx = "rd";
-					if (GCDisplaySettings::getValue(51) == 0)
-					{
-						ss1.Format("%s (%d%s anniversary)", pEvx->strText.c_str(), years, appx);
-					}
-					else
-					{
-						ss1.Format("%s (%d%s)", pEvx->strText.c_str(), years, appx);
-					}
-					md->setStringForKey("text", ss1.c_str());
-				}
-			}
-		}
-	}
 
 other_fest:
 	// ---------------------------

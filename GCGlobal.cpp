@@ -76,7 +76,7 @@ int GCGlobal::initFolders()
 	GCGlobal::applicationStrings[GSTR_LOC_FILE].Format("%slocations.cfg", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());
 	GCGlobal::applicationStrings[GSTR_SSET_FILE].Format("%sshowset.cfg", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());
 	GCGlobal::applicationStrings[GSTR_LOCX_FILE].Format("%sloc.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());//GCAL 3.0
-	GCGlobal::applicationStrings[GSTR_CEX_FILE].Format("%scev3.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());//GCAL 3.0
+	GCGlobal::applicationStrings[GSTR_CEX_FILE].Format("%scev4.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());//GCAL 3.0
 	GCGlobal::applicationStrings[GSTR_CONFX_FILE].Format("%sset.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());
 	GCGlobal::applicationStrings[GSTR_TZ_FILE].Format("%stz.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());
 	GCGlobal::applicationStrings[GSTR_COUNTRY_FILE].Format("%sctrs.rl", GCGlobal::applicationStrings[GSTR_CONFOLDER].c_str());

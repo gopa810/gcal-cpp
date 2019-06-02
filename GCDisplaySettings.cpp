@@ -161,6 +161,12 @@ CShowSetting GCDisplaySettings::gss[] =
 	{1, 1, "CE12", "Sort results core events"},//63
 	{0, 0, "CE13", "Abhijit Muhurta"}, //64
 	{0, 0, "CE14", "Yoga Events"}, //65
+	{0, 0, "CE14", "Yoga Events"}, //66
+	{0, 0, "CE14", "Yoga Events"}, //67
+	{0, 0, "CE14", "Yoga Events"}, //68
+	{0, 0, "CE14", "Yoga Events"}, //69
+	{0, 0, "CE14", "Yoga Events"}, //70
+	{0, 0, "FKSP", "Festival on ksaya tithi: show on previous tithi"}, //71
 	{0, 0, NULL, NULL}
 };
 

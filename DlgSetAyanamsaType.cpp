@@ -33,6 +33,7 @@ void DlgSetAyanamsaType::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(DlgSetAyanamsaType, CDialog)
 	//{{AFX_MSG_MAP(DlgSetAyanamsaType)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_CHECK2, &DlgSetAyanamsaType::OnBnClickedCheck2)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,6 +58,7 @@ BOOL DlgSetAyanamsaType::OnInitDialog()
 	m_san.SetCurSel(GCSankranti::GetSankrantiType());
 
 	CheckDlgButton(IDC_CHECK1, GCDisplaySettings::getValue(44));
+	CheckDlgButton(IDC_CHECK2, GCDisplaySettings::getValue(71));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -67,6 +69,13 @@ void DlgSetAyanamsaType::OnOK()
 	GCAyanamsha::SetAyanamsaType(m_list.GetCurSel());
 	GCSankranti::SetSankrantiType(m_san.GetCurSel());
 	GCDisplaySettings::setValue(44, IsDlgButtonChecked(IDC_CHECK1));
+	GCDisplaySettings::setValue(71, IsDlgButtonChecked(IDC_CHECK2));
 
 	CDialog::OnOK();
+}
+
+
+void DlgSetAyanamsaType::OnBnClickedCheck2()
+{
+	// TODO: Add your control notification handler code here
 }
